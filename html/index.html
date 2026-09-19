@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="description" content="The Sugar Atelier premium online cake shop. Fresh cakes and custom cakes.">
+  <title>Home | The Sugar Atelier</title>
+  <link rel="stylesheet" href="../CSS/style.css">
+</head>
+
+<body class="">
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="logo" href="index.html">The Sugar <span>Atelier</span></a>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop</a>
+        <a href="categories.html">Categories</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <a href="search.html" aria-label="Search">⌕</a>
+        <a href="wishlist.html" aria-label="Wishlist">♡</a>
+        <a href="cart.html" aria-label="Cart">🛒<span class="cart-count">0</span></a>
+        <a href="account.html" aria-label="Account">♙</a>
+        <a class="btn btn-primary" href="shop.html">Order Now</a>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <span class="eyebrow">FRESHLY BAKED • MADE WITH LOVE</span>
+          <h1>Freshly Baked Happiness, Delivered to Your Door</h1>
+          <p>Handcrafted cakes made with premium ingredients for birthdays, weddings, anniversaries and every sweet
+            celebration.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="shop.html">Shop Cakes</a>
+            <a class="btn btn-outline" href="categories.html">Explore Categories</a>
+          </div>
+        </div>
+        <div class="hero-image">
+          <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1000&q=85"
+            alt="Decorated celebration cake">
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">EXPLORE</span>
+            <h2>Shop by Category</h2>
+          </div>
+          <a href="categories.html">View all →</a>
+        </div>
+        <div class="category-grid">
+          <a class="category-card" href="shop.html?category=Birthday">
+            <div class="category-icon">🎂</div>
+            <h3>Birthday Cakes</h3>
+            <p>Make every birthday special.</p>
+          </a>
+          <a class="category-card" href="shop.html?category=Chocolate">
+            <div class="category-icon">🍫</div>
+            <h3>Chocolate Cakes</h3>
+            <p>Rich, smooth and irresistible.</p>
+          </a>
+          <a class="category-card" href="shop.html?category=Wedding">
+            <div class="category-icon">💍</div>
+            <h3>Wedding Cakes</h3>
+            <p>Elegant cakes for your day.</p>
+          </a>
+          <a class="category-card" href="shop.html?category=Cheesecake">
+            <div class="category-icon">🍓</div>
+            <h3>Cheesecakes</h3>
+            <p>Creamy favorites for everyone.</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">CUSTOMER FAVORITES</span>
+            <h2>Best Selling Cakes</h2>
+          </div>
+          <a href="shop.html">Shop all →</a>
+        </div>
+        <!-- id="homeBestSellers" — admin-products.js injects new products here -->
+        <div class="product-grid" id="homeBestSellers">
+          <article class="product-card">
+            <div class="product-img">
+              <span class="badge">Best Seller</span>
+              <button class="wishlist-btn" data-wishlist="Classic Chocolate Dream">♡</button>
+              <a href="product.html?name=Classic+Chocolate+Dream"><img
+                  src="https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&w=700&q=85"
+                  alt="Chocolate cake"></a>
+            </div>
+            <div class="product-info">
+              <div class="rating">★★★★★ <small>(42)</small></div>
+              <h3><a href="product.html?name=Classic+Chocolate+Dream">Classic Chocolate Dream</a></h3>
+              <p class="product-price">৳ 1,850 <del>৳ 2,100</del></p>
+              <button class="btn btn-primary full add-cart" data-name="Classic Chocolate Dream" data-price="1850">Add to
+                Cart</button>
+            </div>
+          </article>
+          <article class="product-card">
+            <div class="product-img">
+              <span class="badge">15% OFF</span>
+              <button class="wishlist-btn" data-wishlist="Strawberry Velvet">♡</button>
+              <a href="product.html?name=Strawberry+Velvet"><img
+                  src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=700&q=85"
+                  alt="Strawberry cake"></a>
+            </div>
+            <div class="product-info">
+              <div class="rating">★★★★★ <small>(35)</small></div>
+              <h3><a href="product.html?name=Strawberry+Velvet">Strawberry Velvet</a></h3>
+              <p class="product-price">৳ 2,050 <del>৳ 2,400</del></p>
+              <button class="btn btn-primary full add-cart" data-name="Strawberry Velvet" data-price="2050">Add to
+                Cart</button>
+            </div>
+          </article>
+          <article class="product-card">
+            <div class="product-img">
+              <button class="wishlist-btn" data-wishlist="Elegant Wedding Bliss">♡</button>
+              <a href="product.html?name=Elegant+Wedding+Bliss"><img
+                  src="https://images.unsplash.com/photo-1558301211-0d8c8ddee6ec?auto=format&fit=crop&w=700&q=85"
+                  alt="Wedding cake"></a>
+            </div>
+            <div class="product-info">
+              <div class="rating">★★★★★ <small>(27)</small></div>
+              <h3><a href="product.html?name=Elegant+Wedding+Bliss">Elegant Wedding Bliss</a></h3>
+              <p class="product-price">৳ 4,900</p>
+              <button class="btn btn-primary full add-cart" data-name="Elegant Wedding Bliss" data-price="4900">Add to
+                Cart</button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="promo">
+      <div class="container promo-inner">
+        <div>
+          <span class="eyebrow">LIMITED OFFER</span>
+          <h2>Celebrate Today — Get 15% Off</h2>
+          <p>Use code <strong>SWEET15</strong> at checkout.</p>
+        </div>
+        <a class="btn btn-light" href="shop.html">Order Today</a>
+      </div>
+    </section>
+
+    <!-- ── Testimonials Section ──────────────────────────────── -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">HAPPY CUSTOMERS</span>
+            <h2>What Our Customers Say</h2>
+          </div>
+        </div>
+        <div class="testimonials-grid">
+          <div class="testimonial-card">
+            <div class="testimonial-quote">"</div>
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-text">The birthday cake was absolutely stunning! Perfect design, perfect taste. My
+              daughter loved every bite. Will definitely order again!</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">A</div>
+              <div>
+                <span class="testimonial-name">Ayesha Rahman</span>
+                <span class="testimonial-role">Dhaka • Birthday Cake</span>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-quote">"</div>
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-text">Ordered the wedding cake and it exceeded all our expectations. The delivery was
+              on time and the cake was fresh and beautiful. Highly recommended!</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">T</div>
+              <div>
+                <span class="testimonial-name">Tanvir Ahmed</span>
+                <span class="testimonial-role">Chittagong • Wedding Cake</span>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-quote">"</div>
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-text">The Classic Chocolate Dream is exactly that — a dream! Rich, creamy and moist.
+              The custom message on top was a lovely touch. 10/10!</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">N</div>
+              <div>
+                <span class="testimonial-name">Nadia Islam</span>
+                <span class="testimonial-role">Sylhet • Chocolate Cake</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">WHY US</span>
+            <h2>Made for Your Moments</h2>
+          </div>
+        </div>
+        <div class="features">
+          <div>
+            <b>✦</b>
+            <h3>Fresh Ingredients</h3>
+            <p>Premium ingredients and careful baking every day.</p>
+          </div>
+          <div>
+            <b>⚡</b>
+            <h3>Fast Delivery</h3>
+            <p>Reliable delivery options for selected areas.</p>
+          </div>
+          <div>
+            <b>♡</b>
+            <h3>Custom Designs</h3>
+            <p>Personalize your cake for your special moment.</p>
+          </div>
+          <div>
+            <b>✓</b>
+            <h3>Secure Payment</h3>
+            <p>Local and international payment options.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a class="logo" href="index.html">The Sugar <span>Atelier</span></a>
+        <p>Premium handcrafted cakes for every celebration.</p>
+        <div class="footer-social">
+          <a href="https://facebook.com" class="social-fb" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg width="17" height="17" viewBox="-2 -2 28 28" fill="currentColor" aria-hidden="true"><path d="M9 8H6v4h3v12h5V12h3.642L18 8h-4V6.333C14 5.374 14.5 5 15.5 5H18V0h-3.808C10.592 0 9 1.583 9 4.615V8z"/></svg>
+          </a>
+          <a href="https://instagram.com" class="social-ig" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+          <a href="https://wa.me/8801700000000" class="social-wa" target="_blank" rel="noopener" aria-label="WhatsApp">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.031 0C5.396 0 .029 5.367.029 12.003c0 2.123.554 4.197 1.609 6.024L0 24l6.163-1.613a11.968 11.968 0 005.868 1.534h.005c6.633 0 12.001-5.367 12.001-12.003C24.037 5.367 18.67 0 12.031 0zm0 21.99a9.972 9.972 0 01-5.084-1.39l-.365-.216-3.778.99.99-3.68-.237-.377a9.96 9.96 0 01-1.527-5.314c0-5.506 4.48-9.986 9.992-9.986 2.668 0 5.176 1.038 7.062 2.925 1.887 1.887 2.926 4.396 2.926 7.066 0 5.508-4.48 9.988-9.979 9.988zm5.474-7.487c-.3-.15-1.776-.876-2.051-.976-.275-.1-.475-.15-.675.15s-.775.976-.95 1.176c-.175.2-.35.225-.65.075s-1.268-.468-2.416-1.492c-.893-.797-1.496-1.782-1.671-2.082-.175-.3-.019-.462.131-.612.135-.135.3-.35.45-.525.15-.175.2-.3.3-.5.1-.2.05-.375-.025-.525s-.675-1.626-.925-2.226c-.244-.585-.491-.506-.675-.515-.175-.01-.375-.01-.575-.01s-.525.075-.8.375c-.275.3-1.05 1.026-1.05 2.502s1.075 2.902 1.225 3.102c.15.2 2.116 3.232 5.127 4.533.716.31 1.275.495 1.71.634.719.229 1.373.197 1.891.12.577-.086 1.776-.725 2.026-1.426.25-.7.25-1.301.175-1.426-.075-.125-.275-.2-.575-.35z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <a href="shop.html">Shop</a>
+        <a href="categories.html">Categories</a>
+        <a href="custom-cake.html">Custom Cake</a>
+        <a href="faq.html">FAQ</a>
+      </div>
+      <div>
+        <h4>Customer Care</h4>
+        <a href="account.html">My Account</a>
+        <a href="orders.html">Track Order</a>
+        <a href="contact.html">Contact</a>
+        <a href="privacy.html">Privacy Policy</a>
+      </div>
+      <div>
+        <h4>Payments</h4>
+        <p>bKash • Nagad • Rocket • Visa • Mastercard • Stripe</p>
+      </div>
+    </div>
+    <div class="copyright">© 2026 The Sugar Atelier. All rights reserved.</div>
+  </footer>
+
+  <!-- WhatsApp Floating Button -->
+  <a class="whatsapp-float" href="https://wa.me/8801700000000" target="_blank" rel="noopener"
+    aria-label="Chat on WhatsApp">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.031 0C5.396 0 .029 5.367.029 12.003c0 2.123.554 4.197 1.609 6.024L0 24l6.163-1.613a11.968 11.968 0 005.868 1.534h.005c6.633 0 12.001-5.367 12.001-12.003C24.037 5.367 18.67 0 12.031 0zm0 21.99a9.972 9.972 0 01-5.084-1.39l-.365-.216-3.778.99.99-3.68-.237-.377a9.96 9.96 0 01-1.527-5.314c0-5.506 4.48-9.986 9.992-9.986 2.668 0 5.176 1.038 7.062 2.925 1.887 1.887 2.926 4.396 2.926 7.066 0 5.508-4.48 9.988-9.979 9.988zm5.474-7.487c-.3-.15-1.776-.876-2.051-.976-.275-.1-.475-.15-.675.15s-.775.976-.95 1.176c-.175.2-.35.225-.65.075s-1.268-.468-2.416-1.492c-.893-.797-1.496-1.782-1.671-2.082-.175-.3-.019-.462.131-.612.135-.135.3-.35.45-.525.15-.175.2-.3.3-.5.1-.2.05-.375-.025-.525s-.675-1.626-.925-2.226c-.244-.585-.491-.506-.675-.515-.175-.01-.375-.01-.575-.01s-.525.075-.8.375c-.275.3-1.05 1.026-1.05 2.502s1.075 2.902 1.225 3.102c.15.2 2.116 3.232 5.127 4.533.716.31 1.275.495 1.71.634.719.229 1.373.197 1.891.12.577-.086 1.776-.725 2.026-1.426.25-.7.25-1.301.175-1.426-.075-.125-.275-.2-.575-.35z"/></svg>
+  </a>
+
+  <!-- Back to Top Button -->
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+
+  <div id="toast" class="toast"></div>
+  <script src="../JS/app.js"></script>
+  <script src="../JS/admin-products.js"></script>
+  <script src="../JS/ant-effects.js"></script>
+  <script>
+    // Back to top
+    const btt = document.getElementById("backToTop");
+    window.addEventListener("scroll", () => {
+      btt.classList.toggle("visible", window.scrollY > 350);
+    });
+    btt.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+  </script>
+</body>
+
+</html>
