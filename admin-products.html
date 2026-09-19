@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="description" content="The Sugar Atelier premium online cake shop. Fresh cakes and custom cakes.">
+    <title>Admin Products | The Sugar Atelier</title>
+    <link rel="stylesheet" href="../CSS/style.css">
+  </head>
+  <body class="admin-body">
+    <div class="admin-layout">
+      <aside class="admin-side">
+        <a class="logo" href="index.html">The Sugar <span>Atelier</span></a>
+        <a href="admin-dashboard.html">Dashboard</a>
+        <a class="active" href="admin-products.html">Products</a>
+        <a href="admin-categories.html">Categories</a>
+        <a href="admin-orders.html">Orders</a>
+        <a href="admin-customers.html">Customers</a>
+        <a href="admin-reviews.html">Reviews</a>
+        <a href="admin-coupons.html">Coupons</a>
+        <a href="admin-custom-cakes.html">Custom Cakes</a>
+        <a href="admin-messages.html">Messages</a>
+        <a href="admin-payments.html">Payments</a>
+        <a href="admin-settings.html">Settings</a>
+        <a href="admin-login.html">Logout</a>
+      </aside>
+        <main class="admin-main">
+          <div class="admin-top">
+            <div>
+              <span class="eyebrow">CATALOG</span>
+              <h1>Products</h1>
+            </div>
+            <a class="btn btn-primary" href="admin-product-form.html">+ Add Product</a>
+          </div>
+          <div class="admin-card">
+            <div class="toolbar">
+              <input id="adminProductSearch" placeholder="Search products">
+              <span class="muted">CRUD-ready UI</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>SKU</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="adminProductRows">
+                  <tr>
+                    <td>Classic Chocolate Dream</td>
+                    <td>SC-001</td>
+                    <td>৳1,850</td>
+                    <td>25</td>
+                    <td>Active</td>
+                    <td>
+                      <a href="admin-product-form.html">Edit</a> ·
+                      <button class="link-btn delete-product">Delete</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Strawberry Velvet</td>
+                    <td>SC-002</td>
+                    <td>৳2,050</td>
+                    <td>14</td>
+                    <td>Active</td>
+                    <td>
+                      <a href="admin-product-form.html">Edit</a> ·
+                      <button class="link-btn delete-product">Delete</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </main>
+      </div>
+    <div id="toast" class="toast"></div>
+    <script src="../JS/app.js"></script>
+    <script src="../JS/admin-products.js"></script>
+  </body>
+</html>

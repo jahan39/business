@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="description" content="The Sugar Atelier premium online cake shop. Fresh cakes and custom cakes.">
+    <title>Search Cakes | The Sugar Atelier</title>
+    <link rel="stylesheet" href="../CSS/style.css">
+  </head>
+  <body class="">
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <a class="logo" href="index.html">The Sugar <span>Atelier</span></a>
+        <nav>
+          <a href="index.html">Home</a>
+          <a href="shop.html">Shop</a>
+          <a href="categories.html">Categories</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+        <div class="nav-actions">
+          <a href="search.html" aria-label="Search">⌕</a>
+          <a href="wishlist.html" aria-label="Wishlist">♡</a>
+          <a href="cart.html" aria-label="Cart">🛒<span class="cart-count">0</span></a>
+          <a href="account.html" aria-label="Account">♙</a>
+          <a class="btn btn-primary" href="shop.html">Order Now</a>
+        </div>
+      </div>
+    </header>
+    <main>
+      <section class="section">
+        <div class="container">
+          <span class="eyebrow">FIND YOUR FAVORITE</span>
+          <h1>Search Cakes</h1>
+          <div class="search-box">
+            <input id="globalSearch" type="search" placeholder="Search chocolate, birthday, wedding...">
+            <button class="btn btn-primary" id="searchButton">Search</button>
+          </div>
+          <div id="searchMessage" class="muted"></div>
+        </div>
+      </section>
+    </main>
+    <footer class="footer">
+      <div class="container footer-grid">
+        <div>
+          <a class="logo" href="index.html">The Sugar <span>Atelier</span></a>
+          <p>Premium handcrafted cakes for every celebration.</p>
+        </div>
+        <div>
+          <h4>Quick Links</h4>
+          <a href="shop.html">Shop</a>
+          <a href="categories.html">Categories</a>
+          <a href="custom-cake.html">Custom Cake</a>
+          <a href="faq.html">FAQ</a>
+        </div>
+        <div>
+          <h4>Customer Care</h4>
+          <a href="account.html">My Account</a>
+          <a href="orders.html">Track Order</a>
+          <a href="contact.html">Contact</a>
+          <a href="privacy.html">Privacy Policy</a>
+        </div>
+        <div>
+          <h4>Payments</h4>
+          <p>bKash • Nagad • Rocket • Visa • Mastercard • Stripe</p>
+        </div>
+      </div>
+      <div class="copyright">© 2026 The Sugar Atelier. All rights reserved.</div>
+    </footer>
+    <a class="whatsapp-float" href="https://wa.me/8801700000000" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">💬</a>
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+    <div id="toast" class="toast"></div>
+    <script src="../JS/app.js"></script>
+    <script>var _b=document.getElementById('backToTop');if(_b){window.addEventListener('scroll',function(){_b.classList.toggle('visible',window.scrollY>350);});_b.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});}</script>
+  </body>
+</html>

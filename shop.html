@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="description" content="The Sugar Atelier premium online cake shop. Fresh cakes and custom cakes.">
+    <title>Shop Cakes | The Sugar Atelier</title>
+    <link rel="stylesheet" href="../CSS/style.css">
+    <style>
+      /* ── Premium Filter Bar ────────────────────────────────────── */
+      .shop-filter-bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 28px;
+        padding: 18px 24px;
+        background: linear-gradient(135deg,#fff 0%,#fff4f8 100%);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(139,58,98,.07);
+      }
+
+      /* Search input */
+      .filter-search-wrap {
+        flex: 1;
+        min-width: 200px;
+        position: relative;
+      }
+      .filter-search-wrap svg {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--primary);
+        pointer-events: none;
+        opacity: .6;
+      }
+      .filter-search-wrap input {
+        width: 100%;
+        padding: 12px 14px 12px 42px;
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        background: var(--bg);
+        font-size: 14px;
+        font-weight: 500;
+        outline: none;
+        transition: border-color .2s, box-shadow .2s;
+      }
+      .filter-search-wrap input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(139,58,98,.1);
+      }
+
+      /* Category pill buttons */
+      .filter-pills {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .filter-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 9px 18px;
+        border-radius: 50px;
+        border: 1.5px solid var(--border);
+        background: #fff;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all .22s;
+        white-space: nowrap;
+      }
+      .filter-pill:hover {
+        border-color: var(--accent);
+        color: var(--primary);
+        background: var(--secondary);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(139,58,98,.12);
+      }
+      .filter-pill.active {
+        background: var(--primary);
+        color: #fff;
+        border-color: var(--primary);
+        box-shadow: 0 6px 18px rgba(139,58,98,.28);
+        transform: translateY(-2px);
+      }
+      .filter-pill .pill-icon { font-size: 15px; }
+
+      /* Sort select */
+      .filter-divider {
+        width: 1px;
+        height: 32px;
+        background: var(--border);
+        flex-shrink: 0;
+      }
+      .filter-sort-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+      }
+      .filter-sort-label {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--muted);
+        letter-spacing: .5px;
+        text-transform: uppercase;
+      }
+      .filter-sort-select {
+        padding: 9px 16px;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        background: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+        cursor: pointer;
+        outline: none;
+        transition: border-color .2s;
+        appearance: auto;
+      }
+      .filter-sort-select:focus { border-color: var(--primary); }
+
+      /* Toolbar count */
+      .shop-toolbar-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
+      .shop-count-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 16px;
+        background: var(--secondary);
+        color: var(--primary);
+        border-radius: 30px;
+        font-size: 13px;
+        font-weight: 800;
+      }
+      .active-filters-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .active-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 12px;
+        background: var(--secondary);
+        color: var(--primary);
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .active-tag button {
+        background: none;
+        border: none;
+        color: var(--primary);
+        font-size: 14px;
+        padding: 0;
+        cursor: pointer;
+        line-height: 1;
+      }
+      /* Price range */
+      .filter-price-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+      }
+      .price-input {
+        width: 90px;
+        padding: 9px 10px;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        background: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        outline: none;
+        transition: border-color .2s;
+        text-align: center;
+      }
+      .price-input:focus { border-color: var(--primary); }
+      .price-sep { color: var(--muted); font-weight: 700; font-size: 13px; }
+    </style>
+  </head>
+  <body class="">
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <a class="logo" href="index.html">The Sugar <span>Atelier</span></a>
+        <nav>
+          <a href="index.html">Home</a>
+          <a href="shop.html">Shop</a>
+          <a href="categories.html">Categories</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+        <div class="nav-actions">
+          <a href="search.html" aria-label="Search">⌕</a>
+          <a href="wishlist.html" aria-label="Wishlist">♡</a>
+          <a href="cart.html" aria-label="Cart">🛒<span class="cart-count">0</span></a>
+          <a href="account.html" aria-label="Account">♙</a>
+          <a class="btn btn-primary" href="shop.html">Order Now</a>
+        </div>
+      </div>
+    </header>
+    <main>
+      <section class="page-hero">
+        <div class="container">
+          <span class="eyebrow">OUR COLLECTION</span>
+          <h1>Shop Fresh Cakes</h1>
+          <p>Find your perfect cake and make your celebration sweeter.</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+
+          <!-- ── Premium Filter Bar ────────────────────────────────── -->
+          <div class="shop-filter-bar">
+            <!-- Search -->
+            <div class="filter-search-wrap">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input id="productSearch" type="search" placeholder="Search cakes…" autocomplete="off">
+            </div>
+
+            <div class="filter-divider"></div>
+
+            <!-- Category Pills -->
+            <div class="filter-pills" id="categoryPills">
+              <button class="filter-pill active" data-cat="">
+                <span class="pill-icon">🎂</span> All
+              </button>
+              <button class="filter-pill" data-cat="Birthday">
+                <span class="pill-icon">🎉</span> Birthday
+              </button>
+              <button class="filter-pill" data-cat="Chocolate">
+                <span class="pill-icon">🍫</span> Chocolate
+              </button>
+              <button class="filter-pill" data-cat="Wedding">
+                <span class="pill-icon">💍</span> Wedding
+              </button>
+              <button class="filter-pill" data-cat="Cheesecake">
+                <span class="pill-icon">🍓</span> Cheesecake
+              </button>
+              <button class="filter-pill" data-cat="Custom">
+                <span class="pill-icon">✨</span> Custom
+              </button>
+            </div>
+
+            <div class="filter-divider"></div>
+
+            <!-- Price Range -->
+            <div class="filter-price-wrap">
+              <span class="filter-sort-label">৳</span>
+              <input class="price-input" id="priceMin" type="number" placeholder="Min" min="0">
+              <span class="price-sep">–</span>
+              <input class="price-input" id="priceMax" type="number" placeholder="Max" min="0">
+            </div>
+
+            <div class="filter-divider"></div>
+
+            <!-- Sort -->
+            <div class="filter-sort-wrap">
+              <span class="filter-sort-label">Sort</span>
+              <select class="filter-sort-select" id="sortProducts">
+                <option value="latest">Latest</option>
+                <option value="low">Price ↑</option>
+                <option value="high">Price ↓</option>
+                <option value="name">A → Z</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- ── Toolbar row ─────────────────────────────────────── -->
+          <div class="shop-toolbar-row">
+            <div class="shop-count-badge">
+              <span>🎂</span>
+              <span id="productCount">Loading…</span>
+            </div>
+            <div class="active-filters-row" id="activeFiltersRow"></div>
+          </div>
+
+          <!-- ── Product Grid (5 columns) ───────────────────────── -->
+          <div class="product-grid" id="shopGrid">
+            <!-- Built-in products -->
+            <article class="product-card searchable" data-name="Classic Chocolate Dream" data-category="Chocolate" data-price="1850">
+              <div class="product-img">
+                <span class="badge">15% OFF</span>
+                <button class="wishlist-btn" data-wishlist="Classic Chocolate Dream">♡</button>
+                <a href="product.html?name=Classic+Chocolate+Dream"><img src="https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&w=700&q=85" alt="Chocolate cake"></a>
+              </div>
+              <div class="product-info">
+                <div class="rating">★★★★★ <small>(42)</small></div>
+                <h3><a href="product.html?name=Classic+Chocolate+Dream">Classic Chocolate Dream</a></h3>
+                <p class="product-price">৳ 1,850</p>
+                <button class="btn btn-primary full add-cart" data-name="Classic Chocolate Dream" data-price="1850">Add to Cart</button>
+              </div>
+            </article>
+            <article class="product-card searchable" data-name="Strawberry Velvet" data-category="Birthday" data-price="2050">
+              <div class="product-img">
+                <span class="badge">Popular</span>
+                <button class="wishlist-btn" data-wishlist="Strawberry Velvet">♡</button>
+                <a href="product.html?name=Strawberry+Velvet"><img src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=700&q=85" alt="Strawberry cake"></a>
+              </div>
+              <div class="product-info">
+                <div class="rating">★★★★★ <small>(35)</small></div>
+                <h3><a href="product.html?name=Strawberry+Velvet">Strawberry Velvet</a></h3>
+                <p class="product-price">৳ 2,050</p>
+                <button class="btn btn-primary full add-cart" data-name="Strawberry Velvet" data-price="2050">Add to Cart</button>
+              </div>
+            </article>
+            <article class="product-card searchable" data-name="Elegant Wedding Bliss" data-category="Wedding" data-price="4900">
+              <div class="product-img">
+                <button class="wishlist-btn" data-wishlist="Elegant Wedding Bliss">♡</button>
+                <a href="product.html?name=Elegant+Wedding+Bliss"><img src="https://images.unsplash.com/photo-1558301211-0d8c8ddee6ec?auto=format&fit=crop&w=700&q=85" alt="Wedding cake"></a>
+              </div>
+              <div class="product-info">
+                <div class="rating">★★★★★ <small>(27)</small></div>
+                <h3><a href="product.html?name=Elegant+Wedding+Bliss">Elegant Wedding Bliss</a></h3>
+                <p class="product-price">৳ 4,900</p>
+                <button class="btn btn-primary full add-cart" data-name="Elegant Wedding Bliss" data-price="4900">Add to Cart</button>
+              </div>
+            </article>
+            <article class="product-card searchable" data-name="Birthday Celebration" data-category="Birthday" data-price="1650">
+              <div class="product-img">
+                <button class="wishlist-btn" data-wishlist="Birthday Celebration">♡</button>
+                <a href="product.html?name=Birthday+Celebration"><img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=700&q=85" alt="Birthday cake"></a>
+              </div>
+              <div class="product-info">
+                <div class="rating">★★★★☆ <small>(19)</small></div>
+                <h3><a href="product.html?name=Birthday+Celebration">Birthday Celebration</a></h3>
+                <p class="product-price">৳ 1,650</p>
+                <button class="btn btn-primary full add-cart" data-name="Birthday Celebration" data-price="1650">Add to Cart</button>
+              </div>
+            </article>
+          </div>
+
+          <!-- Empty state -->
+          <div class="shop-empty" id="shopEmpty" style="display:none;">
+            <div class="shop-empty-icon">🎂</div>
+            <h3>No cakes found</h3>
+            <p>Try adjusting your filters.</p>
+          </div>
+
+        </div>
+      </section>
+    </main>
+    <footer class="footer">
+      <div class="container footer-grid">
+        <div>
+          <a class="logo" href="index.html">The Sugar <span>Atelier</span></a>
+          <p>Premium handcrafted cakes for every celebration.</p>
+        </div>
+        <div>
+          <h4>Quick Links</h4>
+          <a href="shop.html">Shop</a>
+          <a href="categories.html">Categories</a>
+          <a href="custom-cake.html">Custom Cake</a>
+          <a href="faq.html">FAQ</a>
+        </div>
+        <div>
+          <h4>Customer Care</h4>
+          <a href="account.html">My Account</a>
+          <a href="orders.html">Track Order</a>
+          <a href="contact.html">Contact</a>
+          <a href="privacy.html">Privacy Policy</a>
+        </div>
+        <div>
+          <h4>Payments</h4>
+          <p>bKash • Nagad • Rocket • Visa • Mastercard • Stripe</p>
+        </div>
+      </div>
+      <div class="copyright">© 2026 The Sugar Atelier. All rights reserved.</div>
+    </footer>
+    <a class="whatsapp-float" href="https://wa.me/8801700000000" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">💬</a>
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+    <div id="toast" class="toast"></div>
+    <script src="../JS/app.js"></script>
+    <script src="../JS/admin-products.js"></script>
+    <script>
+    /* ── Shop Filter Logic ──────────────────────────────────── */
+    (function () {
+      function initShopFilters() {
+        const grid      = document.getElementById("shopGrid");
+        const countEl   = document.getElementById("productCount");
+        const emptyEl   = document.getElementById("shopEmpty");
+        const searchEl  = document.getElementById("productSearch");
+        const sortEl    = document.getElementById("sortProducts");
+        const priceMin  = document.getElementById("priceMin");
+        const priceMax  = document.getElementById("priceMax");
+        const pills     = document.querySelectorAll("#categoryPills .filter-pill");
+        const activeRow = document.getElementById("activeFiltersRow");
+
+        let activeCat = "";
+
+        // URL param auto-select category
+        const urlCat = new URLSearchParams(location.search).get("category") || "";
+        if (urlCat) {
+          pills.forEach(p => {
+            if (p.dataset.cat === urlCat) { p.classList.add("active"); activeCat = urlCat; }
+            else p.classList.remove("active");
+          });
+        }
+
+        // Pill click
+        pills.forEach(pill => {
+          pill.addEventListener("click", () => {
+            pills.forEach(p => p.classList.remove("active"));
+            pill.classList.add("active");
+            activeCat = pill.dataset.cat;
+            applyFilters();
+          });
+        });
+
+        searchEl?.addEventListener("input", applyFilters);
+        sortEl?.addEventListener("change", applyFilters);
+        priceMin?.addEventListener("input", applyFilters);
+        priceMax?.addEventListener("input", applyFilters);
+
+        function applyFilters() {
+          const q       = (searchEl?.value || "").toLowerCase().trim();
+          const sort    = sortEl?.value || "latest";
+          const minP    = parseFloat(priceMin?.value) || 0;
+          const maxP    = parseFloat(priceMax?.value) || Infinity;
+
+          let cards = [...grid.querySelectorAll(".product-card.searchable")];
+
+          // Filter
+          let visible = cards.filter(c => {
+            const name  = (c.dataset.name || "").toLowerCase();
+            const cat   = c.dataset.category || "";
+            const price = parseFloat(c.dataset.price) || 0;
+
+            const matchSearch = !q || name.includes(q);
+            const matchCat    = !activeCat || cat === activeCat;
+            const matchPrice  = price >= minP && price <= maxP;
+            return matchSearch && matchCat && matchPrice;
+          });
+
+          // Sort
+          visible.sort((a, b) => {
+            const pa = parseFloat(a.dataset.price) || 0;
+            const pb = parseFloat(b.dataset.price) || 0;
+            const na = a.dataset.name || "";
+            const nb = b.dataset.name || "";
+            if (sort === "low")  return pa - pb;
+            if (sort === "high") return pb - pa;
+            if (sort === "name") return na.localeCompare(nb);
+            return 0; // latest = DOM order
+          });
+
+          // Re-render order
+          cards.forEach(c => { c.style.display = "none"; });
+          visible.forEach((c, i) => {
+            c.style.display = "";
+            c.style.animationDelay = (i * 0.04) + "s";
+            grid.appendChild(c); // re-order DOM
+          });
+
+          // Count
+          const n = visible.length;
+          if (countEl) countEl.textContent = n + (n === 1 ? " Cake" : " Cakes");
+          if (emptyEl) emptyEl.style.display = n === 0 ? "block" : "none";
+
+          // Active tags
+          renderActiveTags(q, minP, maxP === Infinity ? 0 : maxP);
+        }
+
+        function renderActiveTags(q, minP, maxP) {
+          if (!activeRow) return;
+          activeRow.innerHTML = "";
+          if (activeCat) addTag(activeCat, () => {
+            activeCat = "";
+            pills.forEach(p => p.classList.toggle("active", p.dataset.cat === ""));
+            applyFilters();
+          });
+          if (q) addTag(`"${q}"`, () => { if(searchEl) searchEl.value=""; applyFilters(); });
+          if (minP) addTag(`Min ৳${minP}`, () => { if(priceMin) priceMin.value=""; applyFilters(); });
+          if (maxP) addTag(`Max ৳${maxP}`, () => { if(priceMax) priceMax.value=""; applyFilters(); });
+        }
+
+        function addTag(label, onRemove) {
+          const tag = document.createElement("span");
+          tag.className = "active-tag";
+          tag.innerHTML = `${label}<button aria-label="Remove filter">×</button>`;
+          tag.querySelector("button").addEventListener("click", onRemove);
+          activeRow.appendChild(tag);
+        }
+
+        // Initial run
+        applyFilters();
+      }
+
+      // Run after admin-products.js injects new cards
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => setTimeout(initShopFilters, 60));
+      } else {
+        setTimeout(initShopFilters, 60);
+      }
+    })();
+
+    // Back to top
+    const btt = document.getElementById("backToTop");
+    window.addEventListener("scroll", () => btt.classList.toggle("visible", window.scrollY > 350));
+    btt.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+    </script>
+  </body>
+</html>

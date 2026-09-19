@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="description" content="The Sugar Atelier – Secure Checkout. Place your cake order safely.">
+    <title>Checkout | The Sugar Atelier</title>
+    <link rel="stylesheet" href="../CSS/style.css">
+    <style>
+      /* ── Checkout Page ── */
+      .checkout-page {
+        background: #faf7f8;
+        min-height: 100vh;
+        padding: 50px 0 80px;
+      }
+
+      /* ── Progress Steps ── */
+      .checkout-steps {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        margin-bottom: 44px;
+      }
+
+      .step {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #b0a0a8;
+      }
+
+      .step.active {
+        color: var(--primary);
+      }
+
+      .step.done {
+        color: #19713a;
+      }
+
+      .step-num {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #e8dde2;
+        color: #b0a0a8;
+        display: grid;
+        place-items: center;
+        font-size: 13px;
+        font-weight: 800;
+        flex-shrink: 0;
+      }
+
+      .step.active .step-num {
+        background: var(--primary);
+        color: #fff;
+        box-shadow: 0 6px 18px rgba(139, 58, 98, .30);
+      }
+
+      .step.done .step-num {
+        background: #dff5e7;
+        color: #19713a;
+      }
+
+      .step-line {
+        width: 60px;
+        height: 2px;
+        background: #e0d5d9;
+        margin: 0 6px;
+      }
+
+      /* ── Main layout ── */
+      .checkout-wrap {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 28px;
+        align-items: start;
+      }
+
+      /* ── Section card ── */
+      .co-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 28px 30px;
+        margin-bottom: 18px;
+      }
+
+      .co-card-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 22px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .co-card-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: var(--secondary);
+        color: var(--primary);
+        display: grid;
+        place-items: center;
+        font-size: 17px;
+        flex-shrink: 0;
+      }
+
+      .co-card-head h2 {
+        font-family: "Playfair Display", serif;
+        font-size: 20px;
+        margin: 0;
+        color: var(--text);
+      }
+
+      /* ── Floating label inputs ── */
+      .co-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+
+      .co-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .co-field.full {
+        grid-column: 1 / -1;
+      }
+
+      .co-field label {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--muted);
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      .co-field input,
+      .co-field select,
+      .co-field textarea {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        font-size: 14px;
+        color: var(--text);
+        background: #fdfafb;
+        transition: .2s;
+        outline: none;
+        font-family: inherit;
+      }
+
+      .co-field input:focus,
+      .co-field select:focus,
+      .co-field textarea:focus {
+        border-color: var(--primary);
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(139, 58, 98, .08);
+      }
+
+      .co-field textarea {
+        resize: vertical;
+        min-height: 85px;
+      }
+
+      /* ── Delivery options ── */
+      .delivery-options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .delivery-opt {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        padding: 14px 18px;
+        cursor: pointer;
+        transition: .2s;
+        position: relative;
+      }
+
+      .delivery-opt:has(input:checked) {
+        border-color: var(--primary);
+        background: #fff8fb;
+      }
+
+      .delivery-opt input[type="radio"] {
+        accent-color: var(--primary);
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+      }
+
+      .delivery-opt-info {
+        flex: 1;
+      }
+
+      .delivery-opt-info b {
+        display: block;
+        font-size: 14px;
+        color: var(--text);
+      }
+
+      .delivery-opt-info span {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .delivery-opt-price {
+        font-weight: 800;
+        color: var(--primary);
+        font-size: 14px;
+      }
+
+      /* ── Payment options ── */
+      .payment-options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .pay-opt {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        padding: 14px 18px;
+        cursor: pointer;
+        transition: .2s;
+      }
+
+      .pay-opt:has(input:checked) {
+        border-color: var(--primary);
+        background: #fff8fb;
+      }
+
+      .pay-opt input[type="radio"] {
+        accent-color: var(--primary);
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+      }
+
+      .pay-opt-logo {
+        font-size: 22px;
+        width: 40px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+
+      .pay-opt-info b {
+        display: block;
+        font-size: 14px;
+        color: var(--text);
+      }
+
+      .pay-opt-info span {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      /* ── Order Summary Sidebar ── */
+      .co-summary {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        overflow: hidden;
+        position: sticky;
+        top: 95px;
+      }
+
+      .co-summary-head {
+        background: linear-gradient(135deg, #5c1e3a, #8B3A62);
+        padding: 22px 24px;
+        color: #fff;
+      }
+
+      .co-summary-head h2 {
+        font-family: "Playfair Display", serif;
+        font-size: 20px;
+        margin: 0 0 4px;
+        color: #fff;
+      }
+
+      .co-summary-head p {
+        font-size: 12px;
+        color: rgba(255,255,255,.7);
+        margin: 0;
+      }
+
+      .co-summary-body {
+        padding: 22px 24px;
+      }
+
+      /* Cart items preview */
+      .co-items {
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 18px;
+        margin-bottom: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-height: 30px;
+      }
+
+      .co-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .co-item img {
+        width: 52px;
+        height: 52px;
+        object-fit: cover;
+        border-radius: 10px;
+        flex-shrink: 0;
+      }
+
+      .co-item-info {
+        flex: 1;
+      }
+
+      .co-item-info b {
+        display: block;
+        font-size: 13px;
+        color: var(--text);
+      }
+
+      .co-item-info span {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .co-item-price {
+        font-weight: 800;
+        font-size: 13px;
+        color: var(--text);
+        white-space: nowrap;
+      }
+
+      /* Price rows */
+      .co-price-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        font-size: 14px;
+      }
+
+      .co-price-row span {
+        color: var(--muted);
+      }
+
+      .co-price-row b {
+        color: var(--text);
+        font-weight: 700;
+      }
+
+      .co-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 2px solid var(--border);
+        padding-top: 14px;
+        margin-top: 8px;
+        font-size: 17px;
+        font-weight: 800;
+      }
+
+      .co-total-row span {
+        color: var(--text);
+      }
+
+      .co-total-row b {
+        color: var(--primary);
+        font-size: 20px;
+      }
+
+      /* Coupon */
+      .co-coupon {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+
+      .co-coupon input {
+        flex: 1;
+        padding: 11px 13px;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        font-size: 13px;
+        outline: none;
+        transition: .2s;
+        font-family: inherit;
+        background: #fdfafb;
+      }
+
+      .co-coupon input:focus {
+        border-color: var(--primary);
+      }
+
+      .co-coupon button {
+        padding: 11px 16px;
+        background: var(--secondary);
+        color: var(--primary);
+        border: none;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 13px;
+        cursor: pointer;
+        transition: .2s;
+        font-family: inherit;
+        white-space: nowrap;
+      }
+
+      .co-coupon button:hover {
+        background: var(--accent);
+        color: #fff;
+      }
+
+      /* Place Order button */
+      .co-place-btn {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, #8B3A62, #c46a92);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: .25s;
+        letter-spacing: 0.4px;
+        margin-top: 18px;
+        box-shadow: 0 8px 24px rgba(139, 58, 98, .28);
+        font-family: inherit;
+      }
+
+      .co-place-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 32px rgba(139, 58, 98, .38);
+      }
+
+      .co-place-btn:active {
+        transform: translateY(0);
+      }
+
+      /* Security badges */
+      .co-secure {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 14px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      /* Responsive */
+      @media (max-width: 900px) {
+        .checkout-wrap {
+          grid-template-columns: 1fr;
+        }
+
+        .co-summary {
+          position: static;
+        }
+
+        .co-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .co-field.full {
+          grid-column: 1;
+        }
+
+        .checkout-steps {
+          gap: 0;
+        }
+
+        .step-line {
+          width: 30px;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .checkout-page {
+          padding: 30px 0 60px;
+        }
+
+        .co-card {
+          padding: 20px;
+        }
+
+        .co-summary-body {
+          padding: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <a class="logo" href="index.html">The Sugar <span>Atelier</span></a>
+        <nav>
+          <a href="index.html">Home</a>
+          <a href="shop.html">Shop</a>
+          <a href="categories.html">Categories</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+        <div class="nav-actions">
+          <a href="search.html" aria-label="Search">⌕</a>
+          <a href="wishlist.html" aria-label="Wishlist">♡</a>
+          <a href="cart.html" aria-label="Cart">🛒 <span class="cart-count">0</span></a>
+          <a href="account.html" aria-label="Account">♙</a>
+          <a class="btn btn-primary" href="shop.html">Order Now</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="checkout-page">
+      <div class="container">
+
+        <!-- Progress Steps -->
+        <div class="checkout-steps">
+          <div class="step done">
+            <div class="step-num">✓</div>
+            <span>Cart</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="step active">
+            <div class="step-num">2</div>
+            <span>Checkout</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <span>Confirmation</span>
+          </div>
+        </div>
+
+        <form id="checkoutForm">
+          <div class="checkout-wrap">
+
+            <!-- ── LEFT COLUMN ── -->
+            <div>
+
+              <!-- Customer Info -->
+              <div class="co-card">
+                <div class="co-card-head">
+                  <div class="co-card-icon">♙</div>
+                  <h2>Customer Information</h2>
+                </div>
+                <div class="co-grid">
+                  <div class="co-field">
+                    <label>Full Name</label>
+                    <input type="text" name="name" placeholder="Ayesha Rahman" required>
+                  </div>
+                  <div class="co-field">
+                    <label>Email Address</label>
+                    <input type="email" name="email" placeholder="you@example.com" required>
+                  </div>
+                  <div class="co-field">
+                    <label>Phone Number</label>
+                    <input type="tel" name="phone" placeholder="+880 1XXX-XXXXXX" required>
+                  </div>
+                  <div class="co-field">
+                    <label>Country</label>
+                    <select name="country">
+                      <option>Bangladesh</option>
+                      <option>United States</option>
+                      <option>United Kingdom</option>
+                      <option>Canada</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Delivery Address -->
+              <div class="co-card">
+                <div class="co-card-head">
+                  <div class="co-card-icon">⌖</div>
+                  <h2>Delivery Address</h2>
+                </div>
+                <div class="co-grid">
+                  <div class="co-field full">
+                    <label>Street Address</label>
+                    <textarea name="address" placeholder="House #, Road #, Area…" required></textarea>
+                  </div>
+                  <div class="co-field">
+                    <label>City</label>
+                    <input type="text" name="city" placeholder="Dhaka" required>
+                  </div>
+                  <div class="co-field">
+                    <label>Postal Code</label>
+                    <input type="text" name="postal" placeholder="1207">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Delivery Options -->
+              <div class="co-card">
+                <div class="co-card-head">
+                  <div class="co-card-icon">⚡</div>
+                  <h2>Delivery Method</h2>
+                </div>
+                <div class="delivery-options">
+                  <label class="delivery-opt">
+                    <input type="radio" name="delivery" value="100" checked>
+                    <div class="pay-opt-logo">📦</div>
+                    <div class="delivery-opt-info">
+                      <b>Standard Delivery</b>
+                      <span>1–2 business days</span>
+                    </div>
+                    <span class="delivery-opt-price">৳ 100</span>
+                  </label>
+                  <label class="delivery-opt">
+                    <input type="radio" name="delivery" value="250">
+                    <div class="pay-opt-logo">🚀</div>
+                    <div class="delivery-opt-info">
+                      <b>Express Delivery</b>
+                      <span>Within 24 hours</span>
+                    </div>
+                    <span class="delivery-opt-price">৳ 250</span>
+                  </label>
+                  <label class="delivery-opt">
+                    <input type="radio" name="delivery" value="350">
+                    <div class="pay-opt-logo">⚡</div>
+                    <div class="delivery-opt-info">
+                      <b>Same Day Delivery</b>
+                      <span>Order before 12 PM</span>
+                    </div>
+                    <span class="delivery-opt-price">৳ 350</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Payment Method -->
+              <div class="co-card">
+                <div class="co-card-head">
+                  <div class="co-card-icon">🔒</div>
+                  <h2>Payment Method</h2>
+                </div>
+                <div class="payment-options">
+                  <label class="pay-opt">
+                    <input type="radio" name="pay" value="bd-local" checked>
+                    <div class="pay-opt-logo">📱</div>
+                    <div class="pay-opt-info">
+                      <b>bKash / Nagad / Rocket</b>
+                      <span>Mobile banking — instant transfer</span>
+                    </div>
+                  </label>
+                  <label class="pay-opt">
+                    <input type="radio" name="pay" value="ssl">
+                    <div class="pay-opt-logo">🏦</div>
+                    <div class="pay-opt-info">
+                      <b>SSLCommerz</b>
+                      <span>All local cards & internet banking</span>
+                    </div>
+                  </label>
+                  <label class="pay-opt">
+                    <input type="radio" name="pay" value="stripe">
+                    <div class="pay-opt-logo">💳</div>
+                    <div class="pay-opt-info">
+                      <b>Stripe — Visa / Mastercard</b>
+                      <span>International cards accepted</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- ── RIGHT COLUMN: Order Summary ── -->
+            <aside>
+              <div class="co-summary">
+                <div class="co-summary-head">
+                  <h2>Order Summary</h2>
+                  <p>Review your items before placing the order</p>
+                </div>
+                <div class="co-summary-body">
+
+                  <!-- Cart Items (rendered by JS) -->
+                  <div class="co-items" id="coItems">
+                    <div style="color:var(--muted);font-size:13px;">Loading cart…</div>
+                  </div>
+
+                  <!-- Coupon -->
+                  <div class="co-coupon">
+                    <input id="couponCode" placeholder="Coupon code e.g. SWEET15">
+                    <button type="button" id="applyCoupon">Apply</button>
+                  </div>
+
+                  <!-- Price breakdown -->
+                  <div class="co-price-row">
+                    <span>Subtotal</span>
+                    <b id="checkoutSubtotal">৳ 0</b>
+                  </div>
+                  <div class="co-price-row">
+                    <span>Discount</span>
+                    <b id="checkoutDiscount" style="color:#19713a;">− ৳ 0</b>
+                  </div>
+                  <div class="co-price-row">
+                    <span>Delivery</span>
+                    <b id="checkoutDelivery">৳ 100</b>
+                  </div>
+
+                  <div class="co-total-row">
+                    <span>Total</span>
+                    <b id="checkoutTotal">৳ 100</b>
+                  </div>
+
+                  <button class="co-place-btn" type="submit" id="placeOrderBtn">
+                    🎂 Place My Order
+                  </button>
+
+                  <div class="co-secure">
+                    🔒 Secure & encrypted checkout
+                  </div>
+
+                </div>
+              </div>
+            </aside>
+
+          </div>
+        </form>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-grid">
+        <div>
+          <a class="logo" href="index.html">The Sugar <span>Atelier</span></a>
+          <p>Premium handcrafted cakes for every celebration.</p>
+        </div>
+        <div>
+          <h4>Quick Links</h4>
+          <a href="shop.html">Shop</a>
+          <a href="categories.html">Categories</a>
+          <a href="custom-cake.html">Custom Cake</a>
+          <a href="faq.html">FAQ</a>
+        </div>
+        <div>
+          <h4>Customer Care</h4>
+          <a href="account.html">My Account</a>
+          <a href="orders.html">Track Order</a>
+          <a href="contact.html">Contact</a>
+          <a href="privacy.html">Privacy Policy</a>
+        </div>
+        <div>
+          <h4>Payments</h4>
+          <p>bKash • Nagad • Rocket • Visa • Mastercard • Stripe</p>
+        </div>
+      </div>
+      <div class="copyright">© 2026 The Sugar Atelier. All rights reserved.</div>
+    </footer>
+
+    <div id="toast" class="toast"></div>
+    <script src="../JS/app.js"></script>
+    <script>
+      /* ── Render cart items in summary ── */
+      function renderCoItems() {
+        const cart  = JSON.parse(localStorage.getItem('sugarAtelierCart') || '[]');
+        const box   = document.getElementById('coItems');
+        const btn   = document.getElementById('placeOrderBtn');
+        if (!cart.length) {
+          box.innerHTML = '<p style="color:var(--muted);font-size:13px;">Your cart is empty. <a href="shop.html" style="color:var(--primary);font-weight:600;">Shop now →</a></p>';
+          if (btn) {
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            btn.style.cursor = 'not-allowed';
+          }
+          return;
+        }
+        if (btn) {
+          btn.disabled = false;
+          btn.style.opacity = '1';
+          btn.style.cursor = 'pointer';
+        }
+        box.innerHTML = cart.map(i => `
+          <div class="co-item">
+            <img src="${i.image || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=120&q=80'}" alt="${i.name}">
+            <div class="co-item-info">
+              <b>${i.name}</b>
+              <span>Qty: ${i.qty}</span>
+            </div>
+            <span class="co-item-price">৳ ${(i.price * i.qty).toLocaleString()}</span>
+          </div>
+        `).join('');
+      }
+
+      /* ── Update totals ── */
+      function updateCoTotals() {
+        const cart     = JSON.parse(localStorage.getItem('sugarAtelierCart') || '[]');
+        const sub      = cart.reduce((s, i) => s + i.price * i.qty, 0);
+        const delivery = sub > 0 ? Number(document.querySelector('input[name="delivery"]:checked')?.value || 100) : 0;
+        const coupon   = localStorage.getItem('sugarCoupon');
+        const discount = (sub > 0 && coupon === 'SWEET15') ? Math.round(sub * .15) : 0;
+        const total    = Math.max(0, sub - discount + delivery);
+
+        const setText = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+        setText('checkoutSubtotal', '৳ ' + sub.toLocaleString());
+        setText('checkoutDiscount', discount > 0 ? '− ৳ ' + discount.toLocaleString() : '− ৳ 0');
+        setText('checkoutDelivery', '৳ ' + delivery.toLocaleString());
+        setText('checkoutTotal',    '৳ ' + total.toLocaleString());
+      }
+
+      /* ── Coupon ── */
+      document.getElementById('applyCoupon')?.addEventListener('click', () => {
+        const v = document.getElementById('couponCode').value.trim().toUpperCase();
+        if (v === 'SWEET15') {
+          localStorage.setItem('sugarCoupon', v);
+          updateCoTotals();
+          const t = document.getElementById('toast');
+          if (t) { t.textContent = '🎉 15% discount applied!'; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200); }
+        } else {
+          const t = document.getElementById('toast');
+          if (t) { t.textContent = 'Invalid coupon code. Try SWEET15'; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200); }
+        }
+      });
+
+      /* ── Delivery change ── */
+      document.querySelectorAll('input[name="delivery"]').forEach(r => r.addEventListener('change', updateCoTotals));
+
+      /* ── Form submit ── */
+      document.getElementById('checkoutForm')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const cart = JSON.parse(localStorage.getItem('sugarAtelierCart') || '[]');
+        if (!cart.length) {
+          const t = document.getElementById('toast');
+          if (t) { t.textContent = 'Your cart is empty! Add cakes before ordering.'; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
+          return;
+        }
+        const btn = document.getElementById('placeOrderBtn');
+        btn.textContent = '⏳ Placing your order…';
+        btn.disabled = true;
+        setTimeout(() => {
+          localStorage.removeItem('sugarAtelierCart');
+          localStorage.removeItem('sugarCoupon');
+          window.location.href = 'orders.html';
+        }, 1200);
+      });
+
+      /* ── Init ── */
+      renderCoItems();
+      updateCoTotals();
+    </script>
+  </body>
+</html>

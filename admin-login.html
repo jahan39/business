@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="description" content="The Sugar Atelier premium online cake shop. Fresh cakes and custom cakes.">
+    <title>Admin Login | The Sugar Atelier</title>
+    <link rel="stylesheet" href="../CSS/style.css">
+  </head>
+  <body class="admin-body">
+    <main class="auth-page admin-auth">
+      <form class="auth-card" id="adminLoginForm">
+        <span class="admin-mark">ADMIN PANEL</span>
+        <a class="logo" href="index.html">The Sugar <span>Atelier</span></a>
+        <h1>Admin Login</h1>
+        <label>Username
+          <input id="adminUser" placeholder="admin" required autocomplete="username">
+        </label>
+        <label>Password
+          <input id="adminPass" type="password" placeholder="12345" required autocomplete="current-password">
+        </label>
+        <button class="btn btn-primary full">Sign In</button>
+        <p class="muted">Local demo login only. Connect a secure backend before production.</p>
+      </form>
+    </main>
+    <div id="toast" class="toast"></div>
+    <script src="../JS/app.js"></script>
+  </body>
+</html>
