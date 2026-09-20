@@ -38,11 +38,16 @@ function initAdmin() {
     process.env.FIREBASE_CLIENT_EMAIL &&
     process.env.FIREBASE_PRIVATE_KEY
   ) {
+    let rawKey = process.env.FIREBASE_PRIVATE_KEY.trim();
+    if ((rawKey.startsWith('"') && rawKey.endsWith('"')) || (rawKey.startsWith("'") && rawKey.endsWith("'"))) {
+      rawKey = rawKey.substring(1, rawKey.length - 1);
+    }
+    const cleanKey = rawKey.replace(/\\n/g, "\n");
+
     credential = cert({
       projectId: process.env.FIREBASE_PROJECT_ID,
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      // dotenv stores \n as literal \\n — convert back to real newlines
-      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+      privateKey: cleanKey,
     });
   } else {
     // Option B: serviceAccountKey.json in project root (local development)

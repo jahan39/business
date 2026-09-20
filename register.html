@@ -886,6 +886,9 @@
                 <span>Create Free Account</span> →
               </button>
 
+              <!-- Persistent error banner -->
+              <div id="regErrorMsg" style="display:none;margin-top:12px;padding:12px 16px;border-radius:10px;background:#fde8e8;color:#9b1c1c;border:1px solid #f8b4b4;font-size:13px;line-height:1.5;font-weight:600;"></div>
+
               <div class="login-link-row">
                 Already part of the family? <a href="login.html">Sign In to your account →</a>
               </div>
@@ -1169,6 +1172,8 @@
           const phone    = document.getElementById('regPhone')?.value.trim() || '';
           const p1       = document.getElementById('regPassword')?.value || '';
           const p2       = document.getElementById('regConfirmPassword')?.value || '';
+          const errorBox = document.getElementById('regErrorMsg');
+          if (errorBox) { errorBox.style.display = 'none'; errorBox.textContent = ''; }
 
           // Client-side validation
           if (!fullName) {
@@ -1224,7 +1229,9 @@
                 submitBtn.innerHTML = origBtnContent;
                 submitBtn.disabled = false;
               }
-              toast(data.message || 'Unable to send the verification email. Please try again later.');
+              const msg = data.message || 'Unable to send the verification email. Please try again later.';
+              if (errorBox) { errorBox.style.display = 'block'; errorBox.textContent = '⚠️ ' + msg; }
+              toast(msg);
               return;
             }
 
@@ -1239,7 +1246,9 @@
               submitBtn.innerHTML = origBtnContent;
               submitBtn.disabled = false;
             }
-            toast('Network error (' + (netErr.message || 'connection failed') + '). Please ensure server is running at http://localhost:3000');
+            const msg = 'Network error (' + (netErr.message || 'connection failed') + '). Please try again.';
+            if (errorBox) { errorBox.style.display = 'block'; errorBox.textContent = '⚠️ ' + msg; }
+            toast(msg);
           }
         });
 
