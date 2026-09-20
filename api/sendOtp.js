@@ -25,14 +25,16 @@ let _gmailTransporter = null;
 function getGmailTransporter() {
   if (!_gmailTransporter && process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
     _gmailTransporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false, // STARTTLS
       auth: {
         user: process.env.GMAIL_USER.trim(),
         pass: process.env.GMAIL_APP_PASSWORD.replace(/\s+/g, ""),
       },
-      connectionTimeout: 5000,
-      greetingTimeout: 5000,
-      socketTimeout: 5000,
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
     });
   }
   return _gmailTransporter;
@@ -302,14 +304,11 @@ module.exports = async function sendOtpHandler(req, res) {
         emailSent = true;
       } catch (gmailErr) {
         deliveryError = gmailErr;
-        console.error("[sendOtp] Gmail SMTP failed (likely cloud port restriction):", gmailErr.message || gmailErr);
+        console.error("[sendOtp] Gmail SMTP delivery error:", gmailErr.message || gmailErr);
       }
-    }
-
-    // Option B: Resend API (used if Gmail SMTP not configured OR if Gmail SMTP timed out / failed)
-    if (!emailSent && process.env.RESEND_API_KEY) {
+    } else if (process.env.RESEND_API_KEY) {
+      // Option B: Resend API
       try {
-        console.log(`[sendOtp] Trying Resend API for: ${email}...`);
         const resend = new Resend(process.env.RESEND_API_KEY);
         const { error: resendErr } = await resend.emails.send({
           from: `${EMAIL_FROM_NAME} <${EMAIL_FROM}>`,
@@ -328,7 +327,7 @@ module.exports = async function sendOtpHandler(req, res) {
         deliveryError = resendCatchErr;
         console.error("[sendOtp] Resend exception:", resendCatchErr);
       }
-    } else if (!emailSent && !process.env.GMAIL_USER && !process.env.RESEND_API_KEY) {
+    } else {
       // Development fallback: no provider configured
       if (process.env.NODE_ENV !== "production") {
         console.log(`[sendOtp] DEV MODE — No email provider configured. OTP for ${email} generated and stored (hashed).`);
@@ -338,11 +337,14 @@ module.exports = async function sendOtpHandler(req, res) {
 
     if (!emailSent) {
       // Delivery failed — clean up the stored OTP so user can retry
-      await otpRef.delete().catch(() => {});
+      await otpRef.delete().catch(() => { });
+      const isDev = process.env.NODE_ENV !== "production";
       const errDetail = deliveryError?.message || "Email delivery failed.";
       return res.status(502).json({
         success: false,
-        message: `Email delivery error: ${errDetail}`,
+        message: isDev
+          ? `Email delivery error: ${errDetail}`
+          : "Unable to send the verification email. Please try again later.",
       });
     }
 
