@@ -1,0 +1,23 @@
+{
+  "name": "sugar-atelier-backend",
+  "version": "1.0.0",
+  "description": "The Sugar Atelier — Node.js backend serving static frontend and secure OTP registration API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.3.1",
+    "firebase-admin": "^14.4.0",
+    "nodemailer": "^10.0.10",
+    "resend": "^3.2.0"
+  },
+  "private": true
+}

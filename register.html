@@ -947,17 +947,12 @@
             <line x1="12" y1="18" x2="12.01" y2="18"></line>
           </svg>
         </div>
-        <h2>Verify Your Mobile & Email</h2>
+        <h2>Verify Your Email Address</h2>
         <p class="otp-instruction">
-          We have generated a 6-digit security verification code for:
-          <br><strong id="otpTargetDisplay" style="color:var(--primary);font-size:14px;"></strong>
+          A 6-digit verification code has been sent to:<br>
+          <strong id="otpTargetDisplay" style="color:var(--primary);font-size:14px;"></strong>
+          <br><span style="font-size:12px;color:var(--muted);">Please check your inbox (and spam folder).</span>
         </p>
-
-        <!-- Simulated live SMS/Email code notice -->
-        <div class="otp-code-notice" id="otpDemoBanner">
-          <span>🔔 <b>Verification OTP:</b> <code id="otpCodeDisplay">------</code></span>
-          <button type="button" id="autoFillOtpBtn" class="otp-copy-btn">Auto-Fill ⚡</button>
-        </div>
 
         <div class="otp-inputs-row" id="otpInputsRow">
           <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-digit" data-idx="0">
@@ -986,9 +981,10 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="js/firebase-config.js"></script>
+    <script>window.__customRegisterHandler = true;</script>
     <script src="js/app.js"></script>
     <script>
-      // Password visibility toggles
+      // ── Password visibility toggles ──────────────────────────────────
       document.querySelectorAll('.toggle-pass-btn').forEach(btn => {
         btn.addEventListener('click', function() {
           const targetId = this.dataset.target;
@@ -1006,7 +1002,7 @@
         });
       });
 
-      // Password strength meter
+      // ── Password strength meter ──────────────────────────────────────
       const passInput = document.getElementById('regPassword');
       const strengthFill = document.getElementById('strengthFill');
       const strengthText = document.getElementById('strengthText');
@@ -1019,14 +1015,12 @@
           strengthText.style.color = 'var(--muted)';
           return;
         }
-
         let score = 0;
         if (val.length >= 6) score++;
         if (val.length >= 10) score++;
         if (/[A-Z]/.test(val)) score++;
         if (/[0-9]/.test(val)) score++;
         if (/[^A-Za-z0-9]/.test(val)) score++;
-
         if (score <= 2) {
           strengthFill.style.width = '33%';
           strengthFill.style.background = '#e74c3c';
@@ -1045,7 +1039,7 @@
         }
       });
 
-      // Google Sign Up Demo click
+      // ── Google Sign Up (existing behaviour preserved) ────────────────
       document.getElementById('googleSignupBtn')?.addEventListener('click', function(e) {
         e.preventDefault();
         const btn = this;
@@ -1067,63 +1061,66 @@
         }, 1500);
       });
 
-      // Prevent app.js duplicate listener
+      // Signal app.js not to attach a duplicate register listener
       window.__customRegisterHandler = true;
 
-      // ── Real Customer Registration with OTP Verification ──
+      // ── Real Server-Side OTP Registration ────────────────────────────
+      // OTP is generated, hashed, and verified entirely on the server.
+      // The plaintext OTP is NEVER stored, displayed, or logged client-side.
       (function() {
-        const modal = document.getElementById('otpModal');
-        const closeBtn = document.getElementById('closeOtpModalBtn');
-        const digitInputs = document.querySelectorAll('.otp-digit');
-        const verifyBtn = document.getElementById('verifyOtpBtn');
-        const autoFillBtn = document.getElementById('autoFillOtpBtn');
-        const resendBtn = document.getElementById('resendOtpBtn');
-        const countdownEl = document.getElementById('resendCountdown');
+        const modal        = document.getElementById('otpModal');
+        const closeBtn     = document.getElementById('closeOtpModalBtn');
+        const digitInputs  = document.querySelectorAll('.otp-digit');
+        const verifyBtn    = document.getElementById('verifyOtpBtn');
+        const resendBtn    = document.getElementById('resendOtpBtn');
+        const countdownEl  = document.getElementById('resendCountdown');
         const targetDisplay = document.getElementById('otpTargetDisplay');
-        const codeDisplay = document.getElementById('otpCodeDisplay');
-        const inputsRow = document.getElementById('otpInputsRow');
-        const regForm = document.getElementById('registerForm');
+        const inputsRow    = document.getElementById('otpInputsRow');
+        const regForm      = document.getElementById('registerForm');
 
+        // Determine backend API origin: if page was opened via Live Server (port 5500, etc.)
+        // or file://, direct API requests to http://localhost:3000 where server.js is listening.
+        const API_BASE = (window.location.protocol === 'file:' || (window.location.port && window.location.port !== '3000'))
+          ? 'http://localhost:3000'
+          : '';
+
+        // pendingReg holds only non-sensitive registration data (no OTP)
         let pendingReg = null;
         let countdownTimer = null;
-        let resendSeconds = 59;
 
-        function generateOtp() {
-          return Math.floor(100000 + Math.random() * 900000).toString();
-        }
-
-        function startCountdown() {
+        // ── Countdown timer (UI only — real rate limiting is server-side) ──
+        function startCountdown(seconds) {
           clearInterval(countdownTimer);
-          resendSeconds = 59;
-          if (resendBtn) resendBtn.disabled = true;
-          if (countdownEl) countdownEl.textContent = resendSeconds;
-
+          let remaining = seconds || 60;
+          if (resendBtn) {
+            resendBtn.disabled = true;
+            resendBtn.innerHTML = `Resend in <span id="resendCountdown">${remaining}</span>s`;
+          }
           countdownTimer = setInterval(() => {
-            resendSeconds--;
-            if (countdownEl) countdownEl.textContent = resendSeconds;
-            if (resendSeconds <= 0) {
+            remaining--;
+            const el = document.getElementById('resendCountdown');
+            if (el) el.textContent = remaining;
+            if (remaining <= 0) {
               clearInterval(countdownTimer);
               if (resendBtn) {
                 resendBtn.disabled = false;
-                resendBtn.textContent = 'Resend OTP 🔄';
+                resendBtn.textContent = 'Resend Code 🔄';
               }
             }
           }, 1000);
         }
 
+        // ── Open OTP modal after server confirms email was sent ──────────
         function openOtpModal(data) {
-          pendingReg = data;
-          if (targetDisplay) targetDisplay.innerHTML = `${data.phone} &bull; ${data.email}`;
-          if (codeDisplay) codeDisplay.textContent = data.otp;
-          
+          pendingReg = data; // { fullName, email, phone, password } — NO otp field
+          if (targetDisplay) targetDisplay.textContent = data.email;
           digitInputs.forEach(inp => inp.value = '');
           modal.classList.add('active');
           setTimeout(() => digitInputs[0]?.focus(), 150);
-
-          startCountdown();
-          toast(`🔐 Verification OTP sent: ${data.otp}`);
+          startCountdown(60);
         }
 
+        // ── Close OTP modal ──────────────────────────────────────────────
         function closeOtpModal() {
           modal.classList.remove('active');
           clearInterval(countdownTimer);
@@ -1136,7 +1133,7 @@
 
         closeBtn?.addEventListener('click', closeOtpModal);
 
-        // Auto-focus progression across 6 digits
+        // ── OTP digit input: auto-advance and backspace behaviour ────────
         digitInputs.forEach((input, idx) => {
           input.addEventListener('input', (e) => {
             const val = e.target.value.replace(/\D/g, '');
@@ -1145,16 +1142,15 @@
               digitInputs[idx + 1].focus();
             }
           });
-
           input.addEventListener('keydown', (e) => {
             if (e.key === 'Backspace' && !input.value && idx > 0) {
               digitInputs[idx - 1].focus();
             }
           });
-
           input.addEventListener('paste', (e) => {
             e.preventDefault();
-            const pasteData = (e.clipboardData || window.clipboardData).getData('text').trim().replace(/\D/g, '');
+            const pasteData = (e.clipboardData || window.clipboardData)
+              .getData('text').trim().replace(/\D/g, '');
             if (pasteData.length >= 6) {
               pasteData.slice(0, 6).split('').forEach((char, i) => {
                 if (digitInputs[i]) digitInputs[i].value = char;
@@ -1164,140 +1160,239 @@
           });
         });
 
-        // Auto-Fill helper
-        autoFillBtn?.addEventListener('click', () => {
-          if (pendingReg && pendingReg.otp) {
-            pendingReg.otp.split('').forEach((digit, i) => {
-              if (digitInputs[i]) digitInputs[i].value = digit;
-            });
-            autoFillBtn.textContent = 'Filled ✓';
-            setTimeout(() => { autoFillBtn.textContent = 'Auto-Fill ⚡'; }, 1200);
-          }
-        });
-
-        // Resend OTP
-        resendBtn?.addEventListener('click', () => {
-          if (pendingReg) {
-            pendingReg.otp = generateOtp();
-            if (codeDisplay) codeDisplay.textContent = pendingReg.otp;
-            toast(`New OTP code: ${pendingReg.otp}`);
-            digitInputs.forEach(inp => inp.value = '');
-            digitInputs[0]?.focus();
-            resendBtn.innerHTML = 'Resend in <span id="resendCountdown">59</span>s';
-            startCountdown();
-          }
-        });
-
-        // 1. Initial form submission -> Validates and launches OTP modal
-        regForm?.addEventListener('submit', function(e) {
+        // ── Step 1: Form submit → call server to send OTP ────────────────
+        regForm?.addEventListener('submit', async function(e) {
           e.preventDefault();
-          const p1 = document.getElementById('regPassword')?.value;
-          const p2 = document.getElementById('regConfirmPassword')?.value;
-          const fullName = document.getElementById('regName')?.value.trim() || 'New Member';
-          const email = document.getElementById('regEmail')?.value.trim() || '';
-          const phone = document.getElementById('regPhone')?.value.trim() || '';
 
+          const fullName = document.getElementById('regName')?.value.trim() || '';
+          const email    = document.getElementById('regEmail')?.value.trim() || '';
+          const phone    = document.getElementById('regPhone')?.value.trim() || '';
+          const p1       = document.getElementById('regPassword')?.value || '';
+          const p2       = document.getElementById('regConfirmPassword')?.value || '';
+
+          // Client-side validation
+          if (!fullName) {
+            toast('Please enter your full name.');
+            document.getElementById('regName')?.focus();
+            return;
+          }
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+            toast('Please enter a valid email address.');
+            document.getElementById('regEmail')?.focus();
+            return;
+          }
           if (p1 !== p2) {
-            toast('Passwords do not match! Please verify.');
+            toast('Passwords do not match. Please verify.');
             document.getElementById('regConfirmPassword')?.focus();
             return;
           }
-
           if (p1.length < 6) {
             toast('Password must be at least 6 characters.');
             document.getElementById('regPassword')?.focus();
             return;
           }
 
-          const otp = generateOtp();
-          openOtpModal({
-            fullName,
-            email,
-            phone,
-            password: p1,
-            otp
-          });
+          const submitBtn = document.getElementById('regSubmitBtn');
+          const origBtnContent = submitBtn ? submitBtn.innerHTML : '';
+          if (submitBtn) {
+            submitBtn.innerHTML = `
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="animation: spin 0.8s linear infinite; flex-shrink:0;">
+                <circle cx="12" cy="12" r="10" stroke="#fff" stroke-width="3" stroke-dasharray="31" stroke-dashoffset="10"/>
+              </svg>
+              Sending Verification Code...
+            `;
+            submitBtn.disabled = true;
+          }
+
+          try {
+            // POST to backend — server generates OTP, hashes it, emails it.
+            // The response NEVER contains the OTP.
+            const resp = await fetch(`${API_BASE}/api/auth/send-otp`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email }),
+            });
+            let data = {};
+            try {
+              data = await resp.json();
+            } catch {
+              data = { success: false, message: 'Server returned an invalid response (' + resp.status + ').' };
+            }
+
+            if (!resp.ok || !data.success) {
+              if (submitBtn) {
+                submitBtn.innerHTML = origBtnContent;
+                submitBtn.disabled = false;
+              }
+              toast(data.message || 'Unable to send the verification email. Please try again later.');
+              return;
+            }
+
+            // Server confirmed email was sent — open modal
+            // Store registration data locally (no OTP stored here)
+            openOtpModal({ fullName, email, phone, password: p1 });
+            toast('Verification code sent! Check your email inbox.');
+
+          } catch (netErr) {
+            console.error('[send-otp network error]:', netErr);
+            if (submitBtn) {
+              submitBtn.innerHTML = origBtnContent;
+              submitBtn.disabled = false;
+            }
+            toast('Network error (' + (netErr.message || 'connection failed') + '). Please ensure server is running at http://localhost:3000');
+          }
         });
 
-        // 2. OTP Verification & Account Creation in Firebase
+        // ── Resend OTP — calls the same server endpoint ──────────────────
+        resendBtn?.addEventListener('click', async () => {
+          if (!pendingReg) return;
+          resendBtn.disabled = true;
+          resendBtn.textContent = 'Sending...';
+
+          try {
+            const resp = await fetch(`${API_BASE}/api/auth/send-otp`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: pendingReg.email }),
+            });
+            let data = {};
+            try {
+              data = await resp.json();
+            } catch {
+              data = { success: false, message: 'Server returned an invalid response (' + resp.status + ').' };
+            }
+
+            if (resp.status === 429) {
+              // Server enforced rate limit — use the wait time from server if available
+              const waitSecs = data.waitSeconds || 60;
+              toast(data.message || 'Please wait before requesting another code.');
+              startCountdown(waitSecs);
+              return;
+            }
+
+            if (!resp.ok || !data.success) {
+              resendBtn.disabled = false;
+              resendBtn.textContent = 'Resend Code 🔄';
+              toast(data.message || 'Unable to resend code. Please try again.');
+              return;
+            }
+
+            // New OTP sent — clear inputs and restart countdown
+            digitInputs.forEach(inp => inp.value = '');
+            digitInputs[0]?.focus();
+            startCountdown(60);
+            toast('A new verification code has been sent to your email.');
+
+          } catch (netErr) {
+            resendBtn.disabled = false;
+            resendBtn.textContent = 'Resend Code 🔄';
+            toast('Network error. Please check your connection and try again.');
+          }
+        });
+
+        // ── Step 2: Verify OTP → server verifies, creates account ────────
         verifyBtn?.addEventListener('click', async function() {
           const entered = Array.from(digitInputs).map(inp => inp.value.trim()).join('');
 
-          if (entered.length < 6) {
-            toast('Please enter the complete 6-digit OTP code.');
+          if (entered.length < 6 || !/^\d{6}$/.test(entered)) {
+            toast('Please enter the complete 6-digit verification code.');
             return;
           }
 
-          if (entered !== pendingReg?.otp) {
-            inputsRow?.classList.add('shake');
-            setTimeout(() => inputsRow?.classList.remove('shake'), 400);
-            toast('Invalid OTP code! Please check the code and re-enter.');
+          if (!pendingReg) {
+            toast('Registration session expired. Please start again.');
+            closeOtpModal();
             return;
           }
 
-          // OTP is valid! Create the real account
           const origBtnContent = verifyBtn.innerHTML;
           verifyBtn.innerHTML = `
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="animation: spin 0.8s linear infinite; flex-shrink:0;">
               <circle cx="12" cy="12" r="10" stroke="#fff" stroke-width="3" stroke-dasharray="31" stroke-dashoffset="10"/>
             </svg>
-            Creating Verified Account...
+            Verifying &amp; Creating Account...
           `;
           verifyBtn.disabled = true;
 
           try {
-            if (window.auth) {
-              const userCred = await window.auth.createUserWithEmailAndPassword(pendingReg.email, pendingReg.password);
-              const user = userCred.user;
-              if (user && user.updateProfile) {
-                await user.updateProfile({ displayName: pendingReg.fullName }).catch(() => {});
+            // POST to backend — server hashes the OTP and compares server-side.
+            // The OTP is not stored anywhere on the client.
+            const resp = await fetch(`${API_BASE}/api/auth/verify-otp`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: pendingReg.email,
+                otp: entered,
+                name: pendingReg.fullName,
+                phone: pendingReg.phone,
+                password: pendingReg.password,
+              }),
+            });
+            let data = {};
+            try {
+              data = await resp.json();
+            } catch {
+              data = { success: false, message: 'Server returned an invalid response (' + resp.status + ').' };
+            }
+
+            if (!resp.ok || !data.success) {
+              verifyBtn.innerHTML = origBtnContent;
+              verifyBtn.disabled = false;
+
+              // Shake animation for wrong code
+              if (resp.status === 400 && data.message && data.message.includes('Invalid')) {
+                inputsRow?.classList.add('shake');
+                setTimeout(() => inputsRow?.classList.remove('shake'), 400);
+                digitInputs.forEach(inp => inp.value = '');
+                digitInputs[0]?.focus();
               }
-              if (window.db) {
-                await window.db.collection('customers').doc(user.uid).set({
-                  id: user.uid,
-                  name: pendingReg.fullName,
-                  email: pendingReg.email,
-                  phone: pendingReg.phone,
+
+              // Locked out — close modal
+              if (resp.status === 429) {
+                modal.classList.remove('active');
+                clearInterval(countdownTimer);
+              }
+
+              // Duplicate account — close modal
+              if (resp.status === 409) {
+                modal.classList.remove('active');
+                clearInterval(countdownTimer);
+              }
+
+              toast(data.message || 'Verification failed. Please try again.');
+              return;
+            }
+
+            // ── Success: account created server-side ─────────────────────
+            // Store only the safe user profile from the server response (no secrets)
+            if (data.user) {
+              try {
+                localStorage.setItem('sugarAtelierCurrentUser', JSON.stringify({
+                  uid: data.user.uid,
+                  name: data.user.name,
+                  email: data.user.email,
+                  phone: data.user.phone,
                   isVerified: true,
-                  status: 'Active',
-                  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                  ordersCount: 0,
-                  totalSpent: 0
-                }, { merge: true }).catch(err => console.warn('Customer doc save notice:', err));
+                  emailVerified: true,
+                }));
+              } catch (storageErr) {
+                // Non-fatal — user is still registered
               }
-              localStorage.setItem('sugarAtelierCurrentUser', JSON.stringify({
-                uid: user.uid,
-                name: pendingReg.fullName,
-                email: pendingReg.email,
-                phone: pendingReg.phone,
-                isVerified: true
-              }));
-            } else {
-              localStorage.setItem('sugarAtelierCurrentUser', JSON.stringify({
-                name: pendingReg.fullName,
-                email: pendingReg.email,
-                phone: pendingReg.phone,
-                isVerified: true
-              }));
             }
 
             modal.classList.remove('active');
-            toast('🎉 Account verified & created successfully! Welcome.');
-            setTimeout(() => location.href = 'account.html', 800);
-          } catch (error) {
-            console.error('Registration error:', error);
+            clearInterval(countdownTimer);
+            // Clear sensitive pendingReg from memory
+            pendingReg = null;
+
+            toast('🎉 Email verified & account created! Welcome to The Sugar Atelier.');
+            setTimeout(() => location.href = 'account.html', 900);
+
+          } catch (netErr) {
+            console.error('[verify-otp network error]:', netErr);
             verifyBtn.innerHTML = origBtnContent;
             verifyBtn.disabled = false;
-            if (error.code === 'auth/email-already-in-use') {
-              modal.classList.remove('active');
-              toast('This email is already registered! Please log in.');
-            } else if (error.code === 'auth/invalid-email') {
-              toast('Invalid email address provided.');
-            } else if (error.code === 'auth/weak-password') {
-              toast('Password must be at least 6 characters.');
-            } else {
-              toast(error.message || 'Could not complete registration. Please try again.');
-            }
+            toast('Network error (' + (netErr.message || 'connection failed') + '). Please check your connection and try again.');
           }
         });
       })();
