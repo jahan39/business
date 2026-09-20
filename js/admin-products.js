@@ -1,9 +1,9 @@
 /**
  * ============================================================
- * PRODUCT MANAGER — localStorage-based CRUD for Sugar Atelier
+ * PRODUCT MANAGER — Firebase Firestore & localStorage CRUD
  * ============================================================
  * Handles: Add, Edit, Delete, List products
- * Products stored in localStorage key: "sugarAtelierProducts"
+ * Products stored in Firebase Firestore with localStorage fallback
  * ============================================================
  */
 
@@ -84,14 +84,15 @@ function getSavedProducts() {
   try { return JSON.parse(localStorage.getItem(PRODUCTS_KEY) || "[]"); }
   catch { return []; }
 }
+
 function setSavedProducts(arr) {
   try {
     localStorage.setItem(PRODUCTS_KEY, JSON.stringify(arr));
     return true;
   } catch (e) {
-    console.warn("Storage quota exceeded, compressing entries:", e);
+    console.warn("Storage quota warning, compressing entries:", e);
     try {
-      // Fallback: strip extra-large base64 data to keep products saved
+      // Fallback: strip extra-large base64 data to keep products saved locally
       const safeArr = arr.map(p => {
         if (p.image && p.image.length > 50000) {
           return { ...p, image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=700&q=85" };
@@ -106,12 +107,15 @@ function setSavedProducts(arr) {
     }
   }
 }
+
 function getAllProducts() {
   return [...BUILTIN_PRODUCTS, ...getSavedProducts()];
 }
+
 function genId() {
   return "prod-" + Date.now() + "-" + Math.floor(Math.random() * 10000);
 }
+
 const adminMoney = n => "৳ " + Number(n).toLocaleString("en-US");
 
 function adminToast(msg) {
@@ -123,13 +127,14 @@ function adminToast(msg) {
 }
 
 // ================================================================
-// ADMIN PRODUCTS PAGE — render product table from localStorage
+// ADMIN PRODUCTS PAGE — render product table
 // ================================================================
 function initAdminProductsPage() {
   const tbody = document.getElementById("adminProductRows");
   if (!tbody) return;
 
   renderAdminTable();
+  window.refreshAdminProductTable = renderAdminTable;
 
   document.getElementById("adminProductSearch")?.addEventListener("input", e => {
     const q = e.target.value.toLowerCase().trim();
@@ -163,12 +168,23 @@ function initAdminProductsPage() {
     `).join("");
 
     tbody.querySelectorAll(".delete-product").forEach(btn => {
-      btn.onclick = () => {
+      btn.onclick = async () => {
         if (!confirm("Are you sure you want to delete this product?")) return;
-        const saved = getSavedProducts().filter(p => p.id !== btn.dataset.id);
+        const prodId = btn.dataset.id;
+        const saved = getSavedProducts().filter(p => p.id !== prodId);
         setSavedProducts(saved);
-        adminToast("Product deleted");
         renderAdminTable();
+        adminToast("Product deleted");
+
+        // Delete from Firestore
+        if (window.db) {
+          try {
+            await window.db.collection("products").doc(prodId).delete();
+            console.log("Deleted from Firestore:", prodId);
+          } catch (err) {
+            console.warn("Could not delete from Firestore:", err);
+          }
+        }
       };
     });
   }
@@ -203,7 +219,7 @@ function initAdminProductForm() {
     }
   }
 
-  // ── Helper: Compress image file via canvas to prevent localStorage quota exhaustion ──
+  // ── Helper: Compress image file via canvas ──
   function compressImageFile(file, callback) {
     const reader = new FileReader();
     reader.onload = ev => {
@@ -272,7 +288,7 @@ function initAdminProductForm() {
     previewEl.style.display = "block";
   }
 
-  form.addEventListener("submit", e => {
+  form.addEventListener("submit", async e => {
     e.preventDefault();
     const fd = new FormData(form);
     const name  = fd.get("productName")?.trim();
@@ -286,8 +302,8 @@ function initAdminProductForm() {
 
     const file = fileInput?.files[0];
 
-    // Helper to build & save product with a resolved image string
-    function saveProduct(imageStr) {
+    // Helper to build & save product
+    async function saveProduct(imageStr) {
       const productData = {
         id:          editProduct ? editProduct.id : genId(),
         name,
@@ -300,9 +316,11 @@ function initAdminProductForm() {
         shortDesc:   fd.get("shortDescription")?.trim() || "",
         description: fd.get("description")?.trim() || "",
         image:       imageStr,
-        builtin:     false
+        builtin:     false,
+        updatedAt:   Date.now()
       };
 
+      // 1. Update local cache immediately
       const saved = getSavedProducts();
       if (editProduct) {
         const idx = saved.findIndex(p => p.id === editProduct.id);
@@ -311,24 +329,31 @@ function initAdminProductForm() {
       } else {
         saved.push(productData);
       }
-      const ok = setSavedProducts(saved);
-      if (ok) {
-        adminToast(editProduct ? "Product updated!" : "Product added to shop!");
-        setTimeout(() => location.href = "admin-products.html", 700);
-      } else {
-        adminToast("Storage full. Product could not be saved.");
+      setSavedProducts(saved);
+
+      // 2. Save to Firestore if connected
+      if (window.db) {
+        try {
+          await window.db.collection("products").doc(productData.id).set(productData, { merge: true });
+          console.log("Saved to Firestore:", productData.name);
+        } catch (dbErr) {
+          console.warn("Could not save to Firestore:", dbErr);
+        }
       }
+
+      adminToast(editProduct ? "Product updated!" : "Product added to shop!");
+      setTimeout(() => location.href = "admin-products.html", 700);
     }
 
     if (compressedDataUrl) {
-      saveProduct(compressedDataUrl);
+      await saveProduct(compressedDataUrl);
     } else if (file) {
-      compressImageFile(file, dataUrl => saveProduct(dataUrl));
+      compressImageFile(file, async dataUrl => await saveProduct(dataUrl));
     } else {
       const imageUrl = fd.get("imageUrl")?.trim() ||
         (editProduct?.image) ||
         "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=700&q=85";
-      saveProduct(imageUrl);
+      await saveProduct(imageUrl);
     }
   });
 
@@ -351,17 +376,23 @@ function initAdminProductForm() {
 }
 
 // ================================================================
-// SHOP PAGE — inject localStorage products into the product grid
+// SHOP PAGE — inject products into the product grid
 // ================================================================
 function injectShopProducts() {
   const grid = document.getElementById("shopGrid");
   if (!grid) return;
 
+  // Clean up any previously injected cards before re-injecting
+  grid.querySelectorAll(".injected-card").forEach(el => el.remove());
+
   const saved = getSavedProducts().filter(p => p.status !== "Draft");
-  if (!saved.length) return;
+  if (!saved.length) {
+    updateShopCount();
+    return;
+  }
 
   const existingNames = new Set(
-    [...grid.querySelectorAll(".product-card")].map(c => (c.dataset.name || "").trim().toLowerCase())
+    [...grid.querySelectorAll(".product-card:not(.injected-card)")].map(c => (c.dataset.name || "").trim().toLowerCase())
   );
 
   saved.forEach(p => {
@@ -371,7 +402,7 @@ function injectShopProducts() {
     existingNames.add(normName);
 
     const article = document.createElement("article");
-    article.className = "product-card searchable";
+    article.className = "product-card searchable injected-card";
     article.setAttribute("data-name",     p.name);
     article.setAttribute("data-category", p.category || "");
     article.setAttribute("data-price",    p.price);
@@ -401,7 +432,7 @@ function injectShopProducts() {
     grid.appendChild(article);
   });
 
-  // Also add any new categories from saved products to the pill filters
+  // Category pills
   const pillsContainer = document.getElementById("categoryPills");
   if (pillsContainer) {
     const existingCats = new Set(
@@ -421,9 +452,21 @@ function injectShopProducts() {
     });
   }
 
-  // If shop.html filter engine is active, trigger an immediate refresh to include injected cards
+  updateShopCount();
+
   if (typeof window.applyShopFilters === "function") {
     window.applyShopFilters();
+  }
+}
+
+function updateShopCount() {
+  const grid = document.getElementById("shopGrid");
+  if (grid) {
+    const allCards = [...grid.querySelectorAll(".searchable")];
+    const countEl  = document.getElementById("productCount");
+    if (countEl) {
+      countEl.textContent = allCards.length + " Cake" + (allCards.length === 1 ? "" : "s");
+    }
   }
 }
 
@@ -434,12 +477,14 @@ function injectHomepageProducts() {
   const grid = document.getElementById("homeBestSellers");
   if (!grid) return;
 
+  grid.querySelectorAll(".injected-card").forEach(el => el.remove());
+
   const saved = getSavedProducts().filter(p => p.status !== "Draft");
   const toShow = saved.length ? saved.slice(-3).reverse() : [];
   if (!toShow.length) return;
 
   const existingNames = new Set(
-    [...grid.querySelectorAll(".product-card")].map(c => (c.dataset.name || "").trim().toLowerCase())
+    [...grid.querySelectorAll(".product-card:not(.injected-card)")].map(c => (c.dataset.name || "").trim().toLowerCase())
   );
 
   toShow.forEach(p => {
@@ -451,7 +496,7 @@ function injectHomepageProducts() {
     const hasBadge = p.discount && p.discount > p.price;
     const discPct  = hasBadge ? Math.round((1 - p.price / p.discount) * 100) : 0;
     const article  = document.createElement("article");
-    article.className = "product-card";
+    article.className = "product-card injected-card";
     article.setAttribute("data-name", p.name);
     article.innerHTML = `
       <div class="product-img">
@@ -486,21 +531,65 @@ function getAllProductsMap() {
 }
 window.getAllProductsMap = getAllProductsMap;
 
+// ================================================================
+// FIREBASE FIRESTORE SYNC
+// ================================================================
+function initFirestoreSync() {
+  if (!window.db) return;
+
+  // 1. One-time migration: If Firestore is empty but user had local products, upload them
+  try {
+    const local = getSavedProducts();
+    if (local.length > 0) {
+      window.db.collection("products").get().then(snap => {
+        if (snap.empty) {
+          console.log("Migrating existing local products to Firestore...");
+          local.forEach(p => {
+            const docId = p.id || genId();
+            window.db.collection("products").doc(docId).set({ ...p, id: docId }, { merge: true });
+          });
+        }
+      }).catch(err => console.warn("Firestore migration check note:", err));
+    }
+  } catch (e) {
+    console.warn("Migration notice:", e);
+  }
+
+  // 2. Real-time sync listener
+  try {
+    window.db.collection("products").onSnapshot(snapshot => {
+      const firestoreProducts = [];
+      snapshot.forEach(doc => {
+        firestoreProducts.push({ ...doc.data(), id: doc.id });
+      });
+
+      // Update local cache
+      setSavedProducts(firestoreProducts);
+
+      // Re-render components
+      injectShopProducts();
+      injectHomepageProducts();
+      if (typeof window.refreshAdminProductTable === "function") {
+        window.refreshAdminProductTable();
+      }
+
+      // Notify page listeners
+      window.dispatchEvent(new CustomEvent("productsUpdated", { detail: firestoreProducts }));
+    }, error => {
+      console.warn("Firestore sync listener note (make sure Firestore Test Mode is enabled):", error);
+    });
+  } catch (err) {
+    console.warn("Firestore init listener notice:", err);
+  }
+}
+
 // ── Auto-run with readyState safety ──────────────────────────────────
 function initAdminSystem() {
   initAdminProductsPage();
   initAdminProductForm();
   injectShopProducts();
   injectHomepageProducts();
-
-  const grid = document.getElementById("shopGrid");
-  if (grid) {
-    const allCards = [...grid.querySelectorAll(".searchable")];
-    const countEl  = document.getElementById("productCount");
-    if (countEl) {
-      countEl.textContent = allCards.length + " Cake" + (allCards.length === 1 ? "" : "s");
-    }
-  }
+  initFirestoreSync();
 }
 
 if (document.readyState === "loading") {
@@ -508,4 +597,3 @@ if (document.readyState === "loading") {
 } else {
   initAdminSystem();
 }
-
