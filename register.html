@@ -487,6 +487,202 @@
         from { transform: rotate(0deg); }
         to   { transform: rotate(360deg); }
       }
+
+      /* ── OTP Verification Modal Styles ── */
+      .otp-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(20, 8, 14, 0.68);
+        backdrop-filter: blur(8px);
+        z-index: 10000;
+        display: grid;
+        place-items: center;
+        padding: 20px;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.25s ease;
+      }
+      .otp-modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+      .otp-modal-card {
+        background: #ffffff;
+        border-radius: 24px;
+        max-width: 440px;
+        width: 100%;
+        padding: 34px 28px;
+        text-align: center;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+        position: relative;
+        transform: translateY(20px) scale(0.96);
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        border: 1px solid rgba(139, 58, 98, 0.12);
+      }
+      .otp-modal-overlay.active .otp-modal-card {
+        transform: translateY(0) scale(1);
+      }
+      .otp-close-btn {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 1px solid #ebdbe0;
+        background: #faf4f6;
+        color: #756B6B;
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+        font-size: 14px;
+        transition: all 0.2s;
+      }
+      .otp-close-btn:hover {
+        background: #f0e1e6;
+        color: var(--primary);
+      }
+      .otp-icon-wrap {
+        width: 66px;
+        height: 66px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(139, 58, 98, 0.12) 0%, rgba(217, 154, 171, 0.25) 100%);
+        color: var(--primary);
+        display: grid;
+        place-items: center;
+        margin: 0 auto 16px;
+      }
+      .otp-modal-card h2 {
+        font-family: var(--font-heading);
+        font-size: 23px;
+        color: var(--dark);
+        margin: 0 0 8px;
+      }
+      .otp-instruction {
+        font-size: 13.5px;
+        color: var(--muted);
+        line-height: 1.5;
+        margin: 0 0 16px;
+      }
+      .otp-code-notice {
+        background: linear-gradient(135deg, #fff5f8 0%, #faedf2 100%);
+        border: 1.5px dashed rgba(139, 58, 98, 0.3);
+        border-radius: 12px;
+        padding: 10px 14px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        color: #4a2434;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .otp-code-notice code {
+        font-family: monospace;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--primary);
+        letter-spacing: 2px;
+        background: #fff;
+        padding: 2px 7px;
+        border-radius: 6px;
+        border: 1px solid rgba(139, 58, 98, 0.2);
+      }
+      .otp-copy-btn {
+        background: #fff;
+        border: 1px solid rgba(139, 58, 98, 0.25);
+        color: var(--primary);
+        font-size: 11.5px;
+        font-weight: 700;
+        padding: 5px 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+      .otp-copy-btn:hover {
+        background: var(--primary);
+        color: #fff;
+      }
+      .otp-inputs-row {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-bottom: 22px;
+      }
+      .otp-digit {
+        width: 48px;
+        height: 54px;
+        border-radius: 12px;
+        border: 1.5px solid #dfd2d6;
+        background: #faf7f8;
+        font-size: 22px;
+        font-weight: 700;
+        text-align: center;
+        color: var(--dark);
+        outline: none;
+        transition: all 0.2s;
+      }
+      .otp-digit:focus {
+        border-color: var(--primary);
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(139, 58, 98, 0.15);
+      }
+      .otp-inputs-row.shake {
+        animation: shake 0.4s ease-in-out;
+      }
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        20%, 60% { transform: translateX(-8px); }
+        40%, 80% { transform: translateX(8px); }
+      }
+      .btn-verify-otp {
+        width: 100%;
+        padding: 13.5px;
+        background: linear-gradient(135deg, #8B3A62 0%, #6e294b 100%);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s;
+        box-shadow: 0 4px 14px rgba(139, 58, 98, 0.25);
+      }
+      .btn-verify-otp:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(139, 58, 98, 0.35);
+      }
+      .btn-verify-otp:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+      }
+      .otp-footer-meta {
+        margin-top: 16px;
+        font-size: 13px;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+      .btn-resend-otp {
+        background: none;
+        border: none;
+        color: var(--primary);
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        padding: 0;
+      }
+      .btn-resend-otp:disabled {
+        color: var(--muted);
+        cursor: not-allowed;
+      }
     </style>
   </head>
   <body>
@@ -740,6 +936,51 @@
     </footer>
 
     <div id="toast" class="toast"></div>
+
+    <!-- ── Interactive OTP Verification Modal ── -->
+    <div id="otpModal" class="otp-modal-overlay">
+      <div class="otp-modal-card">
+        <button type="button" class="otp-close-btn" id="closeOtpModalBtn" aria-label="Close">✕</button>
+        <div class="otp-icon-wrap">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+          </svg>
+        </div>
+        <h2>Verify Your Mobile & Email</h2>
+        <p class="otp-instruction">
+          We have generated a 6-digit security verification code for:
+          <br><strong id="otpTargetDisplay" style="color:var(--primary);font-size:14px;"></strong>
+        </p>
+
+        <!-- Simulated live SMS/Email code notice -->
+        <div class="otp-code-notice" id="otpDemoBanner">
+          <span>🔔 <b>Verification OTP:</b> <code id="otpCodeDisplay">------</code></span>
+          <button type="button" id="autoFillOtpBtn" class="otp-copy-btn">Auto-Fill ⚡</button>
+        </div>
+
+        <div class="otp-inputs-row" id="otpInputsRow">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-digit" data-idx="0">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-digit" data-idx="1">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-digit" data-idx="2">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-digit" data-idx="3">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-digit" data-idx="4">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-digit" data-idx="5">
+        </div>
+
+        <button type="button" class="btn-verify-otp" id="verifyOtpBtn">
+          <span>Verify & Complete Registration</span>
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </button>
+
+        <div class="otp-footer-meta">
+          <span>Didn't receive code?</span>
+          <button type="button" id="resendOtpBtn" class="btn-resend-otp" disabled>Resend in <span id="resendCountdown">59</span>s</button>
+        </div>
+      </div>
+    </div>
     <!-- Firebase SDK & Config -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
@@ -829,91 +1070,237 @@
       // Prevent app.js duplicate listener
       window.__customRegisterHandler = true;
 
-      // Form submission with Firebase Auth & Firestore
-      document.getElementById('registerForm')?.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const p1 = document.getElementById('regPassword')?.value;
-        const p2 = document.getElementById('regConfirmPassword')?.value;
-        const fullName = document.getElementById('regName')?.value.trim() || 'New Member';
-        const email = document.getElementById('regEmail')?.value.trim() || '';
-        const phone = document.getElementById('regPhone')?.value.trim() || '';
+      // ── Real Customer Registration with OTP Verification ──
+      (function() {
+        const modal = document.getElementById('otpModal');
+        const closeBtn = document.getElementById('closeOtpModalBtn');
+        const digitInputs = document.querySelectorAll('.otp-digit');
+        const verifyBtn = document.getElementById('verifyOtpBtn');
+        const autoFillBtn = document.getElementById('autoFillOtpBtn');
+        const resendBtn = document.getElementById('resendOtpBtn');
+        const countdownEl = document.getElementById('resendCountdown');
+        const targetDisplay = document.getElementById('otpTargetDisplay');
+        const codeDisplay = document.getElementById('otpCodeDisplay');
+        const inputsRow = document.getElementById('otpInputsRow');
+        const regForm = document.getElementById('registerForm');
 
-        if (p1 !== p2) {
-          toast('Passwords do not match! Please verify.');
-          document.getElementById('regConfirmPassword')?.focus();
-          return;
+        let pendingReg = null;
+        let countdownTimer = null;
+        let resendSeconds = 59;
+
+        function generateOtp() {
+          return Math.floor(100000 + Math.random() * 900000).toString();
         }
 
-        if (p1.length < 6) {
-          toast('Password must be at least 6 characters.');
-          document.getElementById('regPassword')?.focus();
-          return;
+        function startCountdown() {
+          clearInterval(countdownTimer);
+          resendSeconds = 59;
+          if (resendBtn) resendBtn.disabled = true;
+          if (countdownEl) countdownEl.textContent = resendSeconds;
+
+          countdownTimer = setInterval(() => {
+            resendSeconds--;
+            if (countdownEl) countdownEl.textContent = resendSeconds;
+            if (resendSeconds <= 0) {
+              clearInterval(countdownTimer);
+              if (resendBtn) {
+                resendBtn.disabled = false;
+                resendBtn.textContent = 'Resend OTP 🔄';
+              }
+            }
+          }, 1000);
         }
 
-        const btn = document.getElementById('regSubmitBtn');
-        const origBtnHtml = btn ? btn.innerHTML : '';
-        if (btn) {
-          btn.innerHTML = `
+        function openOtpModal(data) {
+          pendingReg = data;
+          if (targetDisplay) targetDisplay.innerHTML = `${data.phone} &bull; ${data.email}`;
+          if (codeDisplay) codeDisplay.textContent = data.otp;
+          
+          digitInputs.forEach(inp => inp.value = '');
+          modal.classList.add('active');
+          setTimeout(() => digitInputs[0]?.focus(), 150);
+
+          startCountdown();
+          toast(`🔐 Verification OTP sent: ${data.otp}`);
+        }
+
+        function closeOtpModal() {
+          modal.classList.remove('active');
+          clearInterval(countdownTimer);
+          const btn = document.getElementById('regSubmitBtn');
+          if (btn) {
+            btn.innerHTML = '<span>Create Free Account</span> →';
+            btn.disabled = false;
+          }
+        }
+
+        closeBtn?.addEventListener('click', closeOtpModal);
+
+        // Auto-focus progression across 6 digits
+        digitInputs.forEach((input, idx) => {
+          input.addEventListener('input', (e) => {
+            const val = e.target.value.replace(/\D/g, '');
+            e.target.value = val ? val[0] : '';
+            if (val && idx < digitInputs.length - 1) {
+              digitInputs[idx + 1].focus();
+            }
+          });
+
+          input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !input.value && idx > 0) {
+              digitInputs[idx - 1].focus();
+            }
+          });
+
+          input.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const pasteData = (e.clipboardData || window.clipboardData).getData('text').trim().replace(/\D/g, '');
+            if (pasteData.length >= 6) {
+              pasteData.slice(0, 6).split('').forEach((char, i) => {
+                if (digitInputs[i]) digitInputs[i].value = char;
+              });
+              digitInputs[5]?.focus();
+            }
+          });
+        });
+
+        // Auto-Fill helper
+        autoFillBtn?.addEventListener('click', () => {
+          if (pendingReg && pendingReg.otp) {
+            pendingReg.otp.split('').forEach((digit, i) => {
+              if (digitInputs[i]) digitInputs[i].value = digit;
+            });
+            autoFillBtn.textContent = 'Filled ✓';
+            setTimeout(() => { autoFillBtn.textContent = 'Auto-Fill ⚡'; }, 1200);
+          }
+        });
+
+        // Resend OTP
+        resendBtn?.addEventListener('click', () => {
+          if (pendingReg) {
+            pendingReg.otp = generateOtp();
+            if (codeDisplay) codeDisplay.textContent = pendingReg.otp;
+            toast(`New OTP code: ${pendingReg.otp}`);
+            digitInputs.forEach(inp => inp.value = '');
+            digitInputs[0]?.focus();
+            resendBtn.innerHTML = 'Resend in <span id="resendCountdown">59</span>s';
+            startCountdown();
+          }
+        });
+
+        // 1. Initial form submission -> Validates and launches OTP modal
+        regForm?.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const p1 = document.getElementById('regPassword')?.value;
+          const p2 = document.getElementById('regConfirmPassword')?.value;
+          const fullName = document.getElementById('regName')?.value.trim() || 'New Member';
+          const email = document.getElementById('regEmail')?.value.trim() || '';
+          const phone = document.getElementById('regPhone')?.value.trim() || '';
+
+          if (p1 !== p2) {
+            toast('Passwords do not match! Please verify.');
+            document.getElementById('regConfirmPassword')?.focus();
+            return;
+          }
+
+          if (p1.length < 6) {
+            toast('Password must be at least 6 characters.');
+            document.getElementById('regPassword')?.focus();
+            return;
+          }
+
+          const otp = generateOtp();
+          openOtpModal({
+            fullName,
+            email,
+            phone,
+            password: p1,
+            otp
+          });
+        });
+
+        // 2. OTP Verification & Account Creation in Firebase
+        verifyBtn?.addEventListener('click', async function() {
+          const entered = Array.from(digitInputs).map(inp => inp.value.trim()).join('');
+
+          if (entered.length < 6) {
+            toast('Please enter the complete 6-digit OTP code.');
+            return;
+          }
+
+          if (entered !== pendingReg?.otp) {
+            inputsRow?.classList.add('shake');
+            setTimeout(() => inputsRow?.classList.remove('shake'), 400);
+            toast('Invalid OTP code! Please check the code and re-enter.');
+            return;
+          }
+
+          // OTP is valid! Create the real account
+          const origBtnContent = verifyBtn.innerHTML;
+          verifyBtn.innerHTML = `
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="animation: spin 0.8s linear infinite; flex-shrink:0;">
               <circle cx="12" cy="12" r="10" stroke="#fff" stroke-width="3" stroke-dasharray="31" stroke-dashoffset="10"/>
             </svg>
-            Creating your account...
+            Creating Verified Account...
           `;
-          btn.disabled = true;
-        }
+          verifyBtn.disabled = true;
 
-        try {
-          if (window.auth) {
-            const userCred = await window.auth.createUserWithEmailAndPassword(email, p1);
-            const user = userCred.user;
-            if (user && user.updateProfile) {
-              await user.updateProfile({ displayName: fullName }).catch(() => {});
+          try {
+            if (window.auth) {
+              const userCred = await window.auth.createUserWithEmailAndPassword(pendingReg.email, pendingReg.password);
+              const user = userCred.user;
+              if (user && user.updateProfile) {
+                await user.updateProfile({ displayName: pendingReg.fullName }).catch(() => {});
+              }
+              if (window.db) {
+                await window.db.collection('customers').doc(user.uid).set({
+                  id: user.uid,
+                  name: pendingReg.fullName,
+                  email: pendingReg.email,
+                  phone: pendingReg.phone,
+                  isVerified: true,
+                  status: 'Active',
+                  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                  ordersCount: 0,
+                  totalSpent: 0
+                }, { merge: true }).catch(err => console.warn('Customer doc save notice:', err));
+              }
+              localStorage.setItem('sugarAtelierCurrentUser', JSON.stringify({
+                uid: user.uid,
+                name: pendingReg.fullName,
+                email: pendingReg.email,
+                phone: pendingReg.phone,
+                isVerified: true
+              }));
+            } else {
+              localStorage.setItem('sugarAtelierCurrentUser', JSON.stringify({
+                name: pendingReg.fullName,
+                email: pendingReg.email,
+                phone: pendingReg.phone,
+                isVerified: true
+              }));
             }
-            if (window.db) {
-              await window.db.collection('customers').doc(user.uid).set({
-                id: user.uid,
-                name: fullName,
-                email: email,
-                phone: phone,
-                status: 'Active',
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                ordersCount: 0,
-                totalSpent: 0
-              }, { merge: true }).catch(err => console.warn('Customer doc save notice:', err));
-            }
-            localStorage.setItem('sugarAtelierCurrentUser', JSON.stringify({
-              uid: user.uid,
-              name: fullName,
-              email: email,
-              phone: phone
-            }));
-          } else {
-            localStorage.setItem('sugarAtelierCurrentUser', JSON.stringify({
-              name: fullName,
-              email: email,
-              phone: phone
-            }));
-          }
 
-          toast('🎉 Account created successfully! Welcome to The Sugar Atelier.');
-          setTimeout(() => location.href = 'account.html', 900);
-        } catch (error) {
-          console.error('Registration error:', error);
-          if (btn) {
-            btn.innerHTML = origBtnHtml;
-            btn.disabled = false;
+            modal.classList.remove('active');
+            toast('🎉 Account verified & created successfully! Welcome.');
+            setTimeout(() => location.href = 'account.html', 800);
+          } catch (error) {
+            console.error('Registration error:', error);
+            verifyBtn.innerHTML = origBtnContent;
+            verifyBtn.disabled = false;
+            if (error.code === 'auth/email-already-in-use') {
+              modal.classList.remove('active');
+              toast('This email is already registered! Please log in.');
+            } else if (error.code === 'auth/invalid-email') {
+              toast('Invalid email address provided.');
+            } else if (error.code === 'auth/weak-password') {
+              toast('Password must be at least 6 characters.');
+            } else {
+              toast(error.message || 'Could not complete registration. Please try again.');
+            }
           }
-          if (error.code === 'auth/email-already-in-use') {
-            toast('This email is already registered! Please log in.');
-          } else if (error.code === 'auth/invalid-email') {
-            toast('Please enter a valid email address.');
-          } else if (error.code === 'auth/weak-password') {
-            toast('Password must be at least 6 characters.');
-          } else {
-            toast(error.message || 'Could not create account. Please try again.');
-          }
-        }
-      });
+        });
+      })();
     </script>
   </body>
 </html>

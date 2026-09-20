@@ -41,15 +41,15 @@
           <!-- Luxury Account Hero Banner -->
           <div class="account-hero">
             <div class="account-avatar-wrap">
-              <div class="account-avatar" id="avatarInitials">AR</div>
+              <div class="account-avatar" id="avatarInitials">👤</div>
               <button type="button" class="avatar-edit-btn" id="avatarEditBtn" title="Change photo">📷</button>
             </div>
             <div class="account-user-info">
               <div class="user-meta-top">
-                <h2 id="heroUserName">Ayesha Rahman</h2>
-                <span class="member-badge">✨ VIP Sweet Club Member</span>
+                <h2 id="heroUserName">Welcome, Member</h2>
+                <span class="member-badge" id="memberBadge">✨ Verified Member</span>
               </div>
-              <p class="user-meta-sub" id="heroUserSub">ayesha.rahman@example.com • Member since March 2026</p>
+              <p class="user-meta-sub" id="heroUserSub">Manage your profile, cakes, and orders</p>
             </div>
           </div>
 
@@ -119,16 +119,16 @@
 
                 <div class="form-grid">
                   <label>Full Name
-                    <input id="profName" name="name" value="Ayesha Rahman" required autocomplete="name">
+                    <input id="profName" name="name" placeholder="Enter your full name" required autocomplete="name">
                   </label>
                   <label>Email Address
-                    <input id="profEmail" name="email" type="email" value="ayesha.rahman@example.com" required autocomplete="email">
+                    <input id="profEmail" name="email" type="email" placeholder="your.email@example.com" required autocomplete="email" readonly style="background:var(--bg-subtle,#fcf9fa);cursor:not-allowed;">
                   </label>
                   <label>Phone Number
-                    <input id="profPhone" name="phone" type="tel" value="+880 1712-345678" required autocomplete="tel">
+                    <input id="profPhone" name="phone" type="tel" placeholder="+880 1..." required autocomplete="tel">
                   </label>
                   <label>Date of Birth
-                    <input id="profDob" name="dob" type="date" value="1998-05-14">
+                    <input id="profDob" name="dob" type="date">
                   </label>
                 </div>
 
@@ -244,7 +244,14 @@
     <script>
       // Load saved user info
       function loadAccountUser(userObj) {
-        const saved = userObj || JSON.parse(localStorage.getItem("sugarAtelierCurrentUser") || "null");
+        let saved = userObj || JSON.parse(localStorage.getItem("sugarAtelierCurrentUser") || "null");
+        
+        // Clean old demo placeholder if not a real user
+        if (saved && saved.email === "ayesha.rahman@example.com" && (!window.auth || !window.auth.currentUser)) {
+          localStorage.removeItem("sugarAtelierCurrentUser");
+          saved = null;
+        }
+
         if (saved && (saved.name || saved.email)) {
           const heroName = document.getElementById("heroUserName");
           const heroSub = document.getElementById("heroUserSub");
@@ -265,6 +272,11 @@
             const parts = dName.split(" ");
             avatarInitials.textContent = parts.length > 1 ? (parts[0][0] + parts[1][0]).toUpperCase() : dName.slice(0, 2).toUpperCase();
           }
+        } else {
+          const heroName = document.getElementById("heroUserName");
+          const heroSub = document.getElementById("heroUserSub");
+          if (heroName) heroName.textContent = "Guest Customer";
+          if (heroSub) heroSub.innerHTML = 'Please <a href="login.html" style="color:var(--primary);font-weight:700;text-decoration:underline;">Sign In</a> or <a href="register.html" style="color:var(--primary);font-weight:700;text-decoration:underline;">Register</a> to view your profile.';
         }
       }
       loadAccountUser();

@@ -559,7 +559,7 @@
         e.preventDefault();
         const email = document.getElementById('loginEmail')?.value.trim();
         const pass = document.getElementById('loginPassword')?.value;
-        const btn = document.querySelector('.btn-auth-submit');
+        const btn = document.querySelector('.login-submit') || document.querySelector('.btn-auth-submit');
         const origText = btn ? btn.textContent : '';
 
         if (!email || !pass) {
