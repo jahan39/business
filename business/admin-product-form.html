@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="description" content="The Sugar Atelier premium online cake shop. Fresh cakes and custom cakes.">
+    <title>Add/Edit Product | The Sugar Atelier</title>
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body class="admin-body">
+    <div class="admin-layout">
+      <aside class="admin-side">
+        <a class="logo" href="index.html">The Sugar <span>Atelier</span></a>
+        <a href="admin-dashboard.html">Dashboard</a>
+        <a class="active" href="admin-products.html">Products</a>
+        <a href="admin-categories.html">Categories</a>
+        <a href="admin-orders.html">Orders</a>
+        <a href="admin-customers.html">Customers</a>
+        <a href="admin-reviews.html">Reviews</a>
+        <a href="admin-coupons.html">Coupons</a>
+        <a href="admin-custom-cakes.html">Custom Cakes</a>
+        <a href="admin-messages.html">Messages</a>
+        <a href="admin-payments.html">Payments</a>
+        <a href="admin-settings.html">Settings</a>
+        <a href="admin-login.html">Logout</a>
+      </aside>
+      <main class="admin-main">
+        <div class="admin-top">
+          <div>
+            <span class="eyebrow">PRODUCT MANAGEMENT</span>
+            <h1>Add / Edit Product</h1>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <button class="theme-toggle-btn" id="adminThemeToggleBtn" type="button" aria-label="Toggle dark/light mode" title="Toggle dark/light mode" onclick="toggleTheme()">🌙</button>
+            <a class="btn btn-outline" href="shop.html" target="_blank">View Shop ↗</a>
+          </div>
+        </div>
+        <form class="admin-card form-card" id="productForm">
+          <div class="form-grid">
+            <label>Product Name<input required name="productName" placeholder="e.g. Red Velvet Deluxe"></label>
+            <label>SKU<input name="sku" placeholder="Auto-generated if empty"></label>
+            <label>Category
+              <select name="category">
+                <option>Birthday Cakes</option>
+                <option>Chocolate Cakes</option>
+                <option>Wedding Cakes</option>
+                <option>Cheesecake</option>
+              </select>
+            </label>
+            <label>Price<input required type="number" name="price" placeholder="1850"></label>
+            <label>Discount Price<input type="number" name="discount" placeholder="Optional"></label>
+            <label>Stock Quantity<input type="number" name="stock" value="10"></label>
+            <label>Weight<input name="weight" placeholder="1 KG"></label>
+            <label>Status
+              <select name="status">
+                <option>Active</option>
+                <option>Draft</option>
+              </select>
+            </label>
+          </div>
+          <label>Short Description<input name="shortDescription"></label>
+          <label>Description<textarea rows="5" name="description"></textarea></label>
+          <label>Ingredients<textarea rows="4" name="ingredients"></textarea></label>
+          <label>Available Sizes<input name="sizes" placeholder="0.5 KG, 1 KG, 1.5 KG, 2 KG"></label>
+          <label>Available Flavors<input name="flavors" placeholder="Chocolate, Vanilla, Strawberry"></label>
+          <label>Product Image URL<input type="url" name="imageUrl" placeholder="https://images.unsplash.com/..."></label>
+          <label>Product Images (optional file)<input type="file" accept="image/*" multiple name="images"></label>
+          <div class="check-row">
+            <label><input type="checkbox" name="featured"> Featured Product</label>
+            <label><input type="checkbox" name="bestSeller"> Best Seller</label>
+          </div>
+          <button class="btn btn-primary">Save Product</button>
+          <a class="btn btn-outline" href="admin-products.html">Cancel</a>
+        </form>
+      </main>
+    </div>
+    <div id="toast" class="toast"></div>
+    <script src="js/app.js"></script>
+    <script src="js/admin-products.js"></script>
+  </body>
+</html>
