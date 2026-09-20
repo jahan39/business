@@ -235,12 +235,17 @@
     </footer>
 
     <div id="toast" class="toast"></div>
+    <!-- Firebase SDK & Config -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
     <script src="js/app.js"></script>
     <script>
       // Load saved user info
-      function loadAccountUser() {
-        const saved = JSON.parse(localStorage.getItem("sugarAtelierCurrentUser") || "null");
-        if (saved && saved.name) {
+      function loadAccountUser(userObj) {
+        const saved = userObj || JSON.parse(localStorage.getItem("sugarAtelierCurrentUser") || "null");
+        if (saved && (saved.name || saved.email)) {
           const heroName = document.getElementById("heroUserName");
           const heroSub = document.getElementById("heroUserSub");
           const profName = document.getElementById("profName");
@@ -248,20 +253,60 @@
           const profPhone = document.getElementById("profPhone");
           const avatarInitials = document.getElementById("avatarInitials");
 
-          if (heroName) heroName.textContent = saved.name;
-          if (profName) profName.value = saved.name;
+          const dName = saved.name || (saved.email ? saved.email.split('@')[0] : "Member");
+          if (heroName) heroName.textContent = dName;
+          if (profName) profName.value = dName;
           if (saved.email) {
-            if (heroSub) heroSub.textContent = saved.email + " • Member since March 2026";
+            if (heroSub) heroSub.textContent = saved.email + " • Verified Member";
             if (profEmail) profEmail.value = saved.email;
           }
           if (saved.phone && profPhone) profPhone.value = saved.phone;
           if (avatarInitials) {
-            const parts = saved.name.split(" ");
-            avatarInitials.textContent = parts.length > 1 ? (parts[0][0] + parts[1][0]).toUpperCase() : saved.name.slice(0, 2).toUpperCase();
+            const parts = dName.split(" ");
+            avatarInitials.textContent = parts.length > 1 ? (parts[0][0] + parts[1][0]).toUpperCase() : dName.slice(0, 2).toUpperCase();
           }
         }
       }
       loadAccountUser();
+
+      // Firebase Auth state listener
+      if (window.auth) {
+        window.auth.onAuthStateChanged(async user => {
+          if (user) {
+            let userData = {
+              uid: user.uid,
+              name: user.displayName || user.email.split('@')[0],
+              email: user.email,
+              phone: ''
+            };
+            if (window.db) {
+              try {
+                const doc = await window.db.collection('customers').doc(user.uid).get();
+                if (doc.exists) {
+                  const d = doc.data();
+                  if (d.name) userData.name = d.name;
+                  if (d.phone) userData.phone = d.phone;
+                }
+              } catch (e) {
+                console.warn("User fetch notice:", e);
+              }
+            }
+            localStorage.setItem("sugarAtelierCurrentUser", JSON.stringify(userData));
+            loadAccountUser(userData);
+          }
+        });
+      }
+
+      // Logout handler
+      document.querySelector(".logout-link")?.addEventListener("click", async function(e) {
+        e.preventDefault();
+        if (window.auth) {
+          try { await window.auth.signOut(); } catch (err) {}
+        }
+        localStorage.removeItem("sugarAtelierCurrentUser");
+        toast("Signed out successfully.");
+        setTimeout(() => location.href = "login.html", 600);
+      });
 
       // Update wishlist count and orders in stats card
       function updateAccountStats() {
@@ -279,13 +324,13 @@
       updateAccountStats();
 
       // Profile form submission handler
-      document.getElementById("profileForm")?.addEventListener("submit", function(e) {
+      document.getElementById("profileForm")?.addEventListener("submit", async function(e) {
         e.preventDefault();
         const name = document.getElementById("profName").value.trim();
         const email = document.getElementById("profEmail").value.trim();
         const phone = document.getElementById("profPhone")?.value.trim() || "";
-        const p1 = document.getElementById("newPassword").value;
-        const p2 = document.getElementById("confirmNewPassword").value;
+        const p1 = document.getElementById("newPassword")?.value;
+        const p2 = document.getElementById("confirmNewPassword")?.value;
 
         if (p1 && p1 !== p2) {
           toast("Passwords do not match!");
@@ -297,26 +342,36 @@
         btn.textContent = "Saving...";
         btn.disabled = true;
 
-        setTimeout(() => {
-          btn.textContent = orig;
-          btn.disabled = false;
-
-          // Save to localStorage
-          try {
-            localStorage.setItem("sugarAtelierCurrentUser", JSON.stringify({ name, email, phone }));
-          } catch (err) {}
-
-          // Update hero text
-          document.getElementById("heroUserName").textContent = name;
-          document.getElementById("heroUserSub").textContent = email + " • Member since March 2026";
+        try {
+          const user = window.auth ? window.auth.currentUser : null;
+          if (user) {
+            if (user.updateProfile) await user.updateProfile({ displayName: name }).catch(() => {});
+            if (p1 && p1.length >= 6 && user.updatePassword) {
+              await user.updatePassword(p1).catch(err => toast(err.message));
+            }
+            if (window.db) {
+              await window.db.collection("customers").doc(user.uid).set({
+                name,
+                email,
+                phone
+              }, { merge: true }).catch(err => console.warn("Customer update error:", err));
+            }
+          }
+          localStorage.setItem("sugarAtelierCurrentUser", JSON.stringify({ uid: user ? user.uid : undefined, name, email, phone }));
           
-          // Update avatar initials
+          document.getElementById("heroUserName").textContent = name;
+          document.getElementById("heroUserSub").textContent = email + " • Verified Member";
           const parts = name.split(" ");
           const initials = parts.length > 1 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.slice(0, 2).toUpperCase();
           document.getElementById("avatarInitials").textContent = initials;
-
           toast("Profile updated successfully!");
-        }, 600);
+        } catch (err) {
+          console.error("Save profile error:", err);
+          toast("Error updating profile.");
+        } finally {
+          btn.textContent = orig;
+          btn.disabled = false;
+        }
       });
 
       // Photo upload demo

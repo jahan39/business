@@ -547,20 +547,89 @@
     </footer>
 
     <div id="toast" class="toast"></div>
+    <!-- Firebase SDK & Config -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
     <script src="js/app.js"></script>
     <script>
-      // Login form submit
-      document.getElementById('loginForm').addEventListener('submit', function(e) {
+      // Login form submit with Firebase Auth
+      document.getElementById('loginForm')?.addEventListener('submit', async function(e) {
         e.preventDefault();
-        const email = document.getElementById('loginEmail')?.value.trim() || 'ayesha.rahman@example.com';
-        let user = JSON.parse(localStorage.getItem('sugarAtelierCurrentUser') || 'null');
-        if (!user || user.email !== email) {
-          const guessedName = email.split('@')[0].replace(/[._]/g, ' ');
-          const capitalized = guessedName.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-          user = { name: capitalized || 'Ayesha Rahman', email: email };
-          localStorage.setItem('sugarAtelierCurrentUser', JSON.stringify(user));
+        const email = document.getElementById('loginEmail')?.value.trim();
+        const pass = document.getElementById('loginPassword')?.value;
+        const btn = document.querySelector('.btn-auth-submit');
+        const origText = btn ? btn.textContent : '';
+
+        if (!email || !pass) {
+          toast('Please enter your email and password.');
+          return;
         }
-        window.location.href = 'account.html';
+
+        if (btn) {
+          btn.textContent = 'Logging in...';
+          btn.disabled = true;
+        }
+
+        try {
+          if (window.auth) {
+            const userCred = await window.auth.signInWithEmailAndPassword(email, pass);
+            const user = userCred.user;
+            let displayName = user.displayName || '';
+            let phone = '';
+
+            if (window.db) {
+              try {
+                const doc = await window.db.collection('customers').doc(user.uid).get();
+                if (doc.exists) {
+                  const data = doc.data();
+                  if (data.name) displayName = data.name;
+                  if (data.phone) phone = data.phone;
+                }
+              } catch (dbErr) {
+                console.warn('Profile fetch notice:', dbErr);
+              }
+            }
+
+            if (!displayName) {
+              const guessed = email.split('@')[0].replace(/[._]/g, ' ');
+              displayName = guessed.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            }
+
+            localStorage.setItem('sugarAtelierCurrentUser', JSON.stringify({
+              uid: user.uid,
+              name: displayName,
+              email: user.email,
+              phone: phone
+            }));
+
+            toast(`Welcome back, ${displayName}!`);
+            setTimeout(() => window.location.href = 'account.html', 800);
+          } else {
+            // Fallback demo mode
+            const guessed = email.split('@')[0].replace(/[._]/g, ' ');
+            const displayName = guessed.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            localStorage.setItem('sugarAtelierCurrentUser', JSON.stringify({
+              name: displayName,
+              email: email
+            }));
+            window.location.href = 'account.html';
+          }
+        } catch (error) {
+          console.error('Login error:', error);
+          if (btn) {
+            btn.textContent = origText;
+            btn.disabled = false;
+          }
+          if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+            toast('Incorrect email or password. Please verify.');
+          } else if (error.code === 'auth/invalid-email') {
+            toast('Please enter a valid email address.');
+          } else {
+            toast(error.message || 'Login failed. Please try again.');
+          }
+        }
       });
 
       // Google login button — Under Process state

@@ -10,6 +10,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 let db = null;
+let auth = null;
 try {
   if (typeof firebase !== "undefined") {
     if (!firebase.apps.length) {
@@ -17,6 +18,10 @@ try {
     }
     db = firebase.firestore();
     window.db = db;
+    if (typeof firebase.auth === "function") {
+      auth = firebase.auth();
+      window.auth = auth;
+    }
   }
 } catch (err) {
   console.warn("Firebase initialization notice:", err);
