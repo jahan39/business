@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="description" content="Manage your profile, tracked cake orders, and preferences at The Sugar Atelier.">
+    <title>My Account | The Sugar Atelier</title>
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body class="">
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <a class="logo" href="index.html">The Sugar <span>Atelier</span></a>
+        <nav>
+          <a href="index.html">Home</a>
+          <a href="shop.html">Shop</a>
+          <a href="categories.html">Categories</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+        <div class="nav-actions">
+          <a href="search.html" aria-label="Search">⌕</a>
+          <a href="wishlist.html" aria-label="Wishlist">♡</a>
+          <a href="cart.html" aria-label="Cart">🛒<span class="cart-count">0</span></a>
+          <a href="account.html" aria-label="Account" class="active" style="color:var(--primary);">♙</a>
+          <button class="theme-toggle-btn" id="themeToggleBtn" type="button" aria-label="Toggle dark/light mode" title="Toggle dark/light mode" onclick="toggleTheme()">🌙</button>
+          <a class="btn btn-primary" href="shop.html">Order Now</a>
+          <button class="mobile-toggle" id="mobileMenuBtn" aria-label="Toggle navigation">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="section" style="padding-top: 35px;">
+        <div class="container">
+
+          <!-- Luxury Account Hero Banner -->
+          <div class="account-hero">
+            <div class="account-avatar-wrap">
+              <div class="account-avatar" id="avatarInitials">AR</div>
+              <button type="button" class="avatar-edit-btn" id="avatarEditBtn" title="Change photo">📷</button>
+            </div>
+            <div class="account-user-info">
+              <div class="user-meta-top">
+                <h2 id="heroUserName">Ayesha Rahman</h2>
+                <span class="member-badge">✨ VIP Sweet Club Member</span>
+              </div>
+              <p class="user-meta-sub" id="heroUserSub">ayesha.rahman@example.com • Member since March 2026</p>
+            </div>
+          </div>
+
+          <!-- Quick Stats Grid (Identical experience on PC & Mobile) -->
+          <div class="account-stats-grid">
+            <a href="orders.html" class="acc-stat-card">
+              <div class="stat-icon">🛍️</div>
+              <div class="stat-meta">
+                <span class="stat-val">3 Orders</span>
+                <span class="stat-lbl">Active & Past Orders →</span>
+              </div>
+            </a>
+            <a href="wishlist.html" class="acc-stat-card">
+              <div class="stat-icon">♡</div>
+              <div class="stat-meta">
+                <span class="stat-val"><span id="accWishCount">0</span> Saved</span>
+                <span class="stat-lbl">My Wishlist →</span>
+              </div>
+            </a>
+            <div class="acc-stat-card">
+              <div class="stat-icon">🎟️</div>
+              <div class="stat-meta">
+                <span class="stat-val">SWEET15</span>
+                <span class="stat-lbl">15% Active Coupon</span>
+              </div>
+            </div>
+            <div class="acc-stat-card">
+              <div class="stat-icon">💎</div>
+              <div class="stat-meta">
+                <span class="stat-val">320 Pts</span>
+                <span class="stat-lbl">Atelier Sweet Rewards</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Account Grid Layout -->
+          <div class="account-grid">
+            <!-- Navigation Sidebar (Converts to sleek horizontal swipeable pills on mobile) -->
+            <aside class="account-menu">
+              <h3>Navigation</h3>
+              <a class="active" href="account.html">
+                <span class="menu-icon">👤</span> Profile Details
+              </a>
+              <a href="orders.html">
+                <span class="menu-icon">📦</span> My Orders <span style="font-size:11px;background:var(--secondary);padding:2px 7px;border-radius:12px;margin-left:auto;">3</span>
+              </a>
+              <a href="wishlist.html">
+                <span class="menu-icon">♡</span> Wishlist
+              </a>
+              <a href="addresses.html">
+                <span class="menu-icon">📍</span> Saved Addresses
+              </a>
+              <a href="custom-cake.html">
+                <span class="menu-icon">✨</span> Custom Request
+              </a>
+              <a class="logout-link" href="login.html">
+                <span class="menu-icon">🚪</span> Sign Out
+              </a>
+            </aside>
+
+            <!-- Main Profile Form Panel -->
+            <div class="form-card">
+              <form id="profileForm">
+                <div class="form-section-title">
+                  <span>👤</span> Personal Information
+                </div>
+
+                <div class="form-grid">
+                  <label>Full Name
+                    <input id="profName" name="name" value="Ayesha Rahman" required autocomplete="name">
+                  </label>
+                  <label>Email Address
+                    <input id="profEmail" name="email" type="email" value="ayesha.rahman@example.com" required autocomplete="email">
+                  </label>
+                  <label>Phone Number
+                    <input id="profPhone" name="phone" type="tel" value="+880 1712-345678" required autocomplete="tel">
+                  </label>
+                  <label>Date of Birth
+                    <input id="profDob" name="dob" type="date" value="1998-05-14">
+                  </label>
+                </div>
+
+                <div class="form-section-title">
+                  <span>📍</span> Default Delivery Address
+                </div>
+
+                <div style="background:#fdfafb;border:1px solid var(--border);border-radius:14px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px;">
+                  <div>
+                    <strong style="display:block;font-size:14px;">Home • Dhaka</strong>
+                    <span style="color:var(--muted);font-size:13px;">House 42, Road 11, Banani, Dhaka-1213</span>
+                  </div>
+                  <a href="addresses.html" class="btn btn-outline" style="padding:7px 14px;font-size:12px;">Change</a>
+                </div>
+
+                <div class="form-section-title">
+                  <span>🔔</span> Notifications & Club Updates
+                </div>
+
+                <div class="pref-row">
+                  <div class="pref-info">
+                    <b>SMS Order Updates</b>
+                    <span>Receive live baking and delivery driver SMS notifications</span>
+                  </div>
+                  <label class="pref-switch">
+                    <input type="checkbox" checked>
+                    <span class="pref-slider"></span>
+                  </label>
+                </div>
+
+                <div class="pref-row">
+                  <div class="pref-info">
+                    <b>Birthday & Secret Offers</b>
+                    <span>Get exclusive cake recipes and complimentary surprise discounts</span>
+                  </div>
+                  <label class="pref-switch">
+                    <input type="checkbox" checked>
+                    <span class="pref-slider"></span>
+                  </label>
+                </div>
+
+                <div class="form-section-title">
+                  <span>🔒</span> Security
+                </div>
+
+                <div class="form-grid">
+                  <label>New Password (Optional)
+                    <input id="newPassword" type="password" placeholder="Leave blank to keep current">
+                  </label>
+                  <label>Confirm New Password
+                    <input id="confirmNewPassword" type="password" placeholder="Re-type new password">
+                  </label>
+                </div>
+
+                <div style="display:flex;gap:12px;margin-top:25px;align-items:center;">
+                  <button type="submit" class="btn btn-primary" id="saveProfBtn" style="padding:14px 28px;">Save Changes</button>
+                  <button type="reset" class="btn btn-outline" style="padding:14px 22px;">Discard</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-grid">
+        <div>
+          <a class="logo" href="index.html">The Sugar <span>Atelier</span></a>
+          <p>Premium handcrafted cakes for every celebration.</p>
+        <div class="footer-social">
+          <a href="https://facebook.com" class="social-fb" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg width="17" height="17" viewBox="-2 -2 28 28" fill="currentColor" aria-hidden="true"><path d="M9 8H6v4h3v12h5V12h3.642L18 8h-4V6.333C14 5.374 14.5 5 15.5 5H18V0h-3.808C10.592 0 9 1.583 9 4.615V8z"/></svg>
+          </a>
+          <a href="https://instagram.com" class="social-ig" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+          <a href="https://wa.me/8801700000000" class="social-wa" target="_blank" rel="noopener" aria-label="WhatsApp">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.031 0C5.396 0 .029 5.367.029 12.003c0 2.123.554 4.197 1.609 6.024L0 24l6.163-1.613a11.968 11.968 0 005.868 1.534h.005c6.633 0 12.001-5.367 12.001-12.003C24.037 5.367 18.67 0 12.031 0zm0 21.99a9.972 9.972 0 01-5.084-1.39l-.365-.216-3.778.99.99-3.68-.237-.377a9.96 9.96 0 01-1.527-5.314c0-5.506 4.48-9.986 9.992-9.986 2.668 0 5.176 1.038 7.062 2.925 1.887 1.887 2.926 4.396 2.926 7.066 0 5.508-4.48 9.988-9.979 9.988zm5.474-7.487c-.3-.15-1.776-.876-2.051-.976-.275-.1-.475-.15-.675.15s-.775.976-.95 1.176c-.175.2-.35.225-.65.075s-1.268-.468-2.416-1.492c-.893-.797-1.496-1.782-1.671-2.082-.175-.3-.019-.462.131-.612.135-.135.3-.35.45-.525.15-.175.2-.3.3-.5.1-.2.05-.375-.025-.525s-.675-1.626-.925-2.226c-.244-.585-.491-.506-.675-.515-.175-.01-.375-.01-.575-.01s-.525.075-.8.375c-.275.3-1.05 1.026-1.05 2.502s1.075 2.902 1.225 3.102c.15.2 2.116 3.232 5.127 4.533.716.31 1.275.495 1.71.634.719.229 1.373.197 1.891.12.577-.086 1.776-.725 2.026-1.426.25-.7.25-1.301.175-1.426-.075-.125-.275-.2-.575-.35z"/></svg>
+          </a>
+        </div>
+        </div>
+        <div>
+          <h4>Quick Links</h4>
+          <a href="shop.html">Shop</a>
+          <a href="categories.html">Categories</a>
+          <a href="custom-cake.html">Custom Cake</a>
+          <a href="faq.html">FAQ</a>
+        </div>
+        <div>
+          <h4>Customer Care</h4>
+          <a href="account.html">My Account</a>
+          <a href="orders.html">Track Order</a>
+          <a href="contact.html">Contact</a>
+          <a href="privacy.html">Privacy Policy</a>
+        </div>
+        <div>
+          <h4>Payments</h4>
+          <p>bKash • Nagad • Rocket • Visa • Mastercard • Stripe</p>
+        </div>
+      </div>
+      <div class="copyright">© 2026 The Sugar Atelier. All rights reserved.</div>
+    </footer>
+
+    <div id="toast" class="toast"></div>
+    <script src="js/app.js"></script>
+    <script>
+      // Load saved user info
+      function loadAccountUser() {
+        const saved = JSON.parse(localStorage.getItem("sugarAtelierCurrentUser") || "null");
+        if (saved && saved.name) {
+          const heroName = document.getElementById("heroUserName");
+          const heroSub = document.getElementById("heroUserSub");
+          const profName = document.getElementById("profName");
+          const profEmail = document.getElementById("profEmail");
+          const profPhone = document.getElementById("profPhone");
+          const avatarInitials = document.getElementById("avatarInitials");
+
+          if (heroName) heroName.textContent = saved.name;
+          if (profName) profName.value = saved.name;
+          if (saved.email) {
+            if (heroSub) heroSub.textContent = saved.email + " • Member since March 2026";
+            if (profEmail) profEmail.value = saved.email;
+          }
+          if (saved.phone && profPhone) profPhone.value = saved.phone;
+          if (avatarInitials) {
+            const parts = saved.name.split(" ");
+            avatarInitials.textContent = parts.length > 1 ? (parts[0][0] + parts[1][0]).toUpperCase() : saved.name.slice(0, 2).toUpperCase();
+          }
+        }
+      }
+      loadAccountUser();
+
+      // Update wishlist count and orders in stats card
+      function updateAccountStats() {
+        const wish = JSON.parse(localStorage.getItem("sugarAtelierWishlist") || "[]");
+        const wishEl = document.getElementById("accWishCount");
+        if (wishEl) wishEl.textContent = wish.length;
+
+        const orders = JSON.parse(localStorage.getItem("sugarAtelierOrders") || "[]");
+        const totalOrders = 2 + orders.length;
+        const orderStat = document.querySelector(".acc-stat-card .stat-val");
+        if (orderStat && orderStat.textContent.includes("Orders")) {
+          orderStat.textContent = totalOrders + " Orders";
+        }
+      }
+      updateAccountStats();
+
+      // Profile form submission handler
+      document.getElementById("profileForm")?.addEventListener("submit", function(e) {
+        e.preventDefault();
+        const name = document.getElementById("profName").value.trim();
+        const email = document.getElementById("profEmail").value.trim();
+        const phone = document.getElementById("profPhone")?.value.trim() || "";
+        const p1 = document.getElementById("newPassword").value;
+        const p2 = document.getElementById("confirmNewPassword").value;
+
+        if (p1 && p1 !== p2) {
+          toast("Passwords do not match!");
+          return;
+        }
+
+        const btn = document.getElementById("saveProfBtn");
+        const orig = btn.textContent;
+        btn.textContent = "Saving...";
+        btn.disabled = true;
+
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.disabled = false;
+
+          // Save to localStorage
+          try {
+            localStorage.setItem("sugarAtelierCurrentUser", JSON.stringify({ name, email, phone }));
+          } catch (err) {}
+
+          // Update hero text
+          document.getElementById("heroUserName").textContent = name;
+          document.getElementById("heroUserSub").textContent = email + " • Member since March 2026";
+          
+          // Update avatar initials
+          const parts = name.split(" ");
+          const initials = parts.length > 1 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.slice(0, 2).toUpperCase();
+          document.getElementById("avatarInitials").textContent = initials;
+
+          toast("Profile updated successfully!");
+        }, 600);
+      });
+
+      // Photo upload demo
+      document.getElementById("avatarEditBtn")?.addEventListener("click", function() {
+        toast("Photo upload modal opened (Demo)");
+      });
+    </script>
+  </body>
+</html>
