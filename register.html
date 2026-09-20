@@ -1,1410 +1,1442 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <meta name="description" content="Create your account at The Sugar Atelier. Enjoy exclusive cake collections, birthday treats, and express ordering.">
-    <title>Create Account | The Sugar Atelier</title>
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-      /* ── Sign Up Page Luxury Override ── */
-      body {
-        background: var(--bg);
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="description"
+    content="Create your account at The Sugar Atelier. Enjoy exclusive cake collections, birthday treats, and express ordering.">
+  <title>Create Account | The Sugar Atelier</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── Sign Up Page Luxury Override ── */
+    body {
+      background: var(--bg);
+    }
+
+    .signup-page {
+      min-height: calc(100vh - 78px);
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+    }
+
+    /* ── Left visual panel ── */
+    .signup-visual {
+      background: linear-gradient(145deg, #421328 0%, #6e294b 40%, #8B3A62 70%, #b85d85 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 60px 55px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .signup-visual::before {
+      content: '';
+      position: absolute;
+      width: 480px;
+      height: 480px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 70%);
+      top: -120px;
+      right: -100px;
+      pointer-events: none;
+    }
+
+    .signup-visual::after {
+      content: '';
+      position: absolute;
+      width: 380px;
+      height: 380px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(247, 214, 224, 0.15) 0%, rgba(247, 214, 224, 0) 70%);
+      bottom: -80px;
+      left: -80px;
+      pointer-events: none;
+    }
+
+    .vis-glow-ring {
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 1px dashed rgba(255, 255, 255, 0.12);
+      top: 35%;
+      right: -60px;
+      pointer-events: none;
+      animation: rotateRing 40s linear infinite;
+    }
+
+    @keyframes rotateRing {
+      from {
+        transform: rotate(0deg);
       }
 
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .signup-visual .vis-logo {
+      font-family: "Playfair Display", serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+      position: relative;
+      z-index: 2;
+      display: inline-block;
+    }
+
+    .signup-visual .vis-logo span {
+      color: #f9c8d9;
+    }
+
+    .signup-visual .vis-body {
+      position: relative;
+      z-index: 2;
+      margin: 30px 0;
+    }
+
+    .signup-visual .vis-tag {
+      font-size: 11px;
+      letter-spacing: 3px;
+      font-weight: 800;
+      color: #f9c8d9;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 5px 12px;
+      border-radius: 20px;
+      backdrop-filter: blur(8px);
+    }
+
+    .signup-visual h2 {
+      font-family: "Playfair Display", serif;
+      font-size: clamp(32px, 3.4vw, 46px);
+      color: #fff;
+      line-height: 1.18;
+      margin: 0 0 16px;
+      font-weight: 700;
+    }
+
+    .signup-visual p {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 15px;
+      line-height: 1.7;
+      max-width: 400px;
+      margin: 0;
+    }
+
+    .vis-features {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      position: relative;
+      z-index: 2;
+      margin-top: 26px;
+    }
+
+    .vis-feature {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: rgba(255, 255, 255, 0.92);
+      font-size: 14px;
+      font-weight: 500;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(6px);
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+
+    .vis-feature:hover {
+      transform: translateX(4px);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .vis-feature-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.16);
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .vis-trust {
+      position: relative;
+      z-index: 2;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      padding-top: 22px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #f9dfe8;
+      font-size: 13px;
+    }
+
+    .vis-trust .stars {
+      color: #ffd166;
+      font-size: 15px;
+      letter-spacing: 2px;
+    }
+
+    /* ── Right form panel ── */
+    .signup-form-panel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 50px 45px;
+      background: #fff;
+    }
+
+    .signup-box {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .signup-box .form-eyebrow {
+      font-size: 11px;
+      letter-spacing: 3px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .signup-box h1 {
+      font-family: "Playfair Display", serif;
+      font-size: 34px;
+      color: var(--text);
+      margin: 0 0 6px;
+      line-height: 1.2;
+    }
+
+    .signup-box .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0 0 24px;
+    }
+
+    /* ── Social sign up buttons ── */
+    .social-btns {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .social-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text);
+      background: #fff;
+      cursor: pointer;
+      transition: all .2s ease;
+      text-decoration: none;
+      width: 100%;
+    }
+
+    .social-btn:hover {
+      border-color: var(--primary);
+      background: #faf4f7;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(139, 58, 98, 0.08);
+    }
+
+    .social-btn svg {
+      width: 19px;
+      height: 19px;
+      flex-shrink: 0;
+    }
+
+    /* ── Divider ── */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 22px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+    }
+
+    .or-divider::before,
+    .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Form Layout ── */
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap input {
+      width: 100%;
+      padding: 13px 42px 13px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 11px;
+      font-size: 14px;
+      color: var(--text);
+      background: #fdfafb;
+      transition: border-color .2s, box-shadow .2s, background .2s;
+      outline: none;
+    }
+
+    .input-wrap input:focus {
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(139, 58, 98, 0.08);
+    }
+
+    .input-wrap .input-icon {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9e8e95;
+      font-size: 16px;
+      pointer-events: none;
+    }
+
+    .toggle-pass-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #9e8e95;
+      cursor: pointer;
+      padding: 4px;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .toggle-pass-btn:hover {
+      color: var(--primary);
+    }
+
+    /* ── Password Strength Bar ── */
+    .pass-strength {
+      margin-top: 6px;
+    }
+
+    .strength-track {
+      height: 4px;
+      background: #eee4e8;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+    }
+
+    .strength-fill {
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease, background 0.3s ease;
+    }
+
+    .strength-text {
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 4px;
+      display: block;
+      color: var(--muted);
+    }
+
+    /* ── Terms agreement ── */
+    .terms-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 18px 0 22px;
+    }
+
+    .terms-row input[type="checkbox"] {
+      width: 17px;
+      height: 17px;
+      accent-color: var(--primary);
+      cursor: pointer;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .terms-row label {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.5;
+      cursor: pointer;
+    }
+
+    .terms-row a {
+      color: var(--primary);
+      font-weight: 700;
+      text-decoration: underline;
+    }
+
+    /* ── Submit button ── */
+    .signup-submit {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #8B3A62 0%, #a84777 50%, #c46a92 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .25s ease, box-shadow .25s ease;
+      letter-spacing: 0.5px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(139, 58, 98, 0.28);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .signup-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 34px rgba(139, 58, 98, 0.38);
+    }
+
+    .signup-submit:active {
+      transform: translateY(0);
+    }
+
+    /* ── Login link ── */
+    .login-link-row {
+      text-align: center;
+      font-size: 13.5px;
+      color: var(--muted);
+    }
+
+    .login-link-row a {
+      color: var(--primary);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .login-link-row a:hover {
+      text-decoration: underline;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
       .signup-page {
-        min-height: calc(100vh - 78px);
-        display: grid;
-        grid-template-columns: 1.05fr 1fr;
+        grid-template-columns: 1fr;
       }
 
-      /* ── Left visual panel ── */
       .signup-visual {
-        background: linear-gradient(145deg, #421328 0%, #6e294b 40%, #8B3A62 70%, #b85d85 100%);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        padding: 60px 55px;
-        position: relative;
-        overflow: hidden;
+        padding: 40px 30px;
       }
 
-      .signup-visual::before {
-        content: '';
-        position: absolute;
-        width: 480px;
-        height: 480px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 70%);
-        top: -120px;
-        right: -100px;
-        pointer-events: none;
-      }
-
-      .signup-visual::after {
-        content: '';
-        position: absolute;
-        width: 380px;
-        height: 380px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(247,214,224,0.15) 0%, rgba(247,214,224,0) 70%);
-        bottom: -80px;
-        left: -80px;
-        pointer-events: none;
-      }
-
-      .vis-glow-ring {
-        position: absolute;
-        width: 280px;
-        height: 280px;
-        border-radius: 50%;
-        border: 1px dashed rgba(255,255,255,0.12);
-        top: 35%;
-        right: -60px;
-        pointer-events: none;
-        animation: rotateRing 40s linear infinite;
-      }
-
-      @keyframes rotateRing {
-        from { transform: rotate(0deg); }
-        to   { transform: rotate(360deg); }
-      }
-
-      .signup-visual .vis-logo {
-        font-family: "Playfair Display", serif;
-        font-size: 26px;
-        font-weight: 700;
-        color: #fff;
-        text-decoration: none;
-        position: relative;
-        z-index: 2;
-        display: inline-block;
-      }
-
-      .signup-visual .vis-logo span {
-        color: #f9c8d9;
-      }
-
-      .signup-visual .vis-body {
-        position: relative;
-        z-index: 2;
-        margin: 30px 0;
-      }
-
-      .signup-visual .vis-tag {
-        font-size: 11px;
-        letter-spacing: 3px;
-        font-weight: 800;
-        color: #f9c8d9;
-        text-transform: uppercase;
-        margin-bottom: 16px;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: rgba(255, 255, 255, 0.1);
-        padding: 5px 12px;
-        border-radius: 20px;
-        backdrop-filter: blur(8px);
-      }
-
-      .signup-visual h2 {
-        font-family: "Playfair Display", serif;
-        font-size: clamp(32px, 3.4vw, 46px);
-        color: #fff;
-        line-height: 1.18;
-        margin: 0 0 16px;
-        font-weight: 700;
-      }
-
-      .signup-visual p {
-        color: rgba(255,255,255,0.8);
-        font-size: 15px;
-        line-height: 1.7;
-        max-width: 400px;
-        margin: 0;
+      .signup-visual .vis-body h2 {
+        font-size: 30px;
       }
 
       .vis-features {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        position: relative;
-        z-index: 2;
-        margin-top: 26px;
+        display: none;
       }
 
-      .vis-feature {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        color: rgba(255,255,255,0.92);
-        font-size: 14px;
-        font-weight: 500;
-        background: rgba(255,255,255,0.06);
-        padding: 12px 16px;
-        border-radius: 12px;
-        border: 1px solid rgba(255,255,255,0.08);
-        backdrop-filter: blur(6px);
-        transition: transform 0.25s ease, background 0.25s ease;
-      }
-
-      .vis-feature:hover {
-        transform: translateX(4px);
-        background: rgba(255,255,255,0.1);
-      }
-
-      .vis-feature-icon {
-        width: 36px;
-        height: 36px;
-        background: rgba(255,255,255,0.16);
-        border-radius: 10px;
-        display: grid;
-        place-items: center;
-        font-size: 17px;
-        flex-shrink: 0;
-      }
-
-      .vis-trust {
-        position: relative;
-        z-index: 2;
-        border-top: 1px solid rgba(255,255,255,0.12);
-        padding-top: 22px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: #f9dfe8;
-        font-size: 13px;
-      }
-
-      .vis-trust .stars {
-        color: #ffd166;
-        font-size: 15px;
-        letter-spacing: 2px;
-      }
-
-      /* ── Right form panel ── */
       .signup-form-panel {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 50px 45px;
-        background: #fff;
+        padding: 40px 24px;
       }
 
-      .signup-box {
-        width: 100%;
-        max-width: 480px;
-      }
-
-      .signup-box .form-eyebrow {
-        font-size: 11px;
-        letter-spacing: 3px;
-        font-weight: 800;
-        color: var(--primary);
-        text-transform: uppercase;
-        display: block;
-        margin-bottom: 8px;
-      }
-
-      .signup-box h1 {
-        font-family: "Playfair Display", serif;
-        font-size: 34px;
-        color: var(--text);
-        margin: 0 0 6px;
-        line-height: 1.2;
-      }
-
-      .signup-box .subtitle {
-        color: var(--muted);
-        font-size: 14px;
-        margin: 0 0 24px;
-      }
-
-      /* ── Social sign up buttons ── */
-      .social-btns {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 10px;
-        margin-bottom: 22px;
-      }
-
-      .social-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        border: 1.5px solid var(--border);
-        border-radius: 12px;
-        padding: 12px 16px;
-        font-size: 13.5px;
-        font-weight: 600;
-        color: var(--text);
-        background: #fff;
-        cursor: pointer;
-        transition: all .2s ease;
-        text-decoration: none;
-        width: 100%;
-      }
-
-      .social-btn:hover {
-        border-color: var(--primary);
-        background: #faf4f7;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 14px rgba(139, 58, 98, 0.08);
-      }
-
-      .social-btn svg {
-        width: 19px;
-        height: 19px;
-        flex-shrink: 0;
-      }
-
-      /* ── Divider ── */
-      .or-divider {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        margin-bottom: 22px;
-        color: var(--muted);
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 1.5px;
-      }
-
-      .or-divider::before,
-      .or-divider::after {
-        content: '';
-        flex: 1;
-        height: 1px;
-        background: var(--border);
-      }
-
-      /* ── Form Layout ── */
       .form-row-2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
       }
 
-      .input-group {
-        margin-bottom: 16px;
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ── OTP Verification Modal Styles ── */
+    .otp-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 8, 14, 0.68);
+      backdrop-filter: blur(8px);
+      z-index: 10000;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s ease;
+    }
+
+    .otp-modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .otp-modal-card {
+      background: #ffffff;
+      border-radius: 24px;
+      max-width: 440px;
+      width: 100%;
+      padding: 34px 28px;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+      position: relative;
+      transform: translateY(20px) scale(0.96);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid rgba(139, 58, 98, 0.12);
+    }
+
+    .otp-modal-overlay.active .otp-modal-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .otp-close-btn {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid #ebdbe0;
+      background: #faf4f6;
+      color: #756B6B;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .otp-close-btn:hover {
+      background: #f0e1e6;
+      color: var(--primary);
+    }
+
+    .otp-icon-wrap {
+      width: 66px;
+      height: 66px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(139, 58, 98, 0.12) 0%, rgba(217, 154, 171, 0.25) 100%);
+      color: var(--primary);
+      display: grid;
+      place-items: center;
+      margin: 0 auto 16px;
+    }
+
+    .otp-modal-card h2 {
+      font-family: var(--font-heading);
+      font-size: 23px;
+      color: var(--dark);
+      margin: 0 0 8px;
+    }
+
+    .otp-instruction {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin: 0 0 16px;
+    }
+
+    .otp-code-notice {
+      background: linear-gradient(135deg, #fff5f8 0%, #faedf2 100%);
+      border: 1.5px dashed rgba(139, 58, 98, 0.3);
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: #4a2434;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .otp-code-notice code {
+      font-family: monospace;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 2px;
+      background: #fff;
+      padding: 2px 7px;
+      border-radius: 6px;
+      border: 1px solid rgba(139, 58, 98, 0.2);
+    }
+
+    .otp-copy-btn {
+      background: #fff;
+      border: 1px solid rgba(139, 58, 98, 0.25);
+      color: var(--primary);
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .otp-copy-btn:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .otp-inputs-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 22px;
+    }
+
+    .otp-digit {
+      width: 48px;
+      height: 54px;
+      border-radius: 12px;
+      border: 1.5px solid #dfd2d6;
+      background: #faf7f8;
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+      color: var(--dark);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .otp-digit:focus {
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(139, 58, 98, 0.15);
+    }
+
+    .otp-inputs-row.shake {
+      animation: shake 0.4s ease-in-out;
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
       }
 
-      .input-group label {
-        display: block;
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--text);
-        margin-bottom: 6px;
+      20%,
+      60% {
+        transform: translateX(-8px);
       }
 
-      .input-wrap {
-        position: relative;
+      40%,
+      80% {
+        transform: translateX(8px);
       }
+    }
 
-      .input-wrap input {
-        width: 100%;
-        padding: 13px 42px 13px 14px;
-        border: 1.5px solid var(--border);
-        border-radius: 11px;
-        font-size: 14px;
-        color: var(--text);
-        background: #fdfafb;
-        transition: border-color .2s, box-shadow .2s, background .2s;
-        outline: none;
-      }
+    .btn-verify-otp {
+      width: 100%;
+      padding: 13.5px;
+      background: linear-gradient(135deg, #8B3A62 0%, #6e294b 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 14px rgba(139, 58, 98, 0.25);
+    }
 
-      .input-wrap input:focus {
-        border-color: var(--primary);
-        background: #fff;
-        box-shadow: 0 0 0 4px rgba(139,58,98,0.08);
-      }
+    .btn-verify-otp:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(139, 58, 98, 0.35);
+    }
 
-      .input-wrap .input-icon {
-        position: absolute;
-        right: 14px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #9e8e95;
-        font-size: 16px;
-        pointer-events: none;
-      }
+    .btn-verify-otp:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
 
-      .toggle-pass-btn {
-        position: absolute;
-        right: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: none;
-        color: #9e8e95;
-        cursor: pointer;
-        padding: 4px;
-        font-size: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: color 0.2s;
-      }
+    .otp-footer-meta {
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
 
-      .toggle-pass-btn:hover {
-        color: var(--primary);
-      }
+    .btn-resend-otp {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      padding: 0;
+    }
 
-      /* ── Password Strength Bar ── */
-      .pass-strength {
-        margin-top: 6px;
-      }
+    .btn-resend-otp:disabled {
+      color: var(--muted);
+      cursor: not-allowed;
+    }
+  </style>
+</head>
 
-      .strength-track {
-        height: 4px;
-        background: #eee4e8;
-        border-radius: 4px;
-        overflow: hidden;
-        display: flex;
-      }
-
-      .strength-fill {
-        height: 100%;
-        width: 0%;
-        transition: width 0.3s ease, background 0.3s ease;
-      }
-
-      .strength-text {
-        font-size: 11px;
-        font-weight: 600;
-        margin-top: 4px;
-        display: block;
-        color: var(--muted);
-      }
-
-      /* ── Terms agreement ── */
-      .terms-row {
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-        margin: 18px 0 22px;
-      }
-
-      .terms-row input[type="checkbox"] {
-        width: 17px;
-        height: 17px;
-        accent-color: var(--primary);
-        cursor: pointer;
-        margin-top: 2px;
-        flex-shrink: 0;
-      }
-
-      .terms-row label {
-        font-size: 12.5px;
-        color: var(--muted);
-        line-height: 1.5;
-        cursor: pointer;
-      }
-
-      .terms-row a {
-        color: var(--primary);
-        font-weight: 700;
-        text-decoration: underline;
-      }
-
-      /* ── Submit button ── */
-      .signup-submit {
-        width: 100%;
-        padding: 15px;
-        background: linear-gradient(135deg, #8B3A62 0%, #a84777 50%, #c46a92 100%);
-        color: #fff;
-        border: none;
-        border-radius: 12px;
-        font-size: 15px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: transform .25s ease, box-shadow .25s ease;
-        letter-spacing: 0.5px;
-        margin-bottom: 20px;
-        box-shadow: 0 8px 24px rgba(139,58,98,0.28);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-      }
-
-      .signup-submit:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 14px 34px rgba(139,58,98,0.38);
-      }
-
-      .signup-submit:active {
-        transform: translateY(0);
-      }
-
-      /* ── Login link ── */
-      .login-link-row {
-        text-align: center;
-        font-size: 13.5px;
-        color: var(--muted);
-      }
-
-      .login-link-row a {
-        color: var(--primary);
-        font-weight: 700;
-        text-decoration: none;
-      }
-
-      .login-link-row a:hover {
-        text-decoration: underline;
-      }
-
-      /* ── Responsive ── */
-      @media (max-width: 900px) {
-        .signup-page {
-          grid-template-columns: 1fr;
-        }
-
-        .signup-visual {
-          padding: 40px 30px;
-        }
-
-        .signup-visual .vis-body h2 {
-          font-size: 30px;
-        }
-
-        .vis-features {
-          display: none;
-        }
-
-        .signup-form-panel {
-          padding: 40px 24px;
-        }
-
-        .form-row-2 {
-          grid-template-columns: 1fr;
-          gap: 0;
-        }
-      }
-
-      @keyframes spin {
-        from { transform: rotate(0deg); }
-        to   { transform: rotate(360deg); }
-      }
-
-      /* ── OTP Verification Modal Styles ── */
-      .otp-modal-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(20, 8, 14, 0.68);
-        backdrop-filter: blur(8px);
-        z-index: 10000;
-        display: grid;
-        place-items: center;
-        padding: 20px;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.25s ease;
-      }
-      .otp-modal-overlay.active {
-        opacity: 1;
-        visibility: visible;
-      }
-      .otp-modal-card {
-        background: #ffffff;
-        border-radius: 24px;
-        max-width: 440px;
-        width: 100%;
-        padding: 34px 28px;
-        text-align: center;
-        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
-        position: relative;
-        transform: translateY(20px) scale(0.96);
-        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        border: 1px solid rgba(139, 58, 98, 0.12);
-      }
-      .otp-modal-overlay.active .otp-modal-card {
-        transform: translateY(0) scale(1);
-      }
-      .otp-close-btn {
-        position: absolute;
-        top: 18px;
-        right: 18px;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        border: 1px solid #ebdbe0;
-        background: #faf4f6;
-        color: #756B6B;
-        cursor: pointer;
-        display: grid;
-        place-items: center;
-        font-size: 14px;
-        transition: all 0.2s;
-      }
-      .otp-close-btn:hover {
-        background: #f0e1e6;
-        color: var(--primary);
-      }
-      .otp-icon-wrap {
-        width: 66px;
-        height: 66px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, rgba(139, 58, 98, 0.12) 0%, rgba(217, 154, 171, 0.25) 100%);
-        color: var(--primary);
-        display: grid;
-        place-items: center;
-        margin: 0 auto 16px;
-      }
-      .otp-modal-card h2 {
-        font-family: var(--font-heading);
-        font-size: 23px;
-        color: var(--dark);
-        margin: 0 0 8px;
-      }
-      .otp-instruction {
-        font-size: 13.5px;
-        color: var(--muted);
-        line-height: 1.5;
-        margin: 0 0 16px;
-      }
-      .otp-code-notice {
-        background: linear-gradient(135deg, #fff5f8 0%, #faedf2 100%);
-        border: 1.5px dashed rgba(139, 58, 98, 0.3);
-        border-radius: 12px;
-        padding: 10px 14px;
-        margin-bottom: 20px;
-        font-size: 13px;
-        color: #4a2434;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-      }
-      .otp-code-notice code {
-        font-family: monospace;
-        font-size: 15px;
-        font-weight: 700;
-        color: var(--primary);
-        letter-spacing: 2px;
-        background: #fff;
-        padding: 2px 7px;
-        border-radius: 6px;
-        border: 1px solid rgba(139, 58, 98, 0.2);
-      }
-      .otp-copy-btn {
-        background: #fff;
-        border: 1px solid rgba(139, 58, 98, 0.25);
-        color: var(--primary);
-        font-size: 11.5px;
-        font-weight: 700;
-        padding: 5px 10px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.2s;
-        white-space: nowrap;
-      }
-      .otp-copy-btn:hover {
-        background: var(--primary);
-        color: #fff;
-      }
-      .otp-inputs-row {
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-        margin-bottom: 22px;
-      }
-      .otp-digit {
-        width: 48px;
-        height: 54px;
-        border-radius: 12px;
-        border: 1.5px solid #dfd2d6;
-        background: #faf7f8;
-        font-size: 22px;
-        font-weight: 700;
-        text-align: center;
-        color: var(--dark);
-        outline: none;
-        transition: all 0.2s;
-      }
-      .otp-digit:focus {
-        border-color: var(--primary);
-        background: #fff;
-        box-shadow: 0 0 0 3px rgba(139, 58, 98, 0.15);
-      }
-      .otp-inputs-row.shake {
-        animation: shake 0.4s ease-in-out;
-      }
-      @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        20%, 60% { transform: translateX(-8px); }
-        40%, 80% { transform: translateX(8px); }
-      }
-      .btn-verify-otp {
-        width: 100%;
-        padding: 13.5px;
-        background: linear-gradient(135deg, #8B3A62 0%, #6e294b 100%);
-        color: #fff;
-        border: none;
-        border-radius: 12px;
-        font-size: 15px;
-        font-weight: 700;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        transition: all 0.2s;
-        box-shadow: 0 4px 14px rgba(139, 58, 98, 0.25);
-      }
-      .btn-verify-otp:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 6px 18px rgba(139, 58, 98, 0.35);
-      }
-      .btn-verify-otp:disabled {
-        opacity: 0.65;
-        cursor: not-allowed;
-      }
-      .otp-footer-meta {
-        margin-top: 16px;
-        font-size: 13px;
-        color: var(--muted);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-      }
-      .btn-resend-otp {
-        background: none;
-        border: none;
-        color: var(--primary);
-        font-weight: 700;
-        font-size: 13px;
-        cursor: pointer;
-        padding: 0;
-      }
-      .btn-resend-otp:disabled {
-        color: var(--muted);
-        cursor: not-allowed;
-      }
-    </style>
-  </head>
-  <body>
-    <header class="site-header">
-      <div class="container nav-wrap">
-        <a class="logo" href="index.html">The Sugar <span>Atelier</span></a>
-        <nav>
-          <a href="index.html">Home</a>
-          <a href="shop.html">Shop</a>
-          <a href="categories.html">Categories</a>
-          <a href="about.html">About</a>
-          <a href="contact.html">Contact</a>
-        </nav>
-        <div class="nav-actions">
-          <a href="search.html" aria-label="Search">⌕</a>
-          <a href="wishlist.html" aria-label="Wishlist">♡</a>
-          <a href="cart.html" aria-label="Cart">🛒 <span class="cart-count">0</span></a>
-          <a href="account.html" aria-label="Account">♙</a>
-          <a class="btn btn-outline" href="login.html">Sign In</a>
-        </div>
-      </div>
-    </header>
-
-    <main>
-      <div class="signup-page">
-
-        <!-- Left Visual Atelier Experience Panel -->
-        <div class="signup-visual">
-          <div class="vis-glow-ring"></div>
-          <div>
-            <a class="vis-logo" href="index.html">The Sugar <span>Atelier</span></a>
-          </div>
-
-          <div class="vis-body">
-            <span class="vis-tag">✨ ARTISAN CAKE CLUB</span>
-            <h2>Freshly Baked Happiness,<br>Crafted for You</h2>
-            <p>Join thousands of cake lovers who enjoy freshly baked artisan celebrations, priority delivery, and tailor-made dessert perks.</p>
-
-            <div class="vis-features">
-              <div class="vis-feature">
-                <div class="vis-feature-icon">🎂</div>
-                <div>
-                  <strong>Birthday Month Surprise</strong>
-                  <div style="font-size:12px;opacity:0.8;">Special complimentary treat on your birthday</div>
-                </div>
-              </div>
-              <div class="vis-feature">
-                <div class="vis-feature-icon">⚡</div>
-                <div>
-                  <strong>Priority Kitchen & Express Delivery</strong>
-                  <div style="font-size:12px;opacity:0.8;">Jump the queue for same-day celebration bakes</div>
-                </div>
-              </div>
-              <div class="vis-feature">
-                <div class="vis-feature-icon">♡</div>
-                <div>
-                  <strong>Wishlist & 1-Click Ordering</strong>
-                  <div style="font-size:12px;opacity:0.8;">Save favourite designs and repeat past orders easily</div>
-                </div>
-              </div>
-              <div class="vis-feature">
-                <div class="vis-feature-icon">💎</div>
-                <div>
-                  <strong>Secret Member Offers & 15% Off</strong>
-                  <div style="font-size:12px;opacity:0.8;">Use SWEET15 instantly upon registration</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="vis-trust">
-            <div class="stars">★★★★★</div>
-            <span>Rated <strong>4.9 / 5.0</strong> by 2,400+ cake enthusiasts</span>
-          </div>
-        </div>
-
-        <!-- Right Sign Up Form Panel -->
-        <div class="signup-form-panel">
-          <div class="signup-box">
-            <span class="form-eyebrow">NEW CUSTOMER REGISTRATION</span>
-            <h1>Create Account</h1>
-            <p class="subtitle">Already have an account? <a href="login.html" style="color:var(--primary);font-weight:700;">Sign in here →</a></p>
-
-            <!-- Social Sign Up -->
-            <div class="social-btns">
-              <button type="button" class="social-btn" id="googleSignupBtn">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                </svg>
-                Sign up with Google
-              </button>
-            </div>
-
-            <div class="or-divider">OR FILL IN YOUR DETAILS</div>
-
-            <!-- Registration Form -->
-            <form id="registerForm">
-              <!-- Full Name -->
-              <div class="input-group">
-                <label for="regName">Full Name</label>
-                <div class="input-wrap">
-                  <input
-                    id="regName"
-                    name="name"
-                    type="text"
-                    placeholder="e.g. Ayesha Rahman"
-                    required
-                    autocomplete="name"
-                  >
-                  <span class="input-icon">👤</span>
-                </div>
-              </div>
-
-              <!-- Email & Phone row -->
-              <div class="form-row-2">
-                <div class="input-group">
-                  <label for="regEmail">Email Address</label>
-                  <div class="input-wrap">
-                    <input
-                      id="regEmail"
-                      name="email"
-                      type="email"
-                      placeholder="name@example.com"
-                      required
-                      autocomplete="email"
-                    >
-                    <span class="input-icon">✉</span>
-                  </div>
-                </div>
-
-                <div class="input-group">
-                  <label for="regPhone">Phone Number</label>
-                  <div class="input-wrap">
-                    <input
-                      id="regPhone"
-                      name="phone"
-                      type="tel"
-                      placeholder="01XXXXXXXXX"
-                      required
-                      autocomplete="tel"
-                    >
-                    <span class="input-icon">📞</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Password & Confirm Password row -->
-              <div class="form-row-2">
-                <div class="input-group">
-                  <label for="regPassword">Create Password</label>
-                  <div class="input-wrap">
-                    <input
-                      id="regPassword"
-                      name="password"
-                      type="password"
-                      placeholder="Minimum 6 characters"
-                      required
-                      autocomplete="new-password"
-                    >
-                    <button type="button" class="toggle-pass-btn" data-target="regPassword" aria-label="Toggle password visibility">👁</button>
-                  </div>
-                </div>
-
-                <div class="input-group">
-                  <label for="regConfirmPassword">Confirm Password</label>
-                  <div class="input-wrap">
-                    <input
-                      id="regConfirmPassword"
-                      name="confirm_password"
-                      type="password"
-                      placeholder="Re-enter password"
-                      required
-                      autocomplete="new-password"
-                    >
-                    <button type="button" class="toggle-pass-btn" data-target="regConfirmPassword" aria-label="Toggle password visibility">👁</button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Live Strength Indicator -->
-              <div class="pass-strength">
-                <div class="strength-track">
-                  <div class="strength-fill" id="strengthFill"></div>
-                </div>
-                <span class="strength-text" id="strengthText">Password strength: enter password</span>
-              </div>
-
-              <!-- Terms agreement -->
-              <div class="terms-row">
-                <input type="checkbox" id="agreeTerms" required checked>
-                <label for="agreeTerms">
-                  I agree to The Sugar Atelier <a href="privacy.html">Terms of Service</a> & <a href="privacy.html">Privacy Policy</a>.
-                </label>
-              </div>
-
-              <!-- Submit Button -->
-              <button type="submit" class="signup-submit" id="regSubmitBtn">
-                <span>Create Free Account</span> →
-              </button>
-
-              <!-- Persistent error banner -->
-              <div id="regErrorMsg" style="display:none;margin-top:12px;padding:12px 16px;border-radius:10px;background:#fde8e8;color:#9b1c1c;border:1px solid #f8b4b4;font-size:13px;line-height:1.5;font-weight:600;"></div>
-
-              <div class="login-link-row">
-                Already part of the family? <a href="login.html">Sign In to your account →</a>
-              </div>
-            </form>
-          </div>
-        </div>
-
-      </div>
-    </main>
-
-    <footer class="footer">
-      <div class="container footer-grid">
-        <div>
-          <a class="logo" href="index.html">The Sugar <span>Atelier</span></a>
-          <p>Premium handcrafted cakes for every celebration.</p>
-        <div class="footer-social">
-          <a href="https://facebook.com" class="social-fb" target="_blank" rel="noopener" aria-label="Facebook">
-            <svg width="17" height="17" viewBox="-2 -2 28 28" fill="currentColor" aria-hidden="true"><path d="M9 8H6v4h3v12h5V12h3.642L18 8h-4V6.333C14 5.374 14.5 5 15.5 5H18V0h-3.808C10.592 0 9 1.583 9 4.615V8z"/></svg>
-          </a>
-          <a href="https://instagram.com" class="social-ig" target="_blank" rel="noopener" aria-label="Instagram">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-          </a>
-          <a href="https://wa.me/8801700000000" class="social-wa" target="_blank" rel="noopener" aria-label="WhatsApp">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.031 0C5.396 0 .029 5.367.029 12.003c0 2.123.554 4.197 1.609 6.024L0 24l6.163-1.613a11.968 11.968 0 005.868 1.534h.005c6.633 0 12.001-5.367 12.001-12.003C24.037 5.367 18.67 0 12.031 0zm0 21.99a9.972 9.972 0 01-5.084-1.39l-.365-.216-3.778.99.99-3.68-.237-.377a9.96 9.96 0 01-1.527-5.314c0-5.506 4.48-9.986 9.992-9.986 2.668 0 5.176 1.038 7.062 2.925 1.887 1.887 2.926 4.396 2.926 7.066 0 5.508-4.48 9.988-9.979 9.988zm5.474-7.487c-.3-.15-1.776-.876-2.051-.976-.275-.1-.475-.15-.675.15s-.775.976-.95 1.176c-.175.2-.35.225-.65.075s-1.268-.468-2.416-1.492c-.893-.797-1.496-1.782-1.671-2.082-.175-.3-.019-.462.131-.612.135-.135.3-.35.45-.525.15-.175.2-.3.3-.5.1-.2.05-.375-.025-.525s-.675-1.626-.925-2.226c-.244-.585-.491-.506-.675-.515-.175-.01-.375-.01-.575-.01s-.525.075-.8.375c-.275.3-1.05 1.026-1.05 2.502s1.075 2.902 1.225 3.102c.15.2 2.116 3.232 5.127 4.533.716.31 1.275.495 1.71.634.719.229 1.373.197 1.891.12.577-.086 1.776-.725 2.026-1.426.25-.7.25-1.301.175-1.426-.075-.125-.275-.2-.575-.35z"/></svg>
-          </a>
-        </div>
-        </div>
-        <div>
-          <h4>Quick Links</h4>
-          <a href="shop.html">Shop</a>
-          <a href="categories.html">Categories</a>
-          <a href="custom-cake.html">Custom Cake</a>
-          <a href="faq.html">FAQ</a>
-        </div>
-        <div>
-          <h4>Customer Care</h4>
-          <a href="account.html">My Account</a>
-          <a href="orders.html">Track Order</a>
-          <a href="contact.html">Contact</a>
-          <a href="privacy.html">Privacy Policy</a>
-        </div>
-        <div>
-          <h4>Payments</h4>
-          <p>bKash • Nagad • Rocket • Visa • Mastercard • Stripe</p>
-        </div>
-      </div>
-      <div class="copyright">© 2026 The Sugar Atelier. All rights reserved.</div>
-    </footer>
-
-    <div id="toast" class="toast"></div>
-
-    <!-- ── Interactive OTP Verification Modal ── -->
-    <div id="otpModal" class="otp-modal-overlay">
-      <div class="otp-modal-card">
-        <button type="button" class="otp-close-btn" id="closeOtpModalBtn" aria-label="Close">✕</button>
-        <div class="otp-icon-wrap">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-            <line x1="12" y1="18" x2="12.01" y2="18"></line>
-          </svg>
-        </div>
-        <h2>Verify Your Email Address</h2>
-        <p class="otp-instruction">
-          A 6-digit verification code has been sent to:<br>
-          <strong id="otpTargetDisplay" style="color:var(--primary);font-size:14px;"></strong>
-          <br><span style="font-size:12px;color:var(--muted);">Please check your inbox (and spam folder).</span>
-        </p>
-
-        <div class="otp-inputs-row" id="otpInputsRow">
-          <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-digit" data-idx="0">
-          <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-digit" data-idx="1">
-          <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-digit" data-idx="2">
-          <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-digit" data-idx="3">
-          <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-digit" data-idx="4">
-          <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-digit" data-idx="5">
-        </div>
-
-        <button type="button" class="btn-verify-otp" id="verifyOtpBtn">
-          <span>Verify & Complete Registration</span>
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
-        </button>
-
-        <div class="otp-footer-meta">
-          <span>Didn't receive code?</span>
-          <button type="button" id="resendOtpBtn" class="btn-resend-otp" disabled>Resend in <span id="resendCountdown">59</span>s</button>
-        </div>
+<body>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="logo" href="index.html">The Sugar <span>Atelier</span></a>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop</a>
+        <a href="categories.html">Categories</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <a href="search.html" aria-label="Search">⌕</a>
+        <a href="wishlist.html" aria-label="Wishlist">♡</a>
+        <a href="cart.html" aria-label="Cart">🛒 <span class="cart-count">0</span></a>
+        <a href="account.html" aria-label="Account">♙</a>
+        <a class="btn btn-outline" href="login.html">Sign In</a>
       </div>
     </div>
-    <!-- Firebase SDK & Config -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="js/firebase-config.js"></script>
-    <script>window.__customRegisterHandler = true;</script>
-    <script src="js/app.js"></script>
-    <script>
-      // ── Password visibility toggles ──────────────────────────────────
-      document.querySelectorAll('.toggle-pass-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-          const targetId = this.dataset.target;
-          const input = document.getElementById(targetId);
-          if (!input) return;
-          if (input.type === 'password') {
-            input.type = 'text';
-            this.textContent = '🔒';
-            this.style.color = 'var(--primary)';
-          } else {
-            input.type = 'password';
-            this.textContent = '👁';
-            this.style.color = '#9e8e95';
-          }
-        });
-      });
+  </header>
 
-      // ── Password strength meter ──────────────────────────────────────
-      const passInput = document.getElementById('regPassword');
-      const strengthFill = document.getElementById('strengthFill');
-      const strengthText = document.getElementById('strengthText');
+  <main>
+    <div class="signup-page">
 
-      passInput?.addEventListener('input', function() {
-        const val = this.value;
-        if (!val) {
-          strengthFill.style.width = '0%';
-          strengthText.textContent = 'Password strength: enter password';
-          strengthText.style.color = 'var(--muted)';
-          return;
-        }
-        let score = 0;
-        if (val.length >= 6) score++;
-        if (val.length >= 10) score++;
-        if (/[A-Z]/.test(val)) score++;
-        if (/[0-9]/.test(val)) score++;
-        if (/[^A-Za-z0-9]/.test(val)) score++;
-        if (score <= 2) {
-          strengthFill.style.width = '33%';
-          strengthFill.style.background = '#e74c3c';
-          strengthText.textContent = 'Password strength: Weak';
-          strengthText.style.color = '#e74c3c';
-        } else if (score <= 3) {
-          strengthFill.style.width = '66%';
-          strengthFill.style.background = '#f39c12';
-          strengthText.textContent = 'Password strength: Good';
-          strengthText.style.color = '#f39c12';
+      <!-- Left Visual Atelier Experience Panel -->
+      <div class="signup-visual">
+        <div class="vis-glow-ring"></div>
+        <div>
+          <a class="vis-logo" href="index.html">The Sugar <span>Atelier</span></a>
+        </div>
+
+        <div class="vis-body">
+          <span class="vis-tag">✨ ARTISAN CAKE CLUB</span>
+          <h2>Freshly Baked Happiness,<br>Crafted for You</h2>
+          <p>Join thousands of cake lovers who enjoy freshly baked artisan celebrations, priority delivery, and
+            tailor-made dessert perks.</p>
+
+          <div class="vis-features">
+            <div class="vis-feature">
+              <div class="vis-feature-icon">🎂</div>
+              <div>
+                <strong>Birthday Month Surprise</strong>
+                <div style="font-size:12px;opacity:0.8;">Special complimentary treat on your birthday</div>
+              </div>
+            </div>
+            <div class="vis-feature">
+              <div class="vis-feature-icon">⚡</div>
+              <div>
+                <strong>Priority Kitchen & Express Delivery</strong>
+                <div style="font-size:12px;opacity:0.8;">Jump the queue for same-day celebration bakes</div>
+              </div>
+            </div>
+            <div class="vis-feature">
+              <div class="vis-feature-icon">♡</div>
+              <div>
+                <strong>Wishlist & 1-Click Ordering</strong>
+                <div style="font-size:12px;opacity:0.8;">Save favourite designs and repeat past orders easily</div>
+              </div>
+            </div>
+            <div class="vis-feature">
+              <div class="vis-feature-icon">💎</div>
+              <div>
+                <strong>Secret Member Offers & 15% Off</strong>
+                <div style="font-size:12px;opacity:0.8;">Use SWEET15 instantly upon registration</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="vis-trust">
+          <div class="stars">★★★★★</div>
+          <span>Rated <strong>4.9 / 5.0</strong> by 2,400+ cake enthusiasts</span>
+        </div>
+      </div>
+
+      <!-- Right Sign Up Form Panel -->
+      <div class="signup-form-panel">
+        <div class="signup-box">
+          <span class="form-eyebrow">NEW CUSTOMER REGISTRATION</span>
+          <h1>Create Account</h1>
+          <p class="subtitle">Already have an account? <a href="login.html"
+              style="color:var(--primary);font-weight:700;">Sign in here →</a></p>
+
+          <!-- Social Sign Up -->
+          <div class="social-btns">
+            <button type="button" class="social-btn" id="googleSignupBtn">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  fill="#4285F4" />
+                <path
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  fill="#34A853" />
+                <path
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+                  fill="#FBBC05" />
+                <path
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                  fill="#EA4335" />
+              </svg>
+              Sign up with Google
+            </button>
+          </div>
+
+          <div class="or-divider">OR FILL IN YOUR DETAILS</div>
+
+          <!-- Registration Form -->
+          <form id="registerForm">
+            <!-- Full Name -->
+            <div class="input-group">
+              <label for="regName">Full Name</label>
+              <div class="input-wrap">
+                <input id="regName" name="name" type="text" placeholder="e.g. Ayesha Rahman" required
+                  autocomplete="name">
+                <span class="input-icon">👤</span>
+              </div>
+            </div>
+
+            <!-- Email & Phone row -->
+            <div class="form-row-2">
+              <div class="input-group">
+                <label for="regEmail">Email Address</label>
+                <div class="input-wrap">
+                  <input id="regEmail" name="email" type="email" placeholder="name@example.com" required
+                    autocomplete="email">
+                  <span class="input-icon">✉</span>
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label for="regPhone">Phone Number</label>
+                <div class="input-wrap">
+                  <input id="regPhone" name="phone" type="tel" placeholder="01XXXXXXXXX" required autocomplete="tel">
+                  <span class="input-icon">📞</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Password & Confirm Password row -->
+            <div class="form-row-2">
+              <div class="input-group">
+                <label for="regPassword">Create Password</label>
+                <div class="input-wrap">
+                  <input id="regPassword" name="password" type="password" placeholder="Minimum 6 characters" required
+                    autocomplete="new-password">
+                  <button type="button" class="toggle-pass-btn" data-target="regPassword"
+                    aria-label="Toggle password visibility">👁</button>
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label for="regConfirmPassword">Confirm Password</label>
+                <div class="input-wrap">
+                  <input id="regConfirmPassword" name="confirm_password" type="password" placeholder="Re-enter password"
+                    required autocomplete="new-password">
+                  <button type="button" class="toggle-pass-btn" data-target="regConfirmPassword"
+                    aria-label="Toggle password visibility">👁</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Live Strength Indicator -->
+            <div class="pass-strength">
+              <div class="strength-track">
+                <div class="strength-fill" id="strengthFill"></div>
+              </div>
+              <span class="strength-text" id="strengthText">Password strength: enter password</span>
+            </div>
+
+            <!-- Terms agreement -->
+            <div class="terms-row">
+              <input type="checkbox" id="agreeTerms" required checked>
+              <label for="agreeTerms">
+                I agree to The Sugar Atelier <a href="privacy.html">Terms of Service</a> & <a
+                  href="privacy.html">Privacy Policy</a>.
+              </label>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="signup-submit" id="regSubmitBtn">
+              <span>Create Free Account</span> →
+            </button>
+
+            <div class="login-link-row">
+              Already part of the family? <a href="login.html">Sign In to your account →</a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a class="logo" href="index.html">The Sugar <span>Atelier</span></a>
+        <p>Premium handcrafted cakes for every celebration.</p>
+        <div class="footer-social">
+          <a href="https://facebook.com" class="social-fb" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg width="17" height="17" viewBox="-2 -2 28 28" fill="currentColor" aria-hidden="true">
+              <path
+                d="M9 8H6v4h3v12h5V12h3.642L18 8h-4V6.333C14 5.374 14.5 5 15.5 5H18V0h-3.808C10.592 0 9 1.583 9 4.615V8z" />
+            </svg>
+          </a>
+          <a href="https://instagram.com" class="social-ig" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path
+                d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+            </svg>
+          </a>
+          <a href="https://wa.me/8801700000000" class="social-wa" target="_blank" rel="noopener" aria-label="WhatsApp">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path
+                d="M12.031 0C5.396 0 .029 5.367.029 12.003c0 2.123.554 4.197 1.609 6.024L0 24l6.163-1.613a11.968 11.968 0 005.868 1.534h.005c6.633 0 12.001-5.367 12.001-12.003C24.037 5.367 18.67 0 12.031 0zm0 21.99a9.972 9.972 0 01-5.084-1.39l-.365-.216-3.778.99.99-3.68-.237-.377a9.96 9.96 0 01-1.527-5.314c0-5.506 4.48-9.986 9.992-9.986 2.668 0 5.176 1.038 7.062 2.925 1.887 1.887 2.926 4.396 2.926 7.066 0 5.508-4.48 9.988-9.979 9.988zm5.474-7.487c-.3-.15-1.776-.876-2.051-.976-.275-.1-.475-.15-.675.15s-.775.976-.95 1.176c-.175.2-.35.225-.65.075s-1.268-.468-2.416-1.492c-.893-.797-1.496-1.782-1.671-2.082-.175-.3-.019-.462.131-.612.135-.135.3-.35.45-.525.15-.175.2-.3.3-.5.1-.2.05-.375-.025-.525s-.675-1.626-.925-2.226c-.244-.585-.491-.506-.675-.515-.175-.01-.375-.01-.575-.01s-.525.075-.8.375c-.275.3-1.05 1.026-1.05 2.502s1.075 2.902 1.225 3.102c.15.2 2.116 3.232 5.127 4.533.716.31 1.275.495 1.71.634.719.229 1.373.197 1.891.12.577-.086 1.776-.725 2.026-1.426.25-.7.25-1.301.175-1.426-.075-.125-.275-.2-.575-.35z" />
+            </svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <a href="shop.html">Shop</a>
+        <a href="categories.html">Categories</a>
+        <a href="custom-cake.html">Custom Cake</a>
+        <a href="faq.html">FAQ</a>
+      </div>
+      <div>
+        <h4>Customer Care</h4>
+        <a href="account.html">My Account</a>
+        <a href="orders.html">Track Order</a>
+        <a href="contact.html">Contact</a>
+        <a href="privacy.html">Privacy Policy</a>
+      </div>
+      <div>
+        <h4>Payments</h4>
+        <p>bKash • Nagad • Rocket • Visa • Mastercard • Stripe</p>
+      </div>
+    </div>
+    <div class="copyright">© 2026 The Sugar Atelier. All rights reserved.</div>
+  </footer>
+
+  <div id="toast" class="toast"></div>
+
+  <!-- ── Interactive OTP Verification Modal ── -->
+  <div id="otpModal" class="otp-modal-overlay">
+    <div class="otp-modal-card">
+      <button type="button" class="otp-close-btn" id="closeOtpModalBtn" aria-label="Close">✕</button>
+      <div class="otp-icon-wrap">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+          <line x1="12" y1="18" x2="12.01" y2="18"></line>
+        </svg>
+      </div>
+      <h2>Verify Your Email Address</h2>
+      <p class="otp-instruction">
+        A 6-digit verification code has been sent to:<br>
+        <strong id="otpTargetDisplay" style="color:var(--primary);font-size:14px;"></strong>
+        <br><span style="font-size:12px;color:var(--muted);">Please check your inbox (and spam folder).</span>
+      </p>
+
+      <div class="otp-inputs-row" id="otpInputsRow">
+        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-digit" data-idx="0">
+        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-digit" data-idx="1">
+        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-digit" data-idx="2">
+        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-digit" data-idx="3">
+        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-digit" data-idx="4">
+        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-digit" data-idx="5">
+      </div>
+
+      <button type="button" class="btn-verify-otp" id="verifyOtpBtn">
+        <span>Verify & Complete Registration</span>
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </button>
+
+      <div class="otp-footer-meta">
+        <span>Didn't receive code?</span>
+        <button type="button" id="resendOtpBtn" class="btn-resend-otp" disabled>Resend in <span
+            id="resendCountdown">59</span>s</button>
+      </div>
+    </div>
+  </div>
+  <!-- Firebase SDK & Config -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script>window.__customRegisterHandler = true;</script>
+  <script src="js/app.js"></script>
+  <script>
+    // ── Password visibility toggles ──────────────────────────────────
+    document.querySelectorAll('.toggle-pass-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        const targetId = this.dataset.target;
+        const input = document.getElementById(targetId);
+        if (!input) return;
+        if (input.type === 'password') {
+          input.type = 'text';
+          this.textContent = '🔒';
+          this.style.color = 'var(--primary)';
         } else {
-          strengthFill.style.width = '100%';
-          strengthFill.style.background = '#27ae60';
-          strengthText.textContent = 'Password strength: Strong ✨';
-          strengthText.style.color = '#27ae60';
+          input.type = 'password';
+          this.textContent = '👁';
+          this.style.color = '#9e8e95';
         }
       });
+    });
 
-      // ── Google Sign Up (existing behaviour preserved) ────────────────
-      document.getElementById('googleSignupBtn')?.addEventListener('click', function(e) {
-        e.preventDefault();
-        const btn = this;
-        const orig = btn.innerHTML;
-        btn.innerHTML = `
+    // ── Password strength meter ──────────────────────────────────────
+    const passInput = document.getElementById('regPassword');
+    const strengthFill = document.getElementById('strengthFill');
+    const strengthText = document.getElementById('strengthText');
+
+    passInput?.addEventListener('input', function () {
+      const val = this.value;
+      if (!val) {
+        strengthFill.style.width = '0%';
+        strengthText.textContent = 'Password strength: enter password';
+        strengthText.style.color = 'var(--muted)';
+        return;
+      }
+      let score = 0;
+      if (val.length >= 6) score++;
+      if (val.length >= 10) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+      if (score <= 2) {
+        strengthFill.style.width = '33%';
+        strengthFill.style.background = '#e74c3c';
+        strengthText.textContent = 'Password strength: Weak';
+        strengthText.style.color = '#e74c3c';
+      } else if (score <= 3) {
+        strengthFill.style.width = '66%';
+        strengthFill.style.background = '#f39c12';
+        strengthText.textContent = 'Password strength: Good';
+        strengthText.style.color = '#f39c12';
+      } else {
+        strengthFill.style.width = '100%';
+        strengthFill.style.background = '#27ae60';
+        strengthText.textContent = 'Password strength: Strong ✨';
+        strengthText.style.color = '#27ae60';
+      }
+    });
+
+    // ── Google Sign Up (existing behaviour preserved) ────────────────
+    document.getElementById('googleSignupBtn')?.addEventListener('click', function (e) {
+      e.preventDefault();
+      const btn = this;
+      const orig = btn.innerHTML;
+      btn.innerHTML = `
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="animation: spin 0.8s linear infinite; flex-shrink:0;">
             <circle cx="12" cy="12" r="10" stroke="#8B3A62" stroke-width="3" stroke-dasharray="31" stroke-dashoffset="10"/>
           </svg>
           Connecting Google Account...
         `;
-        btn.style.pointerEvents = 'none';
-        btn.style.opacity = '0.8';
-        setTimeout(() => {
-          btn.innerHTML = orig;
-          btn.style.pointerEvents = '';
-          btn.style.opacity = '';
-          toast('Google Account connected! Welcome.');
-          setTimeout(() => location.href = 'account.html', 1000);
-        }, 1500);
+      btn.style.pointerEvents = 'none';
+      btn.style.opacity = '0.8';
+      setTimeout(() => {
+        btn.innerHTML = orig;
+        btn.style.pointerEvents = '';
+        btn.style.opacity = '';
+        toast('Google Account connected! Welcome.');
+        setTimeout(() => location.href = 'account.html', 1000);
+      }, 1500);
+    });
+
+    // Signal app.js not to attach a duplicate register listener
+    window.__customRegisterHandler = true;
+
+    // ── Real Server-Side OTP Registration ────────────────────────────
+    // OTP is generated, hashed, and verified entirely on the server.
+    // The plaintext OTP is NEVER stored, displayed, or logged client-side.
+    (function () {
+      const modal = document.getElementById('otpModal');
+      const closeBtn = document.getElementById('closeOtpModalBtn');
+      const digitInputs = document.querySelectorAll('.otp-digit');
+      const verifyBtn = document.getElementById('verifyOtpBtn');
+      const resendBtn = document.getElementById('resendOtpBtn');
+      const countdownEl = document.getElementById('resendCountdown');
+      const targetDisplay = document.getElementById('otpTargetDisplay');
+      const inputsRow = document.getElementById('otpInputsRow');
+      const regForm = document.getElementById('registerForm');
+
+      // Determine backend API origin: if page was opened via Live Server (port 5500, etc.)
+      // or file://, direct API requests to http://localhost:3000 where server.js is listening.
+      const API_BASE = (window.location.protocol === 'file:' || (window.location.port && window.location.port !== '3000'))
+        ? 'http://localhost:3000'
+        : '';
+
+      // pendingReg holds only non-sensitive registration data (no OTP)
+      let pendingReg = null;
+      let countdownTimer = null;
+
+      // ── Countdown timer (UI only — real rate limiting is server-side) ──
+      function startCountdown(seconds) {
+        clearInterval(countdownTimer);
+        let remaining = seconds || 60;
+        if (resendBtn) {
+          resendBtn.disabled = true;
+          resendBtn.innerHTML = `Resend in <span id="resendCountdown">${remaining}</span>s`;
+        }
+        countdownTimer = setInterval(() => {
+          remaining--;
+          const el = document.getElementById('resendCountdown');
+          if (el) el.textContent = remaining;
+          if (remaining <= 0) {
+            clearInterval(countdownTimer);
+            if (resendBtn) {
+              resendBtn.disabled = false;
+              resendBtn.textContent = 'Resend Code 🔄';
+            }
+          }
+        }, 1000);
+      }
+
+      // ── Open OTP modal after server confirms email was sent ──────────
+      function openOtpModal(data) {
+        pendingReg = data; // { fullName, email, phone, password } — NO otp field
+        if (targetDisplay) targetDisplay.textContent = data.email;
+        digitInputs.forEach(inp => inp.value = '');
+        modal.classList.add('active');
+        setTimeout(() => digitInputs[0]?.focus(), 150);
+        startCountdown(60);
+      }
+
+      // ── Close OTP modal ──────────────────────────────────────────────
+      function closeOtpModal() {
+        modal.classList.remove('active');
+        clearInterval(countdownTimer);
+        const btn = document.getElementById('regSubmitBtn');
+        if (btn) {
+          btn.innerHTML = '<span>Create Free Account</span> →';
+          btn.disabled = false;
+        }
+      }
+
+      closeBtn?.addEventListener('click', closeOtpModal);
+
+      // ── OTP digit input: auto-advance and backspace behaviour ────────
+      digitInputs.forEach((input, idx) => {
+        input.addEventListener('input', (e) => {
+          const val = e.target.value.replace(/\D/g, '');
+          e.target.value = val ? val[0] : '';
+          if (val && idx < digitInputs.length - 1) {
+            digitInputs[idx + 1].focus();
+          }
+        });
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && !input.value && idx > 0) {
+            digitInputs[idx - 1].focus();
+          }
+        });
+        input.addEventListener('paste', (e) => {
+          e.preventDefault();
+          const pasteData = (e.clipboardData || window.clipboardData)
+            .getData('text').trim().replace(/\D/g, '');
+          if (pasteData.length >= 6) {
+            pasteData.slice(0, 6).split('').forEach((char, i) => {
+              if (digitInputs[i]) digitInputs[i].value = char;
+            });
+            digitInputs[5]?.focus();
+          }
+        });
       });
 
-      // Signal app.js not to attach a duplicate register listener
-      window.__customRegisterHandler = true;
+      // ── Step 1: Form submit → call server to send OTP ────────────────
+      regForm?.addEventListener('submit', async function (e) {
+        e.preventDefault();
 
-      // ── Real Server-Side OTP Registration ────────────────────────────
-      // OTP is generated, hashed, and verified entirely on the server.
-      // The plaintext OTP is NEVER stored, displayed, or logged client-side.
-      (function() {
-        const modal        = document.getElementById('otpModal');
-        const closeBtn     = document.getElementById('closeOtpModalBtn');
-        const digitInputs  = document.querySelectorAll('.otp-digit');
-        const verifyBtn    = document.getElementById('verifyOtpBtn');
-        const resendBtn    = document.getElementById('resendOtpBtn');
-        const countdownEl  = document.getElementById('resendCountdown');
-        const targetDisplay = document.getElementById('otpTargetDisplay');
-        const inputsRow    = document.getElementById('otpInputsRow');
-        const regForm      = document.getElementById('registerForm');
+        const fullName = document.getElementById('regName')?.value.trim() || '';
+        const email = document.getElementById('regEmail')?.value.trim() || '';
+        const phone = document.getElementById('regPhone')?.value.trim() || '';
+        const p1 = document.getElementById('regPassword')?.value || '';
+        const p2 = document.getElementById('regConfirmPassword')?.value || '';
 
-        // Determine backend API origin: if page was opened via Live Server (port 5500, etc.)
-        // or file://, direct API requests to http://localhost:3000 where server.js is listening.
-        const API_BASE = (window.location.protocol === 'file:' || (window.location.port && window.location.port !== '3000'))
-          ? 'http://localhost:3000'
-          : '';
-
-        // pendingReg holds only non-sensitive registration data (no OTP)
-        let pendingReg = null;
-        let countdownTimer = null;
-
-        // ── Countdown timer (UI only — real rate limiting is server-side) ──
-        function startCountdown(seconds) {
-          clearInterval(countdownTimer);
-          let remaining = seconds || 60;
-          if (resendBtn) {
-            resendBtn.disabled = true;
-            resendBtn.innerHTML = `Resend in <span id="resendCountdown">${remaining}</span>s`;
-          }
-          countdownTimer = setInterval(() => {
-            remaining--;
-            const el = document.getElementById('resendCountdown');
-            if (el) el.textContent = remaining;
-            if (remaining <= 0) {
-              clearInterval(countdownTimer);
-              if (resendBtn) {
-                resendBtn.disabled = false;
-                resendBtn.textContent = 'Resend Code 🔄';
-              }
-            }
-          }, 1000);
+        // Client-side validation
+        if (!fullName) {
+          toast('Please enter your full name.');
+          document.getElementById('regName')?.focus();
+          return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+          toast('Please enter a valid email address.');
+          document.getElementById('regEmail')?.focus();
+          return;
+        }
+        if (p1 !== p2) {
+          toast('Passwords do not match. Please verify.');
+          document.getElementById('regConfirmPassword')?.focus();
+          return;
+        }
+        if (p1.length < 6) {
+          toast('Password must be at least 6 characters.');
+          document.getElementById('regPassword')?.focus();
+          return;
         }
 
-        // ── Open OTP modal after server confirms email was sent ──────────
-        function openOtpModal(data) {
-          pendingReg = data; // { fullName, email, phone, password } — NO otp field
-          if (targetDisplay) targetDisplay.textContent = data.email;
-          digitInputs.forEach(inp => inp.value = '');
-          modal.classList.add('active');
-          setTimeout(() => digitInputs[0]?.focus(), 150);
-          startCountdown(60);
-        }
-
-        // ── Close OTP modal ──────────────────────────────────────────────
-        function closeOtpModal() {
-          modal.classList.remove('active');
-          clearInterval(countdownTimer);
-          const btn = document.getElementById('regSubmitBtn');
-          if (btn) {
-            btn.innerHTML = '<span>Create Free Account</span> →';
-            btn.disabled = false;
-          }
-        }
-
-        closeBtn?.addEventListener('click', closeOtpModal);
-
-        // ── OTP digit input: auto-advance and backspace behaviour ────────
-        digitInputs.forEach((input, idx) => {
-          input.addEventListener('input', (e) => {
-            const val = e.target.value.replace(/\D/g, '');
-            e.target.value = val ? val[0] : '';
-            if (val && idx < digitInputs.length - 1) {
-              digitInputs[idx + 1].focus();
-            }
-          });
-          input.addEventListener('keydown', (e) => {
-            if (e.key === 'Backspace' && !input.value && idx > 0) {
-              digitInputs[idx - 1].focus();
-            }
-          });
-          input.addEventListener('paste', (e) => {
-            e.preventDefault();
-            const pasteData = (e.clipboardData || window.clipboardData)
-              .getData('text').trim().replace(/\D/g, '');
-            if (pasteData.length >= 6) {
-              pasteData.slice(0, 6).split('').forEach((char, i) => {
-                if (digitInputs[i]) digitInputs[i].value = char;
-              });
-              digitInputs[5]?.focus();
-            }
-          });
-        });
-
-        // ── Step 1: Form submit → call server to send OTP ────────────────
-        regForm?.addEventListener('submit', async function(e) {
-          e.preventDefault();
-
-          const fullName = document.getElementById('regName')?.value.trim() || '';
-          const email    = document.getElementById('regEmail')?.value.trim() || '';
-          const phone    = document.getElementById('regPhone')?.value.trim() || '';
-          const p1       = document.getElementById('regPassword')?.value || '';
-          const p2       = document.getElementById('regConfirmPassword')?.value || '';
-          const errorBox = document.getElementById('regErrorMsg');
-          if (errorBox) { errorBox.style.display = 'none'; errorBox.textContent = ''; }
-
-          // Client-side validation
-          if (!fullName) {
-            toast('Please enter your full name.');
-            document.getElementById('regName')?.focus();
-            return;
-          }
-          if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
-            toast('Please enter a valid email address.');
-            document.getElementById('regEmail')?.focus();
-            return;
-          }
-          if (p1 !== p2) {
-            toast('Passwords do not match. Please verify.');
-            document.getElementById('regConfirmPassword')?.focus();
-            return;
-          }
-          if (p1.length < 6) {
-            toast('Password must be at least 6 characters.');
-            document.getElementById('regPassword')?.focus();
-            return;
-          }
-
-          const submitBtn = document.getElementById('regSubmitBtn');
-          const origBtnContent = submitBtn ? submitBtn.innerHTML : '';
-          if (submitBtn) {
-            submitBtn.innerHTML = `
+        const submitBtn = document.getElementById('regSubmitBtn');
+        const origBtnContent = submitBtn ? submitBtn.innerHTML : '';
+        if (submitBtn) {
+          submitBtn.innerHTML = `
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="animation: spin 0.8s linear infinite; flex-shrink:0;">
                 <circle cx="12" cy="12" r="10" stroke="#fff" stroke-width="3" stroke-dasharray="31" stroke-dashoffset="10"/>
               </svg>
               Sending Verification Code...
             `;
-            submitBtn.disabled = true;
+          submitBtn.disabled = true;
+        }
+
+        try {
+          // POST to backend — server generates OTP, hashes it, emails it.
+          // The response NEVER contains the OTP.
+          const resp = await fetch(`${API_BASE}/api/auth/send-otp`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+          });
+          let data = {};
+          try {
+            data = await resp.json();
+          } catch {
+            data = { success: false, message: 'Server returned an invalid response (' + resp.status + ').' };
           }
 
-          try {
-            // POST to backend — server generates OTP, hashes it, emails it.
-            // The response NEVER contains the OTP.
-            const resp = await fetch(`${API_BASE}/api/auth/send-otp`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email }),
-            });
-            let data = {};
-            try {
-              data = await resp.json();
-            } catch {
-              data = { success: false, message: 'Server returned an invalid response (' + resp.status + ').' };
-            }
-
-            if (!resp.ok || !data.success) {
-              if (submitBtn) {
-                submitBtn.innerHTML = origBtnContent;
-                submitBtn.disabled = false;
-              }
-              const msg = data.message || 'Unable to send the verification email. Please try again later.';
-              if (errorBox) { errorBox.style.display = 'block'; errorBox.textContent = '⚠️ ' + msg; }
-              toast(msg);
-              return;
-            }
-
-            // Server confirmed email was sent — open modal
-            // Store registration data locally (no OTP stored here)
-            openOtpModal({ fullName, email, phone, password: p1 });
-            toast('Verification code sent! Check your email inbox.');
-
-          } catch (netErr) {
-            console.error('[send-otp network error]:', netErr);
+          if (!resp.ok || !data.success) {
             if (submitBtn) {
               submitBtn.innerHTML = origBtnContent;
               submitBtn.disabled = false;
             }
-            const msg = 'Network error (' + (netErr.message || 'connection failed') + '). Please try again.';
-            if (errorBox) { errorBox.style.display = 'block'; errorBox.textContent = '⚠️ ' + msg; }
-            toast(msg);
+            toast(data.message || 'Unable to send the verification email. Please try again later.');
+            return;
           }
-        });
 
-        // ── Resend OTP — calls the same server endpoint ──────────────────
-        resendBtn?.addEventListener('click', async () => {
-          if (!pendingReg) return;
-          resendBtn.disabled = true;
-          resendBtn.textContent = 'Sending...';
+          // Server confirmed email was sent — open modal
+          // Store registration data locally (no OTP stored here)
+          openOtpModal({ fullName, email, phone, password: p1 });
+          toast('Verification code sent! Check your email inbox.');
 
+        } catch (netErr) {
+          console.error('[send-otp network error]:', netErr);
+          if (submitBtn) {
+            submitBtn.innerHTML = origBtnContent;
+            submitBtn.disabled = false;
+          }
+          toast('Network error (' + (netErr.message || 'connection failed') + '). Please ensure server is running at http://localhost:3000');
+        }
+      });
+
+      // ── Resend OTP — calls the same server endpoint ──────────────────
+      resendBtn?.addEventListener('click', async () => {
+        if (!pendingReg) return;
+        resendBtn.disabled = true;
+        resendBtn.textContent = 'Sending...';
+
+        try {
+          const resp = await fetch(`${API_BASE}/api/auth/send-otp`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: pendingReg.email }),
+          });
+          let data = {};
           try {
-            const resp = await fetch(`${API_BASE}/api/auth/send-otp`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email: pendingReg.email }),
-            });
-            let data = {};
-            try {
-              data = await resp.json();
-            } catch {
-              data = { success: false, message: 'Server returned an invalid response (' + resp.status + ').' };
-            }
+            data = await resp.json();
+          } catch {
+            data = { success: false, message: 'Server returned an invalid response (' + resp.status + ').' };
+          }
 
-            if (resp.status === 429) {
-              // Server enforced rate limit — use the wait time from server if available
-              const waitSecs = data.waitSeconds || 60;
-              toast(data.message || 'Please wait before requesting another code.');
-              startCountdown(waitSecs);
-              return;
-            }
+          if (resp.status === 429) {
+            // Server enforced rate limit — use the wait time from server if available
+            const waitSecs = data.waitSeconds || 60;
+            toast(data.message || 'Please wait before requesting another code.');
+            startCountdown(waitSecs);
+            return;
+          }
 
-            if (!resp.ok || !data.success) {
-              resendBtn.disabled = false;
-              resendBtn.textContent = 'Resend Code 🔄';
-              toast(data.message || 'Unable to resend code. Please try again.');
-              return;
-            }
-
-            // New OTP sent — clear inputs and restart countdown
-            digitInputs.forEach(inp => inp.value = '');
-            digitInputs[0]?.focus();
-            startCountdown(60);
-            toast('A new verification code has been sent to your email.');
-
-          } catch (netErr) {
+          if (!resp.ok || !data.success) {
             resendBtn.disabled = false;
             resendBtn.textContent = 'Resend Code 🔄';
-            toast('Network error. Please check your connection and try again.');
-          }
-        });
-
-        // ── Step 2: Verify OTP → server verifies, creates account ────────
-        verifyBtn?.addEventListener('click', async function() {
-          const entered = Array.from(digitInputs).map(inp => inp.value.trim()).join('');
-
-          if (entered.length < 6 || !/^\d{6}$/.test(entered)) {
-            toast('Please enter the complete 6-digit verification code.');
+            toast(data.message || 'Unable to resend code. Please try again.');
             return;
           }
 
-          if (!pendingReg) {
-            toast('Registration session expired. Please start again.');
-            closeOtpModal();
-            return;
-          }
+          // New OTP sent — clear inputs and restart countdown
+          digitInputs.forEach(inp => inp.value = '');
+          digitInputs[0]?.focus();
+          startCountdown(60);
+          toast('A new verification code has been sent to your email.');
 
-          const origBtnContent = verifyBtn.innerHTML;
-          verifyBtn.innerHTML = `
+        } catch (netErr) {
+          resendBtn.disabled = false;
+          resendBtn.textContent = 'Resend Code 🔄';
+          toast('Network error. Please check your connection and try again.');
+        }
+      });
+
+      // ── Step 2: Verify OTP → server verifies, creates account ────────
+      verifyBtn?.addEventListener('click', async function () {
+        const entered = Array.from(digitInputs).map(inp => inp.value.trim()).join('');
+
+        if (entered.length < 6 || !/^\d{6}$/.test(entered)) {
+          toast('Please enter the complete 6-digit verification code.');
+          return;
+        }
+
+        if (!pendingReg) {
+          toast('Registration session expired. Please start again.');
+          closeOtpModal();
+          return;
+        }
+
+        const origBtnContent = verifyBtn.innerHTML;
+        verifyBtn.innerHTML = `
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="animation: spin 0.8s linear infinite; flex-shrink:0;">
               <circle cx="12" cy="12" r="10" stroke="#fff" stroke-width="3" stroke-dasharray="31" stroke-dashoffset="10"/>
             </svg>
             Verifying &amp; Creating Account...
           `;
-          verifyBtn.disabled = true;
+        verifyBtn.disabled = true;
 
+        try {
+          // POST to backend — server hashes the OTP and compares server-side.
+          // The OTP is not stored anywhere on the client.
+          const resp = await fetch(`${API_BASE}/api/auth/verify-otp`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: pendingReg.email,
+              otp: entered,
+              name: pendingReg.fullName,
+              phone: pendingReg.phone,
+              password: pendingReg.password,
+            }),
+          });
+          let data = {};
           try {
-            // POST to backend — server hashes the OTP and compares server-side.
-            // The OTP is not stored anywhere on the client.
-            const resp = await fetch(`${API_BASE}/api/auth/verify-otp`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                email: pendingReg.email,
-                otp: entered,
-                name: pendingReg.fullName,
-                phone: pendingReg.phone,
-                password: pendingReg.password,
-              }),
-            });
-            let data = {};
-            try {
-              data = await resp.json();
-            } catch {
-              data = { success: false, message: 'Server returned an invalid response (' + resp.status + ').' };
-            }
+            data = await resp.json();
+          } catch {
+            data = { success: false, message: 'Server returned an invalid response (' + resp.status + ').' };
+          }
 
-            if (!resp.ok || !data.success) {
-              verifyBtn.innerHTML = origBtnContent;
-              verifyBtn.disabled = false;
-
-              // Shake animation for wrong code
-              if (resp.status === 400 && data.message && data.message.includes('Invalid')) {
-                inputsRow?.classList.add('shake');
-                setTimeout(() => inputsRow?.classList.remove('shake'), 400);
-                digitInputs.forEach(inp => inp.value = '');
-                digitInputs[0]?.focus();
-              }
-
-              // Locked out — close modal
-              if (resp.status === 429) {
-                modal.classList.remove('active');
-                clearInterval(countdownTimer);
-              }
-
-              // Duplicate account — close modal
-              if (resp.status === 409) {
-                modal.classList.remove('active');
-                clearInterval(countdownTimer);
-              }
-
-              toast(data.message || 'Verification failed. Please try again.');
-              return;
-            }
-
-            // ── Success: account created server-side ─────────────────────
-            // Store only the safe user profile from the server response (no secrets)
-            if (data.user) {
-              try {
-                localStorage.setItem('sugarAtelierCurrentUser', JSON.stringify({
-                  uid: data.user.uid,
-                  name: data.user.name,
-                  email: data.user.email,
-                  phone: data.user.phone,
-                  isVerified: true,
-                  emailVerified: true,
-                }));
-              } catch (storageErr) {
-                // Non-fatal — user is still registered
-              }
-            }
-
-            modal.classList.remove('active');
-            clearInterval(countdownTimer);
-            // Clear sensitive pendingReg from memory
-            pendingReg = null;
-
-            toast('🎉 Email verified & account created! Welcome to The Sugar Atelier.');
-            setTimeout(() => location.href = 'account.html', 900);
-
-          } catch (netErr) {
-            console.error('[verify-otp network error]:', netErr);
+          if (!resp.ok || !data.success) {
             verifyBtn.innerHTML = origBtnContent;
             verifyBtn.disabled = false;
-            toast('Network error (' + (netErr.message || 'connection failed') + '). Please check your connection and try again.');
+
+            // Shake animation for wrong code
+            if (resp.status === 400 && data.message && data.message.includes('Invalid')) {
+              inputsRow?.classList.add('shake');
+              setTimeout(() => inputsRow?.classList.remove('shake'), 400);
+              digitInputs.forEach(inp => inp.value = '');
+              digitInputs[0]?.focus();
+            }
+
+            // Locked out — close modal
+            if (resp.status === 429) {
+              modal.classList.remove('active');
+              clearInterval(countdownTimer);
+            }
+
+            // Duplicate account — close modal
+            if (resp.status === 409) {
+              modal.classList.remove('active');
+              clearInterval(countdownTimer);
+            }
+
+            toast(data.message || 'Verification failed. Please try again.');
+            return;
           }
-        });
-      })();
-    </script>
-  </body>
+
+          // ── Success: account created server-side ─────────────────────
+          // Store only the safe user profile from the server response (no secrets)
+          if (data.user) {
+            try {
+              localStorage.setItem('sugarAtelierCurrentUser', JSON.stringify({
+                uid: data.user.uid,
+                name: data.user.name,
+                email: data.user.email,
+                phone: data.user.phone,
+                isVerified: true,
+                emailVerified: true,
+              }));
+            } catch (storageErr) {
+              // Non-fatal — user is still registered
+            }
+          }
+
+          modal.classList.remove('active');
+          clearInterval(countdownTimer);
+          // Clear sensitive pendingReg from memory
+          pendingReg = null;
+
+          toast('🎉 Email verified & account created! Welcome to The Sugar Atelier.');
+          setTimeout(() => location.href = 'account.html', 900);
+
+        } catch (netErr) {
+          console.error('[verify-otp network error]:', netErr);
+          verifyBtn.innerHTML = origBtnContent;
+          verifyBtn.disabled = false;
+          toast('Network error (' + (netErr.message || 'connection failed') + '). Please check your connection and try again.');
+        }
+      });
+    })();
+  </script>
+</body>
+
 </html>
