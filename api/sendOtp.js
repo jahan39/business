@@ -19,6 +19,7 @@ const crypto = require("crypto");
 const { initAdmin, FieldValue, Timestamp } = require("./firebaseAdmin");
 const { Resend } = require("resend");
 const nodemailer = require("nodemailer");
+const emailjs = require("@emailjs/nodejs");
 
 // ── Email Transporter (Gmail SMTP) ────────────────────────────────────
 let _gmailTransporter = null;
@@ -286,13 +287,52 @@ module.exports = async function sendOtpHandler(req, res) {
     });
     // Plaintext OTP is in memory only — stored hash above, plaintext goes to email only
 
-    // ── 5. Send email via Gmail SMTP or Resend ───────────────────────
+    // ── 5. Send email via EmailJS, Gmail SMTP, or Resend ─────────────
     let emailSent = false;
     let deliveryError = null;
 
-    // Option A: Gmail SMTP (preferred when configured — sends to any email address)
-    if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+    // Method 1: EmailJS (HTTPS port 443 — sends to ANY email, zero cloud port blocks)
+    if (
+      process.env.EMAILJS_SERVICE_ID &&
+      process.env.EMAILJS_TEMPLATE_ID &&
+      process.env.EMAILJS_PUBLIC_KEY
+    ) {
       try {
+        console.log(`[sendOtp] Sending email via EmailJS to: ${email}...`);
+        const options = {
+          publicKey: process.env.EMAILJS_PUBLIC_KEY.trim(),
+        };
+        if (process.env.EMAILJS_PRIVATE_KEY) {
+          options.privateKey = process.env.EMAILJS_PRIVATE_KEY.trim();
+        }
+
+        const templateParams = {
+          to_email: email,
+          email: email,
+          otp_code: otp,
+          otp: otp,
+          message: `Your verification code is: ${otp}`,
+          from_name: EMAIL_FROM_NAME,
+        };
+
+        await emailjs.send(
+          process.env.EMAILJS_SERVICE_ID.trim(),
+          process.env.EMAILJS_TEMPLATE_ID.trim(),
+          templateParams,
+          options
+        );
+        emailSent = true;
+        console.log(`[sendOtp] Email successfully dispatched via EmailJS to: ${email}`);
+      } catch (emailjsErr) {
+        deliveryError = emailjsErr;
+        console.error("[sendOtp] EmailJS delivery error:", emailjsErr.text || emailjsErr.message || emailjsErr);
+      }
+    }
+
+    // Method 2: Gmail SMTP (fallback)
+    if (!emailSent && process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+      try {
+        console.log(`[sendOtp] Sending email via Gmail SMTP to: ${email}...`);
         const transporter = getGmailTransporter();
         await transporter.sendMail({
           from: `"${EMAIL_FROM_NAME}" <${process.env.GMAIL_USER.trim()}>`,
@@ -302,13 +342,17 @@ module.exports = async function sendOtpHandler(req, res) {
           text: buildEmailText(email, otp),
         });
         emailSent = true;
+        console.log(`[sendOtp] Email successfully dispatched via Gmail SMTP to: ${email}`);
       } catch (gmailErr) {
         deliveryError = gmailErr;
         console.error("[sendOtp] Gmail SMTP delivery error:", gmailErr.message || gmailErr);
       }
-    } else if (process.env.RESEND_API_KEY) {
-      // Option B: Resend API
+    }
+
+    // Method 3: Resend API (fallback)
+    if (!emailSent && process.env.RESEND_API_KEY) {
       try {
+        console.log(`[sendOtp] Sending email via Resend API to: ${email}...`);
         const resend = new Resend(process.env.RESEND_API_KEY);
         const { error: resendErr } = await resend.emails.send({
           from: `${EMAIL_FROM_NAME} <${EMAIL_FROM}>`,
@@ -322,12 +366,13 @@ module.exports = async function sendOtpHandler(req, res) {
           console.error("[sendOtp] Resend delivery error:", resendErr);
         } else {
           emailSent = true;
+          console.log(`[sendOtp] Email successfully dispatched via Resend API to: ${email}`);
         }
       } catch (resendCatchErr) {
         deliveryError = resendCatchErr;
         console.error("[sendOtp] Resend exception:", resendCatchErr);
       }
-    } else {
+    } else if (!emailSent && !process.env.EMAILJS_SERVICE_ID && !process.env.GMAIL_USER && !process.env.RESEND_API_KEY) {
       // Development fallback: no provider configured
       if (process.env.NODE_ENV !== "production") {
         console.log(`[sendOtp] DEV MODE — No email provider configured. OTP for ${email} generated and stored (hashed).`);
@@ -337,14 +382,11 @@ module.exports = async function sendOtpHandler(req, res) {
 
     if (!emailSent) {
       // Delivery failed — clean up the stored OTP so user can retry
-      await otpRef.delete().catch(() => { });
-      const isDev = process.env.NODE_ENV !== "production";
-      const errDetail = deliveryError?.message || "Email delivery failed.";
+      await otpRef.delete().catch(() => {});
+      const errDetail = deliveryError?.text || deliveryError?.message || "Email delivery failed.";
       return res.status(502).json({
         success: false,
-        message: isDev
-          ? `Email delivery error: ${errDetail}`
-          : "Unable to send the verification email. Please try again later.",
+        message: `Email delivery error: ${errDetail}`,
       });
     }
 
