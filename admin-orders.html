@@ -36,11 +36,12 @@
               <table>
                 <thead>
                   <tr>
-                    <th>Order ID</th>
-                    <th>Date</th>
+                    <th>Order ID / Date</th>
+                    <th>Customer</th>
                     <th>Items</th>
                     <th>Total</th>
-                    <th>Current Status</th>
+                    <th>Payment</th>
+                    <th>Status</th>
                     <th>Update Status</th>
                   </tr>
                 </thead>
@@ -55,42 +56,51 @@
       </main>
     </div>
     <div id="toast" class="toast"></div>
+    <!-- Firebase SDK & Config -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
     <script src="js/app.js"></script>
     <script>
       (function() {
         const tbody = document.getElementById("adminOrdersTbody");
         if (!tbody) return;
 
-        function renderAdminOrders() {
-          const defaultOrders = [
-            { id: "#SC-1024", date: "14 Sep 2026", total: "৳ 1,950", status: "Delivered", items: [{ name: "Classic Chocolate Dream", qty: 1 }] },
-            { id: "#SC-1019", date: "08 Sep 2026", total: "৳ 2,050", status: "Baking", items: [{ name: "Strawberry Velvet", qty: 1 }] }
-          ];
+        const defaultOrders = [
+          { id: "#SC-1024", date: "14 Sep 2026", total: "৳ 1,950", status: "Delivered", customerName: "Demo Customer", customerPhone: "+880 1700-000000", address: "Dhaka", paymentMethod: "bKash / Nagad / Rocket", items: [{ name: "Classic Chocolate Dream", qty: 1 }] },
+          { id: "#SC-1019", date: "08 Sep 2026", total: "৳ 2,050", status: "Baking",    customerName: "Demo Customer", customerPhone: "+880 1700-000001", address: "Dhaka", paymentMethod: "SSLCommerz",              items: [{ name: "Strawberry Velvet", qty: 1 }] }
+        ];
 
-          const saved = JSON.parse(localStorage.getItem("sugarAtelierOrders") || "[]");
-          const all = [...saved, ...defaultOrders];
-
-          tbody.innerHTML = all.map(o => {
+        function renderRows(orders) {
+          if (!orders.length) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted);">No orders yet.</td></tr>';
+            return;
+          }
+          tbody.innerHTML = orders.map(o => {
             const itemsStr = o.items && o.items.length
               ? o.items.map(i => `${i.name} (x${i.qty})`).join(", ")
               : "Handcrafted Cake";
-
             return `
               <tr>
-                <td><strong>${o.id}</strong></td>
-                <td>${o.date || "Recent"}</td>
-                <td style="max-width:260px;font-size:13px;color:var(--muted);">${itemsStr}</td>
+                <td><strong>${o.id}</strong><br><small style="color:var(--muted);font-size:11px;">${o.date || 'Recent'}</small></td>
+                <td>
+                  <b>${o.customerName || '—'}</b><br>
+                  <small style="color:var(--muted);">${o.customerPhone || ''}</small><br>
+                  <small style="color:var(--muted);font-size:11px;">${o.address ? o.address + (o.city ? ', ' + o.city : '') : ''}</small>
+                </td>
+                <td style="max-width:200px;font-size:12px;color:var(--muted);">${itemsStr}</td>
                 <td><strong style="color:var(--primary);">${o.total}</strong></td>
+                <td><small style="color:var(--muted);font-size:11px;">${o.paymentMethod || '—'}</small></td>
                 <td>
                   <span class="status ${o.status === 'Delivered' ? 'success' : ''}">${o.status}</span>
                 </td>
                 <td>
                   <select class="admin-status-sel" data-id="${o.id}" style="padding:5px 9px;font-size:12px;border-radius:6px;border:1px solid var(--border);">
-                    <option value="Order Placed" ${o.status === 'Order Placed' ? 'selected' : ''}>Order Placed</option>
-                    <option value="Confirmed" ${o.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
-                    <option value="Baking" ${o.status === 'Baking' ? 'selected' : ''}>Baking</option>
-                    <option value="Out for Delivery" ${o.status === 'Out for Delivery' ? 'selected' : ''}>Out for Delivery</option>
-                    <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                    <option value="Order Placed"     ${o.status === 'Order Placed'     ? 'selected' : ''}>Order Placed</option>
+                    <option value="Confirmed"         ${o.status === 'Confirmed'         ? 'selected' : ''}>Confirmed</option>
+                    <option value="Baking"            ${o.status === 'Baking'            ? 'selected' : ''}>Baking</option>
+                    <option value="Out for Delivery"  ${o.status === 'Out for Delivery'  ? 'selected' : ''}>Out for Delivery</option>
+                    <option value="Delivered"         ${o.status === 'Delivered'         ? 'selected' : ''}>Delivered</option>
                   </select>
                 </td>
               </tr>
@@ -98,29 +108,51 @@
           }).join("");
 
           tbody.querySelectorAll(".admin-status-sel").forEach(sel => {
-            sel.addEventListener("change", function() {
-              const orderId = this.dataset.id;
+            sel.addEventListener("change", async function() {
+              const orderId  = this.dataset.id;
               const newStatus = this.value;
+
+              // Update Firestore if available
+              if (window.db) {
+                try {
+                  await window.db.collection("orders").doc(orderId).update({ status: newStatus });
+                } catch (err) {
+                  console.warn("Firestore status update notice:", err);
+                }
+              }
+
+              // Update localStorage as backup
               const list = JSON.parse(localStorage.getItem("sugarAtelierOrders") || "[]");
-              let target = list.find(item => item.id === orderId);
+              const target = list.find(item => item.id === orderId);
               if (target) {
                 target.status = newStatus;
                 localStorage.setItem("sugarAtelierOrders", JSON.stringify(list));
-              } else {
-                // If it was one of the default orders, add to localStorage to persist change
-                const base = defaultOrders.find(d => d.id === orderId);
-                if (base) {
-                  list.push({ ...base, status: newStatus });
-                  localStorage.setItem("sugarAtelierOrders", JSON.stringify(list));
-                }
               }
+
               toast("Order " + orderId + " updated to: " + newStatus);
-              renderAdminOrders();
             });
           });
         }
 
-        renderAdminOrders();
+        // Try Firestore first (real-time), fall back to localStorage + defaults
+        if (window.db) {
+          window.db.collection("orders").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+            const firestoreOrders = [];
+            snapshot.forEach(doc => firestoreOrders.push({ id: doc.id, ...doc.data() }));
+            const all = firestoreOrders.length ? firestoreOrders : [
+              ...JSON.parse(localStorage.getItem("sugarAtelierOrders") || "[]"),
+              ...defaultOrders
+            ];
+            renderRows(all);
+          }, err => {
+            console.warn("Firestore orders snapshot notice:", err);
+            const saved = JSON.parse(localStorage.getItem("sugarAtelierOrders") || "[]");
+            renderRows([...saved, ...defaultOrders]);
+          });
+        } else {
+          const saved = JSON.parse(localStorage.getItem("sugarAtelierOrders") || "[]");
+          renderRows([...saved, ...defaultOrders]);
+        }
       })();
     </script>
   </body>

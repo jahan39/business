@@ -63,13 +63,13 @@
           <label>Ingredients<textarea rows="4" name="ingredients"></textarea></label>
           <label>Available Sizes<input name="sizes" placeholder="0.5 KG, 1 KG, 1.5 KG, 2 KG"></label>
           <label>Available Flavors<input name="flavors" placeholder="Chocolate, Vanilla, Strawberry"></label>
-          <label>Product Image URL<input type="url" name="imageUrl" placeholder="https://images.unsplash.com/..."></label>
+          <label>Product Image URL<input type="text" name="imageUrl" placeholder="https://images.unsplash.com/... or image link"></label>
           <label>Product Images (optional file)<input type="file" accept="image/*" multiple name="images"></label>
           <div class="check-row">
             <label><input type="checkbox" name="featured"> Featured Product</label>
             <label><input type="checkbox" name="bestSeller"> Best Seller</label>
           </div>
-          <button class="btn btn-primary">Save Product</button>
+          <button class="btn btn-primary" type="submit" id="saveProductBtn">Save Product</button>
           <a class="btn btn-outline" href="admin-products.html">Cancel</a>
         </form>
       </main>

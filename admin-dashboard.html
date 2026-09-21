@@ -36,9 +36,9 @@
           </div>
         </div>
         <div class="stats">
-          <div><span>Total Sales</span><b>৳284,500</b></div>
-          <div><span>Total Orders</span><b>184</b></div>
-          <div><span>Customers</span><b>1,240</b></div>
+          <div><span>Total Sales</span><b id="dashTotalSales">—</b></div>
+          <div><span>Total Orders</span><b id="dashTotalOrders">—</b></div>
+          <div><span>Messages</span><b id="dashMessages">—</b></div>
           <div><span>Products</span><b id="dashProductCount">—</b></div>
         </div>
         <div class="admin-grid">
@@ -56,9 +56,11 @@
           </div>
           <div class="admin-card">
             <h2>Recent Orders</h2>
-            <div class="mini-order"><b>#SC-1024</b><span>৳1,950</span><em>Delivered</em></div>
-            <div class="mini-order"><b>#SC-1023</b><span>৳2,400</span><em>Baking</em></div>
-            <div class="mini-order"><b>#SC-1022</b><span>৳4,900</span><em>Confirmed</em></div>
+            <div id="dashRecentOrders">
+              <div class="mini-order"><b>#SC-1024</b><span>৳1,950</span><em>Delivered</em></div>
+              <div class="mini-order"><b>#SC-1023</b><span>৳2,400</span><em>Baking</em></div>
+              <div class="mini-order"><b>#SC-1022</b><span>৳4,900</span><em>Confirmed</em></div>
+            </div>
           </div>
         </div>
       </main>
@@ -71,14 +73,41 @@
     <script src="js/app.js"></script>
     <script src="js/admin-products.js"></script>
     <script>
-      // Update product count from localStorage
       document.addEventListener("DOMContentLoaded", () => {
-        const el = document.getElementById("dashProductCount");
-        if (el) {
-          const BUILTIN = 4;
-          const saved = JSON.parse(localStorage.getItem("sugarAtelierProducts") || "[]");
-          el.textContent = BUILTIN + saved.length;
-        }
+        // Product count from localStorage + products collection
+        const elProducts = document.getElementById("dashProductCount");
+        const BUILTIN = 4;
+        const saved = JSON.parse(localStorage.getItem("sugarAtelierProducts") || "[]");
+        if (elProducts) elProducts.textContent = BUILTIN + saved.length;
+
+        if (!window.db) return;
+
+        // Real-time orders stats
+        window.db.collection("orders").onSnapshot(snapshot => {
+          const orders = [];
+          snapshot.forEach(doc => orders.push(doc.data()));
+
+          const totalOrders = orders.length;
+          const totalSales  = orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+
+          const elOrders = document.getElementById("dashTotalOrders");
+          const elSales  = document.getElementById("dashTotalSales");
+          if (elOrders) elOrders.textContent = totalOrders;
+          if (elSales)  elSales.textContent  = totalSales > 0 ? "৳" + totalSales.toLocaleString("en-IN") : "৳0";
+
+          // Recent orders widget
+          const recent = orders.sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || "")).slice(0, 5);
+          const el = document.getElementById("dashRecentOrders");
+          if (el && recent.length) {
+            el.innerHTML = recent.map(o => `<div class="mini-order"><b>${o.id || "—"}</b><span>${o.total || "—"}</span><em>${o.status || "—"}</em></div>`).join("");
+          }
+        }, err => console.warn("Dashboard orders notice:", err));
+
+        // Messages count
+        window.db.collection("messages").onSnapshot(snapshot => {
+          const el = document.getElementById("dashMessages");
+          if (el) el.textContent = snapshot.size;
+        }, err => console.warn("Dashboard messages notice:", err));
       });
     </script>
   </body>

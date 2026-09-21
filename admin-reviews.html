@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8">
@@ -25,23 +25,95 @@
         <a href="admin-login.html">Logout</a>
       </aside>
       <main class="admin-main">
-<div class="admin-top">
-            <div>
-              <span class="eyebrow">ADMIN MANAGEMENT</span>
-              <h1>Reviews</h1>
-            </div>
+        <div class="admin-top">
+          <div>
+            <span class="eyebrow">ADMIN MANAGEMENT</span>
+            <h1>Customer Reviews</h1>
           </div>
-          <div class="admin-card">
-            <div class="empty-state">
-              <div>✦</div>
-              <h2>Reviews</h2>
-              <p>This page is ready to connect to the backend/database.</p>
-              <button class="btn btn-primary">Add New</button>
-            </div>
+          <span class="muted" id="reviewCountBadge">Loading…</span>
+        </div>
+        <div class="admin-card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Reviewer</th>
+                  <th>Product</th>
+                  <th>Rating</th>
+                  <th>Review</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="reviewsTbody">
+                <tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted);">Loading…</td></tr>
+              </tbody>
+            </table>
           </div>
+        </div>
       </main>
     </div>
     <div id="toast" class="toast"></div>
+    <!-- Firebase SDK & Config -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
     <script src="js/app.js"></script>
+    <script>
+      (function() {
+        const tbody      = document.getElementById("reviewsTbody");
+        const countBadge = document.getElementById("reviewCountBadge");
+
+        function stars(n) { return "★".repeat(n || 0) + "☆".repeat(5 - (n || 0)); }
+
+        function renderReviews(list) {
+          if (countBadge) countBadge.textContent = list.length + " Review" + (list.length === 1 ? "" : "s");
+          if (!list.length) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:36px;color:var(--muted);">No reviews yet.</td></tr>';
+            return;
+          }
+          tbody.innerHTML = list.map(r => {
+            const dateStr = r.createdAt ? new Date(r.createdAt).toLocaleDateString("en-GB") : "—";
+            return `
+              <tr>
+                <td><b>${r.name || "Anonymous"}</b><br><small style="color:var(--muted);">${r.email || ""}</small></td>
+                <td style="font-size:13px;">${r.product || "—"}</td>
+                <td style="color:#f4a500;letter-spacing:1px;">${stars(r.rating)}</td>
+                <td style="max-width:220px;font-size:13px;">${r.review || "—"}</td>
+                <td><small style="color:var(--muted);">${dateStr}</small></td>
+                <td><span class="status ${r.approved ? 'success' : ''}">${r.approved ? 'Approved' : 'Pending'}</span></td>
+                <td>
+                  ${!r.approved ? `<button class="btn btn-outline" style="font-size:12px;padding:5px 10px;margin-bottom:4px;" onclick="approveReview('${r._docId}')">Approve</button><br>` : ''}
+                  <button class="btn btn-outline" style="font-size:12px;padding:5px 10px;color:#c0392b;border-color:#c0392b;" onclick="deleteReview('${r._docId}')">Delete</button>
+                </td>
+              </tr>`;
+          }).join("");
+        }
+
+        window.approveReview = async function(docId) {
+          if (!window.db || !docId) return;
+          try { await window.db.collection("reviews").doc(docId).update({ approved: true }); toast("Review approved."); }
+          catch (err) { console.warn(err); }
+        };
+
+        window.deleteReview = async function(docId) {
+          if (!window.db || !docId) return;
+          if (!confirm("Delete this review?")) return;
+          try { await window.db.collection("reviews").doc(docId).delete(); toast("Review deleted."); }
+          catch (err) { console.warn(err); }
+        };
+
+        if (window.db) {
+          window.db.collection("reviews").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+            const list = [];
+            snapshot.forEach(doc => list.push({ _docId: doc.id, ...doc.data() }));
+            renderReviews(list);
+          }, err => { console.warn("Firestore reviews notice:", err); renderReviews([]); });
+        } else {
+          renderReviews([]);
+        }
+      })();
+    </script>
   </body>
 </html>

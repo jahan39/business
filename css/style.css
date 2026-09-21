@@ -516,11 +516,35 @@ p {
   font-size: 19px;
   color: var(--primary);
   box-shadow: 0 5px 18px rgba(0, 0, 0, .1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wishlist-btn svg {
+  pointer-events: none;
+  transition: transform 0.2s ease;
+}
+
+.wishlist-btn:hover svg {
+  transform: scale(1.12);
 }
 
 .wishlist-btn.saved {
   background: var(--primary);
   color: #fff;
+}
+
+.buy-row .wishlist-btn {
+  position: static;
+  width: 48px;
+  height: 48px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  box-shadow: none;
+  flex-shrink: 0;
 }
 
 .product-info {
@@ -1482,7 +1506,8 @@ p {
 
 /* ===================== TABLE ===================== */
 .table-wrap {
-  overflow: auto;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   background: #fff;
   border: 1px solid var(--border);
   border-radius: 15px;
@@ -1926,12 +1951,19 @@ summary {
   .nav-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     margin-left: auto;
   }
 
-  .nav-actions > a {
-    font-size: 17px;
+  .nav-actions > a:not(.btn) {
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+  }
+
+  .nav-actions > a:not(.btn) svg {
+    width: 16px;
+    height: 16px;
   }
 
   /* Keep 'Order Now' button fully visible on mobile! */
@@ -2127,16 +2159,36 @@ summary {
   }
 
   .nav-actions {
-    gap: 8px;
+    gap: 6px;
   }
 
-  .nav-actions > a {
-    font-size: 15px;
+  .nav-actions > a:not(.btn) {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+  }
+
+  .nav-actions > a:not(.btn) svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .nav-actions .cart-count {
+    top: -4px;
+    right: -4px;
+    font-size: 8.5px;
+    min-width: 15px;
+    height: 15px;
+    line-height: 15px;
   }
 
   .nav-actions .btn {
     padding: 6px 10px;
     font-size: 11px;
+  }
+
+  .review-form-row {
+    grid-template-columns: 1fr !important;
   }
 
   nav {
@@ -2285,6 +2337,29 @@ summary {
     left: 14px;
     padding: 6px 10px;
     font-size: 11px;
+  }
+}
+
+/* ===================== RESPONSIVE: EXTRA COMPACT (< 380px) ===================== */
+@media (max-width: 380px) {
+  .logo {
+    font-size: 17px;
+  }
+  .nav-actions {
+    gap: 4px;
+  }
+  .nav-actions > a:not(.btn),
+  .nav-actions .theme-toggle-btn {
+    width: 31px;
+    height: 31px;
+  }
+  .nav-actions > a:not(.btn) svg {
+    width: 13.5px;
+    height: 13.5px;
+  }
+  .nav-actions .btn {
+    padding: 5px 7px;
+    font-size: 10px;
   }
 }
 

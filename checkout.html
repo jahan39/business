@@ -521,10 +521,10 @@
           <a href="contact.html">Contact</a>
         </nav>
         <div class="nav-actions">
-          <a href="search.html" aria-label="Search">⌕</a>
-          <a href="wishlist.html" aria-label="Wishlist">♡</a>
+          <a href="search.html" aria-label="Search" title="Search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></a>
+          <a href="wishlist.html" aria-label="Wishlist" title="Wishlist"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></a>
           <a href="cart.html" aria-label="Cart">🛒 <span class="cart-count">0</span></a>
-          <a href="account.html" aria-label="Account">♙</a>
+          <a href="account.html" aria-label="Account" title="My Account"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></a>
           <button class="theme-toggle-btn" id="themeToggleBtn" type="button" aria-label="Toggle dark/light mode" title="Toggle dark/light mode" onclick="toggleTheme()">🌙</button>
           <a class="btn btn-primary" href="shop.html">Order Now</a>
         </div>
@@ -561,7 +561,7 @@
               <!-- Customer Info -->
               <div class="co-card">
                 <div class="co-card-head">
-                  <div class="co-card-icon">♙</div>
+                  <div class="co-card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
                   <h2>Customer Information</h2>
                 </div>
                 <div class="co-grid">
@@ -781,6 +781,10 @@
     </footer>
 
     <div id="toast" class="toast"></div>
+    <!-- Firebase SDK & Config -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
     <script src="js/app.js"></script>
     <script>
       /* ── Render cart items in summary ── */
@@ -819,8 +823,19 @@
         const cart     = JSON.parse(localStorage.getItem('sugarAtelierCart') || '[]');
         const sub      = cart.reduce((s, i) => s + i.price * i.qty, 0);
         const delivery = sub > 0 ? Number(document.querySelector('input[name="delivery"]:checked')?.value || 100) : 0;
-        const coupon   = localStorage.getItem('sugarCoupon');
-        const discount = (sub > 0 && coupon === 'SWEET15') ? Math.round(sub * .15) : 0;
+        let discountPct = 0;
+        try {
+          const rawC = localStorage.getItem('sugarCoupon');
+          if (rawC) {
+            if (rawC.startsWith('{')) {
+              const parsed = JSON.parse(rawC);
+              discountPct = Number(parsed.discount) || 15;
+            } else if (rawC === 'SWEET15') {
+              discountPct = 15;
+            }
+          }
+        } catch (e) {}
+        const discount = (sub > 0 && discountPct > 0) ? Math.round(sub * (discountPct / 100)) : 0;
         const total    = Math.max(0, sub - discount + delivery);
 
         const setText = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
@@ -831,24 +846,72 @@
       }
 
       /* ── Coupon ── */
-      document.getElementById('applyCoupon')?.addEventListener('click', () => {
+      document.getElementById('applyCoupon')?.addEventListener('click', async () => {
         const v = document.getElementById('couponCode').value.trim().toUpperCase();
+        if (!v) {
+          toast('Please enter a coupon code.');
+          return;
+        }
+
         if (v === 'SWEET15') {
-          localStorage.setItem('sugarCoupon', v);
+          localStorage.setItem('sugarCoupon', JSON.stringify({ code: 'SWEET15', discount: 15 }));
           updateCoTotals();
           const t = document.getElementById('toast');
           if (t) { t.textContent = '🎉 15% discount applied!'; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200); }
-        } else {
-          const t = document.getElementById('toast');
-          if (t) { t.textContent = 'Invalid coupon code. Try SWEET15'; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200); }
+          return;
         }
+
+        // Firestore lookup
+        if (window.db) {
+          try {
+            const doc = await window.db.collection('coupons').doc(v).get();
+            if (doc.exists) {
+              const cData = doc.data();
+              const now = new Date();
+              const exp = cData.expiry ? new Date(cData.expiry) : null;
+              if (exp && exp < now) {
+                toast('This coupon has expired.');
+                return;
+              }
+              const disc = Number(cData.discount) || 15;
+              localStorage.setItem('sugarCoupon', JSON.stringify({ code: v, discount: disc }));
+              updateCoTotals();
+              toast(`🎉 ${v} applied: ${disc}% discount!`);
+              return;
+            }
+          } catch (err) {
+            console.warn('Checkout coupon lookup error:', err);
+          }
+        }
+
+        // localStorage lookup
+        try {
+          const savedCoupons = JSON.parse(localStorage.getItem('sugarAtelierCoupons') || '[]');
+          const found = savedCoupons.find(c => (c.code || '').toUpperCase() === v);
+          if (found) {
+            const now = new Date();
+            const exp = found.expiry ? new Date(found.expiry) : null;
+            if (exp && exp < now) {
+              toast('This coupon has expired.');
+              return;
+            }
+            const disc = Number(found.discount) || 15;
+            localStorage.setItem('sugarCoupon', JSON.stringify({ code: v, discount: disc }));
+            updateCoTotals();
+            toast(`🎉 ${v} applied: ${disc}% discount!`);
+            return;
+          }
+        } catch (e) {}
+
+        const t = document.getElementById('toast');
+        if (t) { t.textContent = 'Invalid coupon code. Try SWEET15'; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200); }
       });
 
       /* ── Delivery change ── */
       document.querySelectorAll('input[name="delivery"]').forEach(r => r.addEventListener('change', updateCoTotals));
 
       /* ── Form submit ── */
-      document.getElementById('checkoutForm')?.addEventListener('submit', function(e) {
+      document.getElementById('checkoutForm')?.addEventListener('submit', async function(e) {
         e.preventDefault();
         const cart = JSON.parse(localStorage.getItem('sugarAtelierCart') || '[]');
         if (!cart.length) {
@@ -856,24 +919,77 @@
           if (t) { t.textContent = 'Your cart is empty! Add cakes before ordering.'; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
           return;
         }
+
+        // Collect form data
+        const fd = new FormData(this);
+        const customerName  = fd.get('name')?.trim() || '';
+        const customerEmail = fd.get('email')?.trim() || '';
+        const customerPhone = fd.get('phone')?.trim() || '';
+        const country       = fd.get('country') || 'Bangladesh';
+        const address       = fd.get('address')?.trim() || '';
+        const city          = fd.get('city')?.trim() || '';
+        const postal        = fd.get('postal')?.trim() || '';
+        const deliveryVal   = fd.get('delivery') || '100';
+        const payMethod     = fd.get('pay') || 'bd-local';
+
+        const deliveryLabels = { '100': 'Standard Delivery', '250': 'Express Delivery', '350': 'Same Day Delivery' };
+        const payLabels = { 'bd-local': 'bKash / Nagad / Rocket', 'ssl': 'SSLCommerz', 'stripe': 'Stripe — Visa/Mastercard' };
+
         const totalText = document.getElementById('checkoutTotal')?.textContent || '৳ 0';
-        const orderNum = "#SC-" + Math.floor(1025 + Math.random() * 8900);
+        const totalNum  = parseInt(totalText.replace(/[^\d]/g, '')) || 0;
+        const orderNum  = "#SC-" + Math.floor(1025 + Math.random() * 8900);
+
+        let currentUid = '';
+        if (window.auth && window.auth.currentUser) {
+          currentUid = window.auth.currentUser.uid;
+        } else {
+          try { currentUid = JSON.parse(localStorage.getItem('sugarAtelierCurrentUser') || '{}').uid || ''; } catch(e){}
+        }
+
         const newOrder = {
-          id: orderNum,
-          date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-          total: totalText,
-          status: 'Baking',
-          items: cart
+          id:              orderNum,
+          orderId:         orderNum,
+          userId:          currentUid,
+          date:            new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+          total:           totalText,
+          totalAmount:     totalNum,
+          status:          'Order Placed',
+          items:           cart,
+          customerName:    customerName,
+          customerEmail:   customerEmail,
+          customerPhone:   customerPhone,
+          country:         country,
+          address:         address,
+          city:            city,
+          postal:          postal,
+          deliveryMethod:  deliveryLabels[deliveryVal] || 'Standard Delivery',
+          deliveryCharge:  Number(deliveryVal),
+          paymentMethod:   payLabels[payMethod] || payMethod,
+          createdAt:       new Date().toISOString(),
         };
+
+        const btn = document.getElementById('placeOrderBtn');
+        btn.textContent = '⏳ Placing your order…';
+        btn.disabled = true;
+
+        // Save to Firestore
+        let firestoreSaved = false;
+        if (window.db) {
+          try {
+            await window.db.collection('orders').doc(orderNum).set(newOrder);
+            firestoreSaved = true;
+          } catch (err) {
+            console.warn('Firestore order save notice:', err);
+          }
+        }
+
+        // Always save to localStorage as backup
         try {
           const orders = JSON.parse(localStorage.getItem('sugarAtelierOrders') || '[]');
           orders.unshift(newOrder);
           localStorage.setItem('sugarAtelierOrders', JSON.stringify(orders));
         } catch (err) {}
 
-        const btn = document.getElementById('placeOrderBtn');
-        btn.textContent = '⏳ Placing your order…';
-        btn.disabled = true;
         setTimeout(() => {
           localStorage.removeItem('sugarAtelierCart');
           localStorage.removeItem('sugarCoupon');
@@ -881,9 +997,45 @@
         }, 1000);
       });
 
+      // Auto-fill logged in user info and primary address
+      function autoFillCheckoutInfo() {
+        let user = null;
+        try { user = JSON.parse(localStorage.getItem('sugarAtelierCurrentUser') || 'null'); } catch(e){}
+        if (!user && window.auth && window.auth.currentUser) {
+          user = {
+            name: window.auth.currentUser.displayName || '',
+            email: window.auth.currentUser.email || '',
+            phone: ''
+          };
+        }
+        if (user) {
+          const nameInput = document.querySelector('input[name="name"]');
+          const emailInput = document.querySelector('input[name="email"]');
+          const phoneInput = document.querySelector('input[name="phone"]');
+          if (nameInput && !nameInput.value && user.name) nameInput.value = user.name;
+          if (emailInput && !emailInput.value && user.email) emailInput.value = user.email;
+          if (phoneInput && !phoneInput.value && user.phone) phoneInput.value = user.phone;
+        }
+
+        try {
+          const addresses = JSON.parse(localStorage.getItem('sugarAtelierAddresses') || '[]');
+          if (addresses.length) {
+            const a = addresses[0];
+            const addrInput = document.querySelector('input[name="address"]');
+            const cityInput = document.querySelector('input[name="city"]');
+            const postalInput = document.querySelector('input[name="postal"]');
+            if (addrInput && !addrInput.value && a.street) addrInput.value = a.street;
+            if (cityInput && !cityInput.value && a.city) cityInput.value = a.city;
+            if (postalInput && !postalInput.value && a.postal) postalInput.value = a.postal;
+          }
+        } catch(e){}
+      }
+
       /* ── Init ── */
       renderCoItems();
       updateCoTotals();
+      autoFillCheckoutInfo();
+      if (window.auth) window.auth.onAuthStateChanged(autoFillCheckoutInfo);
     </script>
   </body>
 </html>

@@ -19,10 +19,10 @@
           <a href="contact.html">Contact</a>
         </nav>
         <div class="nav-actions">
-          <a href="search.html" aria-label="Search">⌕</a>
-          <a href="wishlist.html" aria-label="Wishlist">♡</a>
+          <a href="search.html" aria-label="Search" title="Search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></a>
+          <a href="wishlist.html" aria-label="Wishlist" title="Wishlist"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></a>
           <a href="cart.html" aria-label="Cart">🛒<span class="cart-count">0</span></a>
-          <a href="account.html" aria-label="Account">♙</a>
+          <a href="account.html" aria-label="Account" title="My Account"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></a>
           <button class="theme-toggle-btn" id="themeToggleBtn" type="button" aria-label="Toggle dark/light mode" title="Toggle dark/light mode" onclick="toggleTheme()">🌙</button>
           <a class="btn btn-primary" href="shop.html">Order Now</a>
         </div>
@@ -61,11 +61,11 @@
                 <button>Strawberry</button>
               </div>
             </div>
-            <label class="field">Cake Message<input placeholder="Happy Birthday!"></label>
+            <label class="field">Cake Message<input id="cakeMessageInput" placeholder="Happy Birthday!"></label>
             <div class="buy-row">
               <input class="qty" type="number" min="1" value="1">
-              <button class="btn btn-primary add-cart" id="addCartBtn" data-name="Classic Chocolate Dream" data-price="1850">Add to Cart</button>
-              <button class="btn btn-outline wishlist-btn" id="wishBtn" data-wishlist="Classic Chocolate Dream">♡</button>
+              <button class="btn btn-primary" id="addCartBtn" data-name="Classic Chocolate Dream" data-price="1850" onclick="handleProductAddToCart(event)">Add to Cart</button>
+              <button class="btn btn-outline wishlist-btn" id="wishBtn" data-wishlist="Classic Chocolate Dream" title="Add to Wishlist"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></button>
             </div>
             <div class="info-box">
               <b>Delivery</b>
@@ -76,14 +76,51 @@
       </section>
       <section class="section soft">
         <div class="container">
-          <h2>Customer Reviews</h2>
-          <div class="review">
-            <b>★★★★★ — Ayesha</b>
-            <p>Beautiful cake and excellent taste. Delivery was on time!</p>
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+            <h2 style="margin:0;">Customer Reviews</h2>
+            <button class="btn btn-outline" id="toggleReviewFormBtn" type="button" style="font-size:13px;padding:8px 16px;">+ Write a Review</button>
           </div>
-          <div class="review">
-            <b>★★★★★ — Tanvir</b>
-            <p>The chocolate flavor was rich and fresh. Highly recommended.</p>
+
+          <!-- Review Submission Form -->
+          <div id="reviewFormWrap" style="display:none;background:#fff;border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:28px;max-width:620px;">
+            <h3 style="margin-top:0;font-size:17px;color:var(--primary);">Share Your Experience</h3>
+            <form id="productReviewForm" style="display:grid;gap:14px;">
+              <div class="review-form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div>
+                  <label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;">Your Name</label>
+                  <input id="revName" placeholder="e.g. Nusrat Jahan" required style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:13.5px;background:#fdfafb;">
+                </div>
+                <div>
+                  <label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;">Rating</label>
+                  <select id="revRating" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:13.5px;background:#fdfafb;">
+                    <option value="5">★★★★★ (5 Stars)</option>
+                    <option value="4">★★★★☆ (4 Stars)</option>
+                    <option value="3">★★★☆☆ (3 Stars)</option>
+                    <option value="2">★★☆☆☆ (2 Stars)</option>
+                    <option value="1">★☆☆☆☆ (1 Star)</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;">Review</label>
+                <textarea id="revText" rows="3" placeholder="Tell us what you liked about this cake..." required style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:13.5px;font-family:inherit;background:#fdfafb;"></textarea>
+              </div>
+              <div style="display:flex;gap:10px;">
+                <button type="submit" class="btn btn-primary" style="padding:10px 22px;">Submit Review</button>
+                <button type="button" id="cancelReviewBtn" class="btn btn-outline" style="padding:10px 18px;">Cancel</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="productReviewsList">
+            <div class="review">
+              <b>★★★★★ — Ayesha</b>
+              <p>Beautiful cake and excellent taste. Delivery was on time!</p>
+            </div>
+            <div class="review">
+              <b>★★★★★ — Tanvir</b>
+              <p>The chocolate flavor was rich and fresh. Highly recommended.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -193,17 +230,44 @@
 
       function loadProduct() {
         const params  = new URLSearchParams(location.search);
-        const nameKey = params.get("name") || "Classic Chocolate Dream";
+        const nameKey = (params.get("name") || params.get("id") || "Classic Chocolate Dream").trim();
+        const normKey = nameKey.toLowerCase();
 
-        // Try builtin first, then localStorage
+        // 1. Try builtin
         let product = BUILTIN_DATA[nameKey];
+        if (!product) {
+          for (const k in BUILTIN_DATA) {
+            if (k.toLowerCase() === normKey) { product = BUILTIN_DATA[k]; break; }
+          }
+        }
+
+        // 2. Try localStorage
         if (!product) {
           try {
             const saved = JSON.parse(localStorage.getItem("sugarAtelierProducts") || "[]");
-            product = saved.find(p => p.name === nameKey);
+            product = saved.find(p => (p.name || "").trim().toLowerCase() === normKey || p.id === nameKey);
           } catch { /* ignore */ }
         }
+
+        // 3. Fallback to Firestore directly if not yet in cache
+        if (!product && window.db) {
+          window.db.collection("products").get().then(snap => {
+            snap.forEach(doc => {
+              const d = doc.data();
+              if ((d.name && d.name.trim().toLowerCase() === normKey) || doc.id === nameKey) {
+                product = { ...d, id: doc.id };
+              }
+            });
+            if (product) renderProductView(product);
+          }).catch(e => console.warn("Firestore product fetch note:", e));
+        }
+
         if (!product) product = BUILTIN_DATA["Classic Chocolate Dream"];
+        renderProductView(product);
+      }
+
+      function renderProductView(product) {
+        if (!product) return;
 
         // Update page title
         document.title = product.name + " | The Sugar Atelier";
@@ -280,6 +344,150 @@
       btt.classList.toggle("visible", window.scrollY > 350);
     });
     btt.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+    // ── Handle Add to Cart with size/flavor/message ─────────────────────
+    function handleProductAddToCart(e) {
+      e.preventDefault();
+      const addBtn = document.getElementById("addCartBtn");
+      const detail = document.querySelector(".product-detail");
+
+      const name  = addBtn.dataset.name  || "Handcrafted Cake";
+      const price = Number(addBtn.dataset.price) || 1850;
+
+      // Read selected size chip
+      const sizeChips   = detail ? [...detail.querySelectorAll(".option")] : [];
+      let selectedSize  = "";
+      let selectedFlavor = "";
+      sizeChips.forEach(opt => {
+        const label = opt.querySelector("b")?.textContent?.toLowerCase() || "";
+        const selected = opt.querySelector(".chips .selected");
+        if (label.includes("size"))   selectedSize   = selected?.textContent?.trim() || "";
+        if (label.includes("flavor")) selectedFlavor = selected?.textContent?.trim() || "";
+      });
+
+      // Read cake message
+      const cakeMsg = document.getElementById("cakeMessageInput")?.value?.trim() || "";
+
+      // Build descriptive display name
+      let displayName = name;
+      const extras = [selectedSize, selectedFlavor, cakeMsg ? `"${cakeMsg}"` : ""].filter(Boolean);
+      if (extras.length) displayName = `${name} (${extras.join(", ")})`;
+
+      // Read qty
+      const qtyInput = detail ? detail.querySelector(".qty") : null;
+      const qty = qtyInput ? Math.max(1, Number(qtyInput.value) || 1) : 1;
+
+      // Get product image
+      const mainImg = document.getElementById("mainImg");
+      const imgSrc  = mainImg ? mainImg.src : null;
+
+      // Use global addToCart from app.js
+      if (typeof addToCart === "function") {
+        addToCart(displayName, price, qty, imgSrc);
+      }
+    }
+    window.handleProductAddToCart = handleProductAddToCart;
+
+    // ── Reviews Logic (Firestore submission & display) ───────────────
+    (function initProductReviews() {
+      const toggleBtn = document.getElementById("toggleReviewFormBtn");
+      const cancelBtn = document.getElementById("cancelReviewBtn");
+      const formWrap  = document.getElementById("reviewFormWrap");
+      const revForm   = document.getElementById("productReviewForm");
+      const listEl    = document.getElementById("productReviewsList");
+
+      toggleBtn?.addEventListener("click", () => {
+        if (!formWrap) return;
+        const isHidden = formWrap.style.display === "none";
+        formWrap.style.display = isHidden ? "block" : "none";
+        toggleBtn.textContent = isHidden ? "✕ Close Form" : "+ Write a Review";
+
+        // Auto-fill customer name if logged in
+        try {
+          const u = JSON.parse(localStorage.getItem('sugarAtelierCurrentUser') || '{}');
+          const nameInput = document.getElementById("revName");
+          if (nameInput && !nameInput.value && u.name) nameInput.value = u.name;
+        } catch (e) {}
+      });
+
+      cancelBtn?.addEventListener("click", () => {
+        if (!formWrap) return;
+        formWrap.style.display = "none";
+        if (toggleBtn) toggleBtn.textContent = "+ Write a Review";
+      });
+
+      function stars(n) { return "★".repeat(n || 0) + "☆".repeat(5 - (n || 0)); }
+
+      async function loadApprovedReviews() {
+        if (!listEl) return;
+        const params = new URLSearchParams(location.search);
+        const cakeName = params.get("name") || "Classic Chocolate Dream";
+
+        if (window.db) {
+          try {
+            const snap = await window.db.collection("reviews")
+              .where("product", "==", cakeName)
+              .where("approved", "==", true)
+              .get();
+
+            if (!snap.empty) {
+              const reviews = [];
+              snap.forEach(d => reviews.push(d.data()));
+              listEl.innerHTML = reviews.map(r => `
+                <div class="review" style="margin-bottom:14px;">
+                  <b>${stars(r.rating)} — ${r.name || 'Anonymous'}</b>
+                  <p>${r.review || ''}</p>
+                </div>
+              `).join("");
+            }
+          } catch (err) {
+            console.warn("Reviews load note:", err);
+          }
+        }
+      }
+
+      revForm?.addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const params = new URLSearchParams(location.search);
+        const cakeName = params.get("name") || document.getElementById("prodName")?.textContent || "Handcrafted Cake";
+        const name = document.getElementById("revName")?.value.trim();
+        const rating = Number(document.getElementById("revRating")?.value) || 5;
+        const review = document.getElementById("revText")?.value.trim();
+
+        if (!name || !review) return;
+
+        const subBtn = revForm.querySelector('button[type="submit"]');
+        const origText = subBtn.textContent;
+        subBtn.textContent = "Submitting...";
+        subBtn.disabled = true;
+
+        try {
+          if (window.db) {
+            await window.db.collection("reviews").add({
+              product: cakeName,
+              name: name,
+              rating: rating,
+              review: review,
+              approved: false, // Pending admin approval
+              createdAt: new Date().toISOString()
+            });
+          }
+          toast("Thank you! Your review has been submitted for moderation.");
+          revForm.reset();
+          if (formWrap) formWrap.style.display = "none";
+          if (toggleBtn) toggleBtn.textContent = "+ Write a Review";
+        } catch (err) {
+          console.error("Submit review error:", err);
+          toast("Could not submit review. Please try again.");
+        } finally {
+          subBtn.textContent = origText;
+          subBtn.disabled = false;
+        }
+      });
+
+      // Run on page load
+      setTimeout(loadApprovedReviews, 100);
+    })();
     </script>
   </body>
 </html>

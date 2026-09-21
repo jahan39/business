@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8">
@@ -25,23 +25,97 @@
         <a href="admin-login.html">Logout</a>
       </aside>
       <main class="admin-main">
-<div class="admin-top">
+        <div class="admin-top">
+          <div>
+            <span class="eyebrow">ADMIN MANAGEMENT</span>
+            <h1>Website Settings</h1>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <form id="settingsForm" style="max-width:540px;display:flex;flex-direction:column;gap:20px;">
             <div>
-              <span class="eyebrow">ADMIN MANAGEMENT</span>
-              <h1>Website Settings</h1>
+              <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:600;">Shop Name</label>
+              <input id="settShopName" type="text" placeholder="The Sugar Atelier" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;">
             </div>
-          </div>
-          <div class="admin-card">
-            <div class="empty-state">
-              <div>✦</div>
-              <h2>Website Settings</h2>
-              <p>This page is ready to connect to the backend/database.</p>
-              <button class="btn btn-primary">Add New</button>
+            <div>
+              <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:600;">Standard Delivery Charge (৳)</label>
+              <input id="settDeliveryStd" type="number" min="0" placeholder="100" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;">
             </div>
-          </div>
+            <div>
+              <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:600;">Express Delivery Charge (৳)</label>
+              <input id="settDeliveryExp" type="number" min="0" placeholder="250" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;">
+            </div>
+            <div>
+              <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:600;">Announcement Banner</label>
+              <input id="settAnnouncement" type="text" placeholder="Free delivery on orders over ৳2,000!" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;">
+              <small style="color:var(--muted);font-size:12px;">Leave blank to hide banner.</small>
+            </div>
+            <div>
+              <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:600;">Support Email</label>
+              <input id="settSupportEmail" type="email" placeholder="support@yourdomain.com" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;">
+            </div>
+            <div>
+              <button type="submit" class="btn btn-primary" style="width:fit-content;padding:12px 28px;">Save Settings</button>
+            </div>
+          </form>
+        </div>
       </main>
     </div>
     <div id="toast" class="toast"></div>
+    <!-- Firebase SDK & Config -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
     <script src="js/app.js"></script>
+    <script>
+      (function() {
+        const fields = {
+          shopName:        "settShopName",
+          deliveryStd:     "settDeliveryStd",
+          deliveryExp:     "settDeliveryExp",
+          announcement:    "settAnnouncement",
+          supportEmail:    "settSupportEmail",
+        };
+
+        function loadSettings(data) {
+          if (!data) return;
+          Object.entries(fields).forEach(([key, id]) => {
+            const el = document.getElementById(id);
+            if (el && data[key] !== undefined) el.value = data[key];
+          });
+        }
+
+        // Load existing settings
+        if (window.db) {
+          window.db.collection("settings").doc("site").get().then(doc => {
+            if (doc.exists) loadSettings(doc.data());
+          }).catch(err => console.warn("Settings load note:", err));
+        }
+
+        // Save settings
+        document.getElementById("settingsForm")?.addEventListener("submit", async function(e) {
+          e.preventDefault();
+          const data = {};
+          Object.entries(fields).forEach(([key, id]) => {
+            const el = document.getElementById(id);
+            data[key] = el ? el.value.trim() : "";
+          });
+          data.updatedAt = new Date().toISOString();
+
+          if (window.db) {
+            try {
+              await window.db.collection("settings").doc("site").set(data, { merge: true });
+              toast("Settings saved successfully!");
+            } catch (err) {
+              console.warn("Settings save error:", err);
+              toast("Error saving settings. Please try again.");
+            }
+          } else {
+            toast("Firestore not connected. Settings not saved.");
+          }
+        });
+      })();
+    </script>
   </body>
 </html>

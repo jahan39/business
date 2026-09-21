@@ -19,10 +19,10 @@
           <a href="contact.html">Contact</a>
         </nav>
         <div class="nav-actions">
-          <a href="search.html" aria-label="Search">⌕</a>
-          <a href="wishlist.html" aria-label="Wishlist">♡</a>
+          <a href="search.html" aria-label="Search" title="Search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></a>
+          <a href="wishlist.html" aria-label="Wishlist" title="Wishlist"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></a>
           <a href="cart.html" aria-label="Cart">🛒<span class="cart-count">0</span></a>
-          <a href="account.html" aria-label="Account">♙</a>
+          <a href="account.html" aria-label="Account" title="My Account"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></a>
           <a class="btn btn-primary" href="shop.html">Order Now</a>
         </div>
       </div>
@@ -104,50 +104,66 @@
       <div class="copyright">© 2026 The Sugar Atelier. All rights reserved.</div>
     </footer>
     <div id="toast" class="toast"></div>
+    <!-- Firebase SDK & Config -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
     <script src="js/app.js"></script>
     <script>
+      // Flag to prevent app.js duplicate handler
+      window.__customCakeHandler = true;
+
       // Auto-fill customer info if logged in
       try {
         const u = JSON.parse(localStorage.getItem("sugarAtelierCurrentUser") || "null");
         if (u) {
-          if (u.name && document.getElementById("ccName")) document.getElementById("ccName").value = u.name;
+          if (u.name  && document.getElementById("ccName"))  document.getElementById("ccName").value  = u.name;
           if (u.phone && document.getElementById("ccPhone")) document.getElementById("ccPhone").value = u.phone;
         }
       } catch (e) {}
 
-      document.getElementById("customCakeForm")?.addEventListener("submit", function(e) {
+      document.getElementById("customCakeForm")?.addEventListener("submit", async function(e) {
         e.preventDefault();
         const fd = new FormData(this);
         const req = {
-          id: "CC-" + Math.floor(100 + Math.random() * 900),
+          id:           "CC-" + Math.floor(100 + Math.random() * 900),
           customerName: fd.get("customerName")?.trim() || "Customer",
-          phone: fd.get("phone")?.trim() || "",
-          cakeType: fd.get("cakeType")?.trim() || "",
-          flavor: fd.get("flavor") || "Chocolate",
-          size: fd.get("size") || "1 KG",
+          phone:        fd.get("phone")?.trim() || "",
+          cakeType:     fd.get("cakeType")?.trim() || "",
+          flavor:       fd.get("flavor") || "Chocolate",
+          size:         fd.get("size") || "1 KG",
           deliveryDate: fd.get("deliveryDate") || "",
-          theme: fd.get("theme")?.trim() || "Custom Request",
-          message: fd.get("message")?.trim() || "",
+          theme:        fd.get("theme")?.trim() || "Custom Request",
+          message:      fd.get("message")?.trim() || "",
           instructions: fd.get("instructions")?.trim() || "",
-          status: "Pending",
-          createdAt: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
+          status:       "Pending",
+          createdAt:    new Date().toISOString(),
         };
 
+        const btn = document.getElementById("ccSubmitBtn");
+        btn.disabled = true;
+        btn.textContent = "Submitting Request…";
+
+        // Save to Firestore
+        if (window.db) {
+          try {
+            await window.db.collection("customCakeRequests").doc(req.id).set(req);
+          } catch (err) {
+            console.warn("Firestore custom cake save notice:", err);
+          }
+        }
+
+        // Also save to localStorage as backup
         try {
           const list = JSON.parse(localStorage.getItem("sugarAtelierCustomCakes") || "[]");
           list.unshift(req);
           localStorage.setItem("sugarAtelierCustomCakes", JSON.stringify(list));
         } catch (err) {}
 
-        const btn = document.getElementById("ccSubmitBtn");
-        btn.disabled = true;
-        btn.textContent = "Submitting Request…";
-        setTimeout(() => {
-          toast("🎉 Custom cake request submitted! We will call you shortly.");
-          this.reset();
-          btn.disabled = false;
-          btn.textContent = "Submit Custom Request";
-        }, 700);
+        toast("🎉 Custom cake request submitted! We will call you shortly.");
+        this.reset();
+        btn.disabled = false;
+        btn.textContent = "Submit Custom Request";
       });
     </script>
   </body>

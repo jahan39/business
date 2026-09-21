@@ -56,50 +56,38 @@
       </main>
     </div>
     <div id="toast" class="toast"></div>
+    <!-- Firebase SDK & Config -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
     <script src="js/app.js"></script>
     <script>
       (function() {
         const tbody = document.getElementById("customCakesTbody");
         if (!tbody) return;
 
-        function renderCustomCakes() {
-          const defaultItems = [
-            {
-              id: "CC-101",
-              customerName: "Sadia Islam",
-              phone: "+880 1819-234567",
-              cakeType: "3-Tier Wedding Cake",
-              flavor: "Vanilla & Raspberry",
-              size: "3 KG+",
-              deliveryDate: "2026-10-05",
-              theme: "Floral Gold Elegance",
-              message: "Forever & Always",
-              instructions: "Less sweet cream, eggless base preferred.",
-              status: "In Progress"
-            }
-          ];
+        const defaultItems = [
+          { id: "CC-101", customerName: "Sadia Islam", phone: "+880 1819-234567", cakeType: "3-Tier Wedding Cake", flavor: "Vanilla & Raspberry", size: "3 KG+", deliveryDate: "2026-10-05", theme: "Floral Gold Elegance", message: "Forever & Always", instructions: "Less sweet cream, eggless base preferred.", status: "In Progress" }
+        ];
 
-          const saved = JSON.parse(localStorage.getItem("sugarAtelierCustomCakes") || "[]");
-          const all = [...saved, ...defaultItems];
-
+        function renderCustomCakes(all) {
           if (!all.length) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted);">No custom cake requests received yet.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted);">No custom cake requests yet.</td></tr>';
             return;
           }
-
-          tbody.innerHTML = all.map((c, i) => `
+          tbody.innerHTML = all.map(c => `
             <tr>
               <td><strong>${c.id}</strong></td>
               <td>
-                <b>${c.customerName}</b><br>
+                <b>${c.customerName || "—"}</b><br>
                 <small style="color:var(--muted);">${c.phone || "No phone"}</small>
               </td>
               <td>
-                <span>${c.cakeType}</span><br>
-                <small style="color:var(--muted);">${c.flavor}</small>
+                <span>${c.cakeType || "—"}</span><br>
+                <small style="color:var(--muted);">${c.flavor || ""}</small>
               </td>
               <td>
-                <span>${c.size}</span><br>
+                <span>${c.size || "—"}</span><br>
                 <small style="color:var(--primary);">${c.deliveryDate || "ASAP"}</small>
               </td>
               <td style="max-width:220px;font-size:13px;">
@@ -107,36 +95,47 @@
                 <span style="color:var(--muted);">${c.instructions || c.theme || "—"}</span>
               </td>
               <td>
-                <span class="status ${c.status === 'Completed' ? 'success' : ''}">${c.status}</span>
+                <span class="status ${c.status === 'Completed' ? 'success' : ''}">${c.status || "Pending"}</span>
               </td>
               <td>
                 <select class="status-change-sel" data-id="${c.id}" style="padding:4px 8px;font-size:12px;border-radius:6px;border:1px solid var(--border);">
-                  <option value="Pending" ${c.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                  <option value="Pending"     ${c.status === 'Pending'     ? 'selected' : ''}>Pending</option>
                   <option value="In Progress" ${c.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
-                  <option value="Completed" ${c.status === 'Completed' ? 'selected' : ''}>Completed</option>
-                  <option value="Rejected" ${c.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
+                  <option value="Completed"   ${c.status === 'Completed'   ? 'selected' : ''}>Completed</option>
+                  <option value="Rejected"    ${c.status === 'Rejected'    ? 'selected' : ''}>Rejected</option>
                 </select>
               </td>
             </tr>
           `).join("");
 
           tbody.querySelectorAll(".status-change-sel").forEach(sel => {
-            sel.addEventListener("change", function() {
-              const reqId = this.dataset.id;
+            sel.addEventListener("change", async function() {
+              const reqId    = this.dataset.id;
               const newStatus = this.value;
+              if (window.db) {
+                try { await window.db.collection("customCakeRequests").doc(reqId).update({ status: newStatus }); }
+                catch (err) { console.warn("Firestore custom cake status note:", err); }
+              }
               const list = JSON.parse(localStorage.getItem("sugarAtelierCustomCakes") || "[]");
               const target = list.find(item => item.id === reqId);
-              if (target) {
-                target.status = newStatus;
-                localStorage.setItem("sugarAtelierCustomCakes", JSON.stringify(list));
-              }
+              if (target) { target.status = newStatus; localStorage.setItem("sugarAtelierCustomCakes", JSON.stringify(list)); }
               toast("Status updated to: " + newStatus);
-              renderCustomCakes();
             });
           });
         }
 
-        renderCustomCakes();
+        if (window.db) {
+          window.db.collection("customCakeRequests").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+            const list = [];
+            snapshot.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
+            renderCustomCakes(list.length ? list : [...JSON.parse(localStorage.getItem("sugarAtelierCustomCakes") || "[]"), ...defaultItems]);
+          }, err => {
+            console.warn("Firestore custom cakes notice:", err);
+            renderCustomCakes([...JSON.parse(localStorage.getItem("sugarAtelierCustomCakes") || "[]"), ...defaultItems]);
+          });
+        } else {
+          renderCustomCakes([...JSON.parse(localStorage.getItem("sugarAtelierCustomCakes") || "[]"), ...defaultItems]);
+        }
       })();
     </script>
   </body>

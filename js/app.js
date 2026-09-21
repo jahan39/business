@@ -16,6 +16,9 @@ const THEME_KEY = "sugarAtelierTheme";
 
 const CART_KEY = "sugarAtelierCart", WISH_KEY = "sugarAtelierWishlist";
 
+const WISH_ICON_OUTLINE = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>`;
+const WISH_ICON_SAVED = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>`;
+
 const PRODUCTS_INFO = {
   "Classic Chocolate Dream": {
     price: 1850,
@@ -48,7 +51,37 @@ const money = n => "৳ " + Number(n).toLocaleString("en-US");
 const getCart = () => JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 const setCart = c => { localStorage.setItem(CART_KEY, JSON.stringify(c)); updateCartCount(); };
 const getWish = () => JSON.parse(localStorage.getItem(WISH_KEY) || "[]");
-const setWish = w => localStorage.setItem(WISH_KEY, JSON.stringify(w));
+const setWish = w => {
+  localStorage.setItem(WISH_KEY, JSON.stringify(w));
+  if (window.auth && window.auth.currentUser && window.db) {
+    try {
+      window.db.collection("customers").doc(window.auth.currentUser.uid).set({ wishlist: w }, { merge: true }).catch(() => {});
+    } catch (e) {}
+  }
+};
+
+// Sync wishlist on user login
+if (typeof window !== "undefined") {
+  setTimeout(() => {
+    if (window.auth) {
+      window.auth.onAuthStateChanged(user => {
+        if (user && window.db) {
+          window.db.collection("customers").doc(user.uid).get().then(doc => {
+            if (doc.exists && Array.isArray(doc.data().wishlist)) {
+              const cloudWish = doc.data().wishlist;
+              const localWish = getWish();
+              const merged = Array.from(new Set([...cloudWish, ...localWish]));
+              localStorage.setItem(WISH_KEY, JSON.stringify(merged));
+              if (document.getElementById("wishlistGrid") && typeof initWishlist === "function") {
+                initWishlist();
+              }
+            }
+          }).catch(() => {});
+        }
+      });
+    }
+  }, 300);
+}
 
 function toast(msg) {
   const el = document.getElementById("toast");
@@ -140,8 +173,19 @@ function updateTotals() {
   const cart = getCart();
   const sub = cart.reduce((s, i) => s + i.price * i.qty, 0);
   const delivery = sub > 0 ? 100 : 0;
-  const coupon = localStorage.getItem("sugarCoupon");
-  const discount = (sub > 0 && coupon === "SWEET15") ? Math.round(sub * 0.15) : 0;
+  let discountPct = 0;
+  try {
+    const rawCoupon = localStorage.getItem("sugarCoupon");
+    if (rawCoupon) {
+      if (rawCoupon.startsWith("{")) {
+        const parsed = JSON.parse(rawCoupon);
+        discountPct = Number(parsed.discount) || 15;
+      } else if (rawCoupon === "SWEET15") {
+        discountPct = 15;
+      }
+    }
+  } catch (e) {}
+  const discount = (sub > 0 && discountPct > 0) ? Math.round(sub * (discountPct / 100)) : 0;
   const total = Math.max(0, sub - discount + delivery);
 
   setText("subtotal", money(sub));
@@ -244,7 +288,7 @@ function initWishlist() {
     return `
       <article class="product-card">
         <div class="product-img">
-          <button class="wishlist-btn saved" data-wishlist="${n}" title="Remove from wishlist">♥</button>
+          <button class="wishlist-btn saved" data-wishlist="${n}" title="Remove from wishlist">${WISH_ICON_SAVED}</button>
           <a href="${productUrl}"><img src="${info.image}" alt="${n}"></a>
         </div>
         <div class="product-info">
@@ -346,12 +390,12 @@ document.addEventListener("click", e => {
     if (i >= 0) {
       w.splice(i, 1);
       wish.classList.remove("saved");
-      wish.textContent = "♡";
+      wish.innerHTML = WISH_ICON_OUTLINE;
       toast("Removed from wishlist");
     } else {
       w.push(n);
       wish.classList.add("saved");
-      wish.textContent = "♥";
+      wish.innerHTML = WISH_ICON_SAVED;
       toast("Added to wishlist");
     }
     setWish(w);
@@ -364,15 +408,65 @@ document.addEventListener("click", e => {
 });
 
 // Coupon handling
-document.getElementById("applyCoupon")?.addEventListener("click", () => {
-  const v = document.getElementById("couponCode")?.value.trim().toUpperCase();
-  if (v === "SWEET15") {
-    localStorage.setItem("sugarCoupon", v);
-    toast("🎉 15% discount applied!");
-    updateTotals();
-  } else {
-    toast("Invalid coupon code. Try SWEET15");
+document.getElementById("applyCoupon")?.addEventListener("click", async () => {
+  const input = document.getElementById("couponCode");
+  const v = input?.value?.trim().toUpperCase();
+  if (!v) {
+    toast("Please enter a coupon code.");
+    return;
   }
+
+  // 1. Built-in promo
+  if (v === "SWEET15") {
+    localStorage.setItem("sugarCoupon", JSON.stringify({ code: "SWEET15", discount: 15 }));
+    toast("🎉 SWEET15 applied: 15% discount!");
+    updateTotals();
+    return;
+  }
+
+  // 2. Check Firestore coupons collection
+  if (window.db) {
+    try {
+      const doc = await window.db.collection("coupons").doc(v).get();
+      if (doc.exists) {
+        const cData = doc.data();
+        const now = new Date();
+        const exp = cData.expiry ? new Date(cData.expiry) : null;
+        if (exp && exp < now) {
+          toast("This coupon has expired.");
+          return;
+        }
+        const disc = Number(cData.discount) || 15;
+        localStorage.setItem("sugarCoupon", JSON.stringify({ code: v, discount: disc }));
+        toast(`🎉 ${v} applied: ${disc}% discount!`);
+        updateTotals();
+        return;
+      }
+    } catch (err) {
+      console.warn("Coupon check error:", err);
+    }
+  }
+
+  // 3. Fallback localStorage coupons
+  try {
+    const savedCoupons = JSON.parse(localStorage.getItem("sugarAtelierCoupons") || "[]");
+    const found = savedCoupons.find(c => (c.code || "").toUpperCase() === v);
+    if (found) {
+      const now = new Date();
+      const exp = found.expiry ? new Date(found.expiry) : null;
+      if (exp && exp < now) {
+        toast("This coupon has expired.");
+        return;
+      }
+      const disc = Number(found.discount) || 15;
+      localStorage.setItem("sugarCoupon", JSON.stringify({ code: v, discount: disc }));
+      toast(`🎉 ${v} applied: ${disc}% discount!`);
+      updateTotals();
+      return;
+    }
+  } catch (e) {}
+
+  toast("Invalid coupon code. Try SWEET15");
 });
 
 // Standalone checkoutForm listener (if not handled by custom checkout.html script)
@@ -401,11 +495,13 @@ document.getElementById("contactForm")?.addEventListener("submit", e => {
 });
 
 // Custom cake form
-document.getElementById("customCakeForm")?.addEventListener("submit", e => {
-  e.preventDefault();
-  toast("Custom cake request submitted! We will contact you shortly.");
-  e.target.reset();
-});
+if (!window.__customCakeHandler) {
+  document.getElementById("customCakeForm")?.addEventListener("submit", e => {
+    e.preventDefault();
+    toast("Custom cake request submitted! We will contact you shortly.");
+    e.target.reset();
+  });
+}
 
 // Register form (runs only if page has not defined custom handler)
 const regForm = document.getElementById("registerForm");
@@ -520,7 +616,7 @@ function initMobileMenu() {
         <h4>Customer Account</h4>
         <a href="account.html">👤 My Profile</a>
         <a href="orders.html">📦 My Orders</a>
-        <a href="wishlist.html">♡ My Wishlist</a>
+        <a href="wishlist.html">🔖 My Wishlist</a>
         <a href="cart.html">🛒 Shopping Cart</a>
         <a href="login.html" style="color:#c0392b;margin-top:6px;font-weight:600;">🚪 Sign Out</a>
       </div>
@@ -690,9 +786,10 @@ function bootApp() {
   document.querySelectorAll(".wishlist-btn").forEach(b => {
     if (w.includes(b.dataset.wishlist)) {
       b.classList.add("saved");
-      b.textContent = "♥";
+      b.innerHTML = WISH_ICON_SAVED;
     } else {
-      b.textContent = "♡";
+      b.classList.remove("saved");
+      b.innerHTML = WISH_ICON_OUTLINE;
     }
   });
 

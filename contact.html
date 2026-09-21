@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8">
@@ -19,10 +19,10 @@
           <a href="contact.html">Contact</a>
         </nav>
         <div class="nav-actions">
-          <a href="search.html" aria-label="Search">⌕</a>
-          <a href="wishlist.html" aria-label="Wishlist">♡</a>
+          <a href="search.html" aria-label="Search" title="Search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></a>
+          <a href="wishlist.html" aria-label="Wishlist" title="Wishlist"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></a>
           <a href="cart.html" aria-label="Cart">🛒<span class="cart-count">0</span></a>
-          <a href="account.html" aria-label="Account">♙</a>
+          <a href="account.html" aria-label="Account" title="My Account"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></a>
           <a class="btn btn-primary" href="shop.html">Order Now</a>
         </div>
       </div>
@@ -98,7 +98,49 @@
     <a class="whatsapp-float" href="https://wa.me/8801700000000" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">💬</a>
     <button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
     <div id="toast" class="toast"></div>
+    <!-- Firebase SDK & Config -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
     <script src="js/app.js"></script>
-    <script>var _b=document.getElementById('backToTop');if(_b){window.addEventListener('scroll',function(){_b.classList.toggle('visible',window.scrollY>350);});_b.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});}</script>
+    <script>
+      // Contact form — save to Firestore
+      document.getElementById("contactForm")?.addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const fd = new FormData(this);
+        const msgData = {
+          name:      fd.get("name")?.trim() || "",
+          email:     fd.get("email")?.trim() || "",
+          phone:     fd.get("phone")?.trim() || "",
+          subject:   fd.get("subject")?.trim() || "",
+          message:   fd.get("message")?.trim() || "",
+          createdAt: new Date().toISOString(),
+          read:      false,
+        };
+
+        const btn = this.querySelector("button[type=submit]");
+        const origText = btn ? btn.textContent : "Send Message";
+        if (btn) { btn.textContent = "Sending…"; btn.disabled = true; }
+
+        if (window.db) {
+          try {
+            await window.db.collection("messages").add(msgData);
+          } catch (err) {
+            console.warn("Firestore message save notice:", err);
+          }
+        }
+
+        toast("Thank you! Your message has been submitted.");
+        this.reset();
+        if (btn) { btn.textContent = origText; btn.disabled = false; }
+      });
+
+      // Back to top
+      const btt = document.getElementById("backToTop");
+      if (btt) {
+        window.addEventListener("scroll", () => btt.classList.toggle("visible", window.scrollY > 350));
+        btt.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+      }
+    </script>
   </body>
 </html>
