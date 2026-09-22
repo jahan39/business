@@ -159,7 +159,10 @@ function initAdminProductsPage() {
           <div style="display:flex;align-items:center;gap:10px;">
             <img src="${p.image || ''}" alt="${p.name}"
               style="width:44px;height:44px;object-fit:cover;border-radius:8px;background:#f5f5f5;">
-            <span>${p.name}</span>
+            <div>
+              <div style="font-weight:600;">${p.name}</div>
+              ${p.category ? `<small style="display:inline-block;padding:2px 7px;border-radius:4px;font-size:11px;background:${(p.category === 'Custom' || p.category === 'Custom Cakes') ? 'rgba(139,58,98,0.12)' : '#f3f4f6'};color:${(p.category === 'Custom' || p.category === 'Custom Cakes') ? 'var(--primary,#8B3A62)' : '#4b5563'};font-weight:600;">${(p.category === 'Custom' || p.category === 'Custom Cakes') ? '✨ Custom Cake' : p.category}</small>` : ''}
+            </div>
           </div>
         </td>
         <td>${p.sku || "—"}</td>
@@ -423,10 +426,13 @@ function injectShopProducts() {
     if (existingNames.has(normName)) return;
     existingNames.add(normName);
 
+    const isCustom = (p.category === "Custom" || p.category === "Custom Cakes");
+    const normCategory = isCustom ? "Custom" : (p.category || "");
+
     const article = document.createElement("article");
-    article.className = "product-card searchable injected-card";
+    article.className = "product-card searchable injected-card" + (isCustom ? " custom-card" : "");
     article.setAttribute("data-name",     p.name);
-    article.setAttribute("data-category", p.category || "");
+    article.setAttribute("data-category", normCategory);
     article.setAttribute("data-price",    p.price);
 
     const hasBadge  = p.discount && p.discount > p.price;
@@ -434,21 +440,33 @@ function injectShopProducts() {
 
     article.innerHTML = `
       <div class="product-img">
-        ${hasBadge ? `<span class="badge">${discPct}% OFF</span>` : ""}
+        ${isCustom ? `<span class="badge" style="background:linear-gradient(135deg,#8B3A62,#c46a92);color:#fff;">Bespoke • Custom</span>` : (hasBadge ? `<span class="badge">${discPct}% OFF</span>` : "")}
         <button class="wishlist-btn" data-wishlist="${p.name}">${ADMIN_WISH_ICON}</button>
-        <a href="product.html?name=${encodeURIComponent(p.name)}">
+        <a href="${isCustom ? 'custom-cake.html' : `product.html?name=${encodeURIComponent(p.name)}`}">
           <img src="${p.image}" alt="${p.name}" loading="lazy">
         </a>
       </div>
       <div class="product-info">
-        <div class="rating">★★★★★ <small>(New)</small></div>
-        <h3><a href="product.html?name=${encodeURIComponent(p.name)}">${p.name}</a></h3>
+        <div class="rating">★★★★★ <small>${isCustom ? "(Custom Design)" : "(New)"}</small></div>
+        <h3><a href="${isCustom ? 'custom-cake.html' : `product.html?name=${encodeURIComponent(p.name)}`}">${p.name}</a></h3>
+        ${isCustom ? `<p style="font-size:12px;color:var(--muted);margin:0 0 6px;">${p.shortDesc || "Custom name, flavor & piping text"}</p>` : ""}
         <p class="product-price">
           ${adminMoney(p.price)}
           ${hasBadge ? `<del>${adminMoney(p.discount)}</del>` : ""}
         </p>
-        <button class="btn btn-primary full add-cart"
-          data-name="${p.name}" data-price="${p.price}">Add to Cart</button>
+        ${isCustom ? `
+          <button class="btn btn-primary full open-quick-custom-btn"
+            data-name="${p.name}"
+            data-price="${p.price}"
+            data-flavor="${p.flavor || 'Belgian Rich Chocolate'}"
+            data-size="${p.weight || '1.5 KG'}"
+            data-img="${p.image}">
+            Customize & Order ✨
+          </button>
+        ` : `
+          <button class="btn btn-primary full add-cart"
+            data-name="${p.name}" data-price="${p.price}">Add to Cart</button>
+        `}
       </div>
     `;
     grid.appendChild(article);

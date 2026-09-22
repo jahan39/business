@@ -220,6 +220,100 @@
           flex: 1;
         }
       }
+
+      /* ── Custom Cake Spotlight Banner ── */
+      .custom-spotlight-banner {
+        display: none;
+        background: linear-gradient(135deg, rgba(255,247,249,0.98) 0%, rgba(250,232,238,0.95) 50%, rgba(253,242,246,0.98) 100%);
+        border: 1.5px solid var(--accent);
+        border-radius: 20px;
+        padding: 28px 32px;
+        margin-bottom: 24px;
+        box-shadow: 0 12px 35px rgba(139,58,98,0.08);
+        position: relative;
+        overflow: hidden;
+      }
+      [data-theme="dark"] .custom-spotlight-banner {
+        background: linear-gradient(135deg, #24171e 0%, #1f1419 100%);
+        border-color: rgba(232,140,177,0.3);
+      }
+      .custom-spotlight-banner:before {
+        content: "🎂";
+        position: absolute;
+        right: 25px;
+        top: 20px;
+        font-size: 80px;
+        opacity: 0.12;
+        pointer-events: none;
+      }
+      .custom-spotlight-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      .custom-spotlight-content {
+        max-width: 600px;
+      }
+      .custom-spotlight-title {
+        font-family: "Playfair Display", serif;
+        font-size: 24px;
+        margin: 6px 0 8px;
+        color: var(--primary);
+      }
+      .custom-badge-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 14px 0 4px;
+      }
+      .custom-badge-pill {
+        background: var(--surface, #fff);
+        border: 1px solid var(--border);
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--primary);
+      }
+      .custom-card {
+        border: 1.5px solid rgba(217, 154, 171, 0.4) !important;
+        transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s !important;
+      }
+      .custom-card:hover {
+        border-color: var(--primary) !important;
+        box-shadow: 0 12px 30px rgba(139, 58, 98, 0.15) !important;
+      }
+      /* Quick Order Modal */
+      .shop-custom-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(18, 12, 15, 0.75);
+        backdrop-filter: blur(6px);
+        z-index: 10000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .shop-custom-modal-content {
+        background: var(--surface, #fff);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        max-width: 580px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 30px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+        position: relative;
+        animation: qcModalPop .25s ease-out;
+      }
+      @keyframes qcModalPop {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+      }
     </style>
   </head>
   <body class="">
@@ -230,7 +324,6 @@
           <a href="index.html">Home</a>
           <a href="shop.html">Shop</a>
           <a href="categories.html">Categories</a>
-          <a href="custom-cake.html">Custom Cake</a>
           <a href="about.html">About</a>
           <a href="contact.html">Contact</a>
         </nav>
@@ -324,6 +417,33 @@
               <span id="productCount">Loading…</span>
             </div>
             <div class="active-filters-row" id="activeFiltersRow"></div>
+          </div>
+
+          <!-- ── Custom Cake Atelier Spotlight Banner (Shown when Custom is active) ── -->
+          <div id="customCakeSpotlightBanner" class="custom-spotlight-banner">
+            <div class="custom-spotlight-head">
+              <div class="custom-spotlight-content">
+                <span class="eyebrow" style="color:var(--primary);font-size:11px;">✦ BESPOKE CAKE ATELIER ✦</span>
+                <h2 class="custom-spotlight-title">Craft Your Signature Custom Cake</h2>
+                <p style="margin:0;font-size:13.5px;color:var(--muted);line-height:1.6;">
+                  Can't find exactly what you desire? Choose your unique cake name, custom flavor, tiers, dietary preference, and special piped message. Our pastry chefs handcraft it to your celebration vision.
+                </p>
+                <div class="custom-badge-pills">
+                  <span class="custom-badge-pill">🎂 1, 2 & 3 Tiers</span>
+                  <span class="custom-badge-pill">🍫 100% Custom Flavors</span>
+                  <span class="custom-badge-pill">🌿 Pure Eggless & Sugar-Free</span>
+                  <span class="custom-badge-pill">⚡ Instant Live Quote</span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px;min-width:200px;">
+                <button type="button" id="spotlightQuickOrderBtn" class="btn btn-primary" style="padding:13px 20px;font-size:14px;border-radius:12px;font-weight:700;box-shadow:0 8px 20px rgba(139,58,98,0.25);">
+                  ✨ Quick Custom Order
+                </button>
+                <a href="custom-cake.html" class="btn btn-outline" style="padding:11px 18px;font-size:13px;border-radius:12px;text-align:center;">
+                  🎨 Open Full Studio ↗
+                </a>
+              </div>
+            </div>
           </div>
 
           <!-- ── Product Grid (5 columns) ───────────────────────── -->
@@ -442,8 +562,172 @@
       </div>
       <div class="copyright">© 2026 The Sugar Atelier. All rights reserved.</div>
     </footer>
-    <a class="whatsapp-float" href="https://wa.me/8801700000000" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">💬</a>
-    <button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+    <!-- QUICK CUSTOM CAKE ORDER MODAL ON SHOP PAGE -->
+    <div id="quickCustomModal" class="shop-custom-modal-backdrop">
+      <div class="shop-custom-modal-content">
+        <button id="closeQuickCustomBtn" type="button" style="position:absolute;top:16px;right:16px;background:var(--bg);border:1px solid var(--border);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text);">✕</button>
+        
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border);">
+          <img id="qcModalImg" src="https://images.unsplash.com/photo-1535141192574-5d4897c13136?auto=format&fit=crop&w=700&q=85" alt="Cake Preview" style="width:65px;height:65px;object-fit:cover;border-radius:10px;border:1px solid var(--border);flex-shrink:0;">
+          <div>
+            <span class="eyebrow" style="font-size:11px;color:var(--primary);letter-spacing:1px;">BESPOKE QUICK ORDER</span>
+            <h3 id="qcModalCakeTitle" style="margin:2px 0 0;font-size:17px;font-family:'Playfair Display',serif;">Custom Cake</h3>
+          </div>
+        </div>
+
+        <form id="quickCustomForm">
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:var(--text);">Custom Cake Name / Title *</label>
+            <input required id="qcCakeName" name="cakeName" placeholder="e.g. Vintage Princess Heart Birthday" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);box-sizing:border-box;">
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+            <div>
+              <label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:var(--text);">Flavor *</label>
+              <select id="qcFlavor" name="flavor" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);box-sizing:border-box;">
+                <option value="Belgian Rich Chocolate">Belgian Rich Chocolate</option>
+                <option value="Classic Madagascar Vanilla">Classic Madagascar Vanilla</option>
+                <option value="Velvet Romance (Red Velvet)">Velvet Romance (Red Velvet)</option>
+                <option value="Black Forest Royale">Black Forest Royale</option>
+                <option value="Mango Passionfruit Cream">Mango Passionfruit Cream</option>
+                <option value="Salted Butterscotch & Caramel">Salted Butterscotch & Caramel</option>
+                <option value="Lotus Biscoff Crunch">Lotus Biscoff Crunch</option>
+                <option value="Custom Special Blend">Custom Special Blend</option>
+              </select>
+            </div>
+            <div>
+              <label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:var(--text);">Size / Weight *</label>
+              <select id="qcSize" name="size" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);box-sizing:border-box;">
+                <option value="1 KG" data-price="1600">1 KG (Serves 6–8) — ৳1,600</option>
+                <option value="1.5 KG" data-price="2300" selected>1.5 KG (Serves 10–12) — ৳2,300</option>
+                <option value="2 KG" data-price="3000">2 KG (Serves 14–16) — ৳3,000</option>
+                <option value="3 KG" data-price="4300">3 KG (Serves 22–25) — ৳4,300</option>
+                <option value="4 KG" data-price="5600">4 KG (Serves 30–35) — ৳5,600</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+            <div>
+              <label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:var(--text);">Tiers</label>
+              <select id="qcTiers" name="tiers" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);box-sizing:border-box;">
+                <option value="1-Tier" data-tier="0">1-Tier (Standard)</option>
+                <option value="2-Tier" data-tier="500">2-Tier (+৳500)</option>
+                <option value="3-Tier" data-tier="1200">3-Tier (+৳1,200)</option>
+              </select>
+            </div>
+            <div>
+              <label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:var(--text);">Dietary</label>
+              <select id="qcDietary" name="dietary" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);box-sizing:border-box;">
+                <option value="Regular" data-diet="0">Regular (With Egg)</option>
+                <option value="100% Eggless" data-diet="200">100% Eggless (+৳200)</option>
+                <option value="Sugar-Free (Stevia)" data-diet="300">Sugar-Free (+৳300)</option>
+                <option value="Gluten-Free" data-diet="350">Gluten-Free (+৳350)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:var(--text);">Message to Pipe on Cake</label>
+            <input id="qcMessage" name="message" placeholder="e.g. Happy 25th Birthday Sarah! 🎂" maxlength="50" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);box-sizing:border-box;">
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+            <div>
+              <label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:var(--text);">Your Name *</label>
+              <input required id="qcCustomerName" name="customerName" placeholder="e.g. Ayesha Rahman" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);box-sizing:border-box;">
+            </div>
+            <div>
+              <label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:var(--text);">Phone Number *</label>
+              <input required type="tel" id="qcPhone" name="phone" placeholder="+880 1XXX-XXXXXX" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);box-sizing:border-box;">
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+            <div>
+              <label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:var(--text);">Delivery Date *</label>
+              <input required type="date" id="qcDeliveryDate" name="deliveryDate" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);box-sizing:border-box;">
+            </div>
+            <div>
+              <label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:var(--text);">Delivery Area *</label>
+              <select id="qcCity" name="city" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);box-sizing:border-box;">
+                <option value="Gulshan">Gulshan 1 & 2</option>
+                <option value="Banani">Banani</option>
+                <option value="Dhanmondi">Dhanmondi</option>
+                <option value="Uttara">Uttara</option>
+                <option value="Mirpur">Mirpur</option>
+                <option value="Bashundhara R/A">Bashundhara R/A</option>
+                <option value="Mohammadpur">Mohammadpur</option>
+                <option value="Old Dhaka">Old Dhaka</option>
+                <option value="Other Area">Other Area in Dhaka</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-bottom:14px;">
+            <label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:var(--text);">Full Delivery Address *</label>
+            <textarea required id="qcAddress" name="deliveryAddress" rows="2" placeholder="House #, Road #, Apartment / Flat, Landmark" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);box-sizing:border-box;"></textarea>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--bg);border-radius:10px;border:1px solid var(--border);margin-bottom:16px;">
+            <span style="font-size:13px;color:var(--muted);">Estimated Quote:</span>
+            <b id="qcLiveTotal" style="color:var(--primary);font-size:20px;">৳ 2,300</b>
+          </div>
+
+          <button type="submit" id="qcSubmitBtn" class="btn btn-primary" style="width:100%;padding:12px;font-size:15px;font-weight:700;border-radius:10px;">
+            Confirm & Place Custom Order 🎂
+          </button>
+
+          <div style="text-align:center;margin-top:12px;">
+            <a href="custom-cake.html" style="font-size:12px;color:var(--primary);font-weight:600;">
+              Want to upload a custom reference sketch? Open Full Studio ↗
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- QUICK CUSTOM CAKE CONFIRMATION MODAL -->
+    <div id="quickCustomSuccessModal" class="shop-custom-modal-backdrop">
+      <div class="shop-custom-modal-content" style="text-align:center;max-width:480px;">
+        <div style="width:60px;height:60px;border-radius:50%;background:#e8f5e9;color:#2e7d32;display:inline-flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:14px;">✓</div>
+        <span class="eyebrow" style="color:#2e7d32;font-size:11px;">ORDER CONFIRMED</span>
+        <h2 style="font-family:'Playfair Display',serif;margin:4px 0 10px;font-size:22px;">Custom Request Received!</h2>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">
+          Thank you! Our master cake artist has received your custom blueprint and will call / WhatsApp you shortly.
+        </p>
+
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:left;font-size:13px;margin-bottom:18px;">
+          <div style="display:flex;justify-content:space-between;border-bottom:1px dashed var(--border);padding-bottom:6px;margin-bottom:6px;">
+            <span style="color:var(--muted);">Order ID:</span>
+            <b id="qcSuccessId" style="color:var(--primary);font-family:monospace;font-size:14px;">CC-101</b>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="color:var(--muted);">Cake:</span>
+            <b id="qcSuccessName">Custom Cake</b>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="color:var(--muted);">Flavor & Size:</span>
+            <span id="qcSuccessSpecs">Chocolate • 1.5 KG</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding-top:6px;border-top:1px solid var(--border);font-weight:700;">
+            <span>Estimated Quote:</span>
+            <span id="qcSuccessPrice" style="color:var(--primary);font-size:16px;">৳ 2,300</span>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <a id="qcWhatsAppBtn" href="#" target="_blank" class="btn" style="background:#25D366;color:#fff;border:none;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:10px;padding:11px;">
+            💬 Chat with Chef on WhatsApp
+          </a>
+          <div style="display:flex;gap:8px;">
+            <a href="orders.html" class="btn btn-outline" style="flex:1;border-radius:8px;font-size:12.5px;">View in Orders</a>
+            <button type="button" id="closeQcSuccessBtn" class="btn btn-primary" style="flex:1;border-radius:8px;font-size:12.5px;">Continue Shopping</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="toast" class="toast"></div>
     <!-- Firebase SDK & Config -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -544,10 +828,18 @@
             grid.appendChild(c); // re-order DOM
           });
 
+          // Show/Hide custom spotlight banner when Custom category is active
+          const spotlight = document.getElementById("customCakeSpotlightBanner");
+          if (spotlight) {
+            spotlight.style.display = (activeCat === "Custom") ? "block" : "none";
+          }
+
           // Count
           const n = visible.length;
           if (countEl) countEl.textContent = n + (n === 1 ? " Cake" : " Cakes");
-          if (emptyEl) emptyEl.style.display = n === 0 ? "block" : "none";
+          if (emptyEl) {
+            emptyEl.style.display = (n === 0 && activeCat !== "Custom") ? "block" : "none";
+          }
 
           // Active tags
           renderActiveTags(q, minP, maxP === Infinity ? 0 : maxP);
@@ -576,6 +868,237 @@
 
         // Expose globally so dynamic product injections can refresh the view immediately
         window.applyShopFilters = applyFilters;
+
+        // ── Quick Custom Cake Modal Handlers ──
+        const qcModal     = document.getElementById("quickCustomModal");
+        const qcSuccess   = document.getElementById("quickCustomSuccessModal");
+        const qcForm      = document.getElementById("quickCustomForm");
+        const closeQcBtn  = document.getElementById("closeQuickCustomBtn");
+        const closeSuccBtn= document.getElementById("closeQcSuccessBtn");
+        const spotQuickBtn= document.getElementById("spotlightQuickOrderBtn");
+
+        const qcImg       = document.getElementById("qcModalImg");
+        const qcTitle     = document.getElementById("qcModalCakeTitle");
+        const qcCakeName  = document.getElementById("qcCakeName");
+        const qcFlavor    = document.getElementById("qcFlavor");
+        const qcSize      = document.getElementById("qcSize");
+        const qcTiers     = document.getElementById("qcTiers");
+        const qcDietary   = document.getElementById("qcDietary");
+        const qcLiveTotal = document.getElementById("qcLiveTotal");
+        const qcDate      = document.getElementById("qcDeliveryDate");
+        const qcNameInp   = document.getElementById("qcCustomerName");
+        const qcPhoneInp  = document.getElementById("qcPhone");
+        const qcAddressInp= document.getElementById("qcAddress");
+
+        // Set min date = tomorrow
+        if (qcDate) {
+          const tmr = new Date();
+          tmr.setDate(tmr.getDate() + 1);
+          qcDate.min = tmr.toISOString().split("T")[0];
+          qcDate.value = tmr.toISOString().split("T")[0];
+        }
+
+        let currentQcEstimatedTotal = 2300;
+
+        function updateQcPrice() {
+          const sizeOpt = qcSize?.selectedOptions[0];
+          const tierOpt = qcTiers?.selectedOptions[0];
+          const dietOpt = qcDietary?.selectedOptions[0];
+
+          const base = Number(sizeOpt?.dataset.price || 2300);
+          const tier = Number(tierOpt?.dataset.tier || 0);
+          const diet = Number(dietOpt?.dataset.diet || 0);
+
+          currentQcEstimatedTotal = base + tier + diet;
+          if (qcLiveTotal) {
+            qcLiveTotal.textContent = "৳ " + currentQcEstimatedTotal.toLocaleString();
+          }
+        }
+
+        [qcSize, qcTiers, qcDietary].forEach(el => {
+          el?.addEventListener("change", updateQcPrice);
+        });
+
+        function openQuickCustomModal(data = {}) {
+          if (!qcModal) return;
+          const cakeTitle = data.name || "Custom Artisan Cake";
+          if (qcTitle) qcTitle.textContent = cakeTitle;
+          if (qcCakeName) qcCakeName.value = cakeTitle;
+          if (qcImg) qcImg.src = data.img || "https://images.unsplash.com/photo-1535141192574-5d4897c13136?auto=format&fit=crop&w=700&q=85";
+          
+          if (data.flavor && qcFlavor) qcFlavor.value = data.flavor;
+          if (data.size && qcSize) qcSize.value = data.size;
+
+          // Auto-fill logged in customer
+          try {
+            const u = JSON.parse(localStorage.getItem("sugarAtelierCurrentUser") || "null");
+            if (u) {
+              if (u.name && qcNameInp) qcNameInp.value = u.name;
+              if (u.phone && qcPhoneInp) qcPhoneInp.value = u.phone;
+              if (u.address && qcAddressInp) qcAddressInp.value = u.address;
+            }
+          } catch(e) {}
+
+          updateQcPrice();
+          qcModal.style.display = "flex";
+        }
+
+        function closeQuickCustomModal() {
+          if (qcModal) qcModal.style.display = "none";
+        }
+
+        closeQcBtn?.addEventListener("click", closeQuickCustomModal);
+        qcModal?.addEventListener("click", e => { if (e.target === qcModal) closeQuickCustomModal(); });
+
+        spotQuickBtn?.addEventListener("click", () => {
+          openQuickCustomModal({
+            name: "Bespoke Custom Cake",
+            flavor: "Belgian Rich Chocolate",
+            size: "1.5 KG"
+          });
+        });
+
+        // Delegate clicks on shopGrid for .open-quick-custom-btn
+        grid?.addEventListener("click", e => {
+          const btn = e.target.closest(".open-quick-custom-btn");
+          if (!btn) return;
+          e.preventDefault();
+          openQuickCustomModal({
+            name: btn.dataset.name,
+            price: btn.dataset.price,
+            flavor: btn.dataset.flavor,
+            size: btn.dataset.size,
+            shape: btn.dataset.shape,
+            img: btn.dataset.img
+          });
+        });
+
+        // Quick Custom Cake Form Submit
+        qcForm?.addEventListener("submit", async function(e) {
+          e.preventDefault();
+
+          const btn = document.getElementById("qcSubmitBtn");
+          btn.disabled = true;
+          btn.textContent = "Submitting Custom Order…";
+
+          const fd = new FormData(this);
+          const orderId = "CC-" + Math.floor(100 + Math.random() * 900);
+          const cakeName = fd.get("cakeName")?.trim() || "Custom Cake";
+          const flavor = fd.get("flavor") || "Belgian Rich Chocolate";
+          const size = fd.get("size") || "1.5 KG";
+          const tiers = fd.get("tiers") || "1-Tier";
+          const dietary = fd.get("dietary") || "Regular";
+
+          let currentUid = null;
+          let currentEmail = "";
+          try {
+            const u = JSON.parse(localStorage.getItem("sugarAtelierCurrentUser") || "null");
+            if (u) {
+              currentUid = u.uid || u.id || null;
+              currentEmail = u.email || "";
+            }
+          } catch (err) {}
+
+          const req = {
+            id: orderId,
+            orderId: orderId,
+            userId: currentUid,
+            customerEmail: currentEmail,
+            cakeName: cakeName,
+            customerName: fd.get("customerName")?.trim() || "Customer",
+            phone: fd.get("phone")?.trim() || "",
+            whatsapp: fd.get("phone")?.trim() || "",
+            cakeType: "Celebration Cake",
+            occasion: "Celebration",
+            cakeShape: "Custom",
+            tiers: tiers,
+            flavor: flavor,
+            size: size,
+            dietary: dietary,
+            colorTheme: "Pastel Elegance",
+            deliveryDate: fd.get("deliveryDate") || "",
+            deliveryTimeSlot: "Afternoon (1:00 PM – 5:00 PM)",
+            city: fd.get("city") || "Dhaka",
+            deliveryAddress: fd.get("deliveryAddress")?.trim() || "",
+            theme: cakeName,
+            message: fd.get("message")?.trim() || "",
+            instructions: "Quick Custom Order placed from Shop page",
+            estimatedPrice: currentQcEstimatedTotal,
+            total: "৳ " + Number(currentQcEstimatedTotal).toLocaleString(),
+            totalAmount: currentQcEstimatedTotal,
+            image: qcImg?.src || "",
+            status: "Pending",
+            type: "Custom Cake",
+            items: [{ name: cakeName + ` (${size}, ${flavor})`, qty: 1, price: currentQcEstimatedTotal }],
+            createdAt: new Date().toISOString(),
+          };
+
+          // 1. Save to Firestore customCakeRequests & orders
+          if (window.db) {
+            try {
+              await window.db.collection("customCakeRequests").doc(req.id).set(req);
+            } catch (err) {
+              console.warn("Firestore custom cake save note:", err);
+            }
+            try {
+              await window.db.collection("orders").doc(req.id).set(req);
+            } catch (err) {
+              console.warn("Firestore orders save note:", err);
+            }
+          }
+
+          // 2. Save to localStorage custom cakes list
+          try {
+            const list = JSON.parse(localStorage.getItem("sugarAtelierCustomCakes") || "[]");
+            list.unshift(req);
+            localStorage.setItem("sugarAtelierCustomCakes", JSON.stringify(list));
+          } catch (err) {}
+
+          // 3. Save to localStorage orders list
+          try {
+            const orders = JSON.parse(localStorage.getItem("sugarAtelierOrders") || "[]");
+            orders.unshift({
+              id: req.id,
+              orderId: req.id,
+              date: new Date().toLocaleDateString("en-GB", { day: 'numeric', month: 'short', year: 'numeric' }),
+              total: "৳ " + Number(req.estimatedPrice).toLocaleString(),
+              status: "Pending",
+              customerName: req.customerName,
+              customerPhone: req.phone,
+              address: req.deliveryAddress + " (" + req.city + ")",
+              items: [{ name: req.cakeName + " (" + req.size + ", " + req.flavor + ")", qty: 1 }]
+            });
+            localStorage.setItem("sugarAtelierOrders", JSON.stringify(orders));
+          } catch (err) {}
+
+          // Close quick modal & show success modal
+          closeQuickCustomModal();
+          btn.disabled = false;
+          btn.textContent = "Confirm & Place Custom Order 🎂";
+          this.reset();
+
+          if (qcSuccess) {
+            document.getElementById("qcSuccessId").textContent = req.id;
+            document.getElementById("qcSuccessName").textContent = req.cakeName;
+            document.getElementById("qcSuccessSpecs").textContent = `${req.flavor} • ${req.size} (${req.tiers})`;
+            document.getElementById("qcSuccessPrice").textContent = "৳ " + Number(req.estimatedPrice).toLocaleString();
+
+            const waMsg = encodeURIComponent(`Hi The Sugar Atelier! I just placed a Custom Cake order from the Shop page.\n\nOrder ID: ${req.id}\nCake: ${req.cakeName}\nFlavor: ${req.flavor}\nSize: ${req.size} (${req.tiers})\nDelivery: ${req.deliveryDate}\nEstimated: ৳${req.estimatedPrice}`);
+            const waBtn = document.getElementById("qcWhatsAppBtn");
+            if (waBtn) waBtn.href = `https://wa.me/8801700000000?text=${waMsg}`;
+
+            qcSuccess.style.display = "flex";
+          } else {
+            toast("🎉 Custom cake request submitted! We will call you shortly.");
+          }
+        });
+
+        closeSuccBtn?.addEventListener("click", () => {
+          if (qcSuccess) qcSuccess.style.display = "none";
+        });
+        qcSuccess?.addEventListener("click", e => {
+          if (e.target === qcSuccess) qcSuccess.style.display = "none";
+        });
 
         // Initial run
         applyFilters();
