@@ -259,6 +259,7 @@
           const profName = document.getElementById("profName");
           const profEmail = document.getElementById("profEmail");
           const profPhone = document.getElementById("profPhone");
+          const profDob = document.getElementById("profDob");
           const avatarInitials = document.getElementById("avatarInitials");
 
           const dName = saved.name || (saved.email ? saved.email.split('@')[0] : "Member");
@@ -269,9 +270,11 @@
             if (profEmail) profEmail.value = saved.email;
           }
           if (saved.phone && profPhone) profPhone.value = saved.phone;
+          if (saved.dob && profDob) profDob.value = saved.dob;
+          const userPhoto = saved.photoUrl || saved.photo;
           if (avatarInitials) {
-            if (saved.photoUrl) {
-              avatarInitials.innerHTML = `<img src="${saved.photoUrl}" alt="${dName}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`;
+            if (userPhoto) {
+              avatarInitials.innerHTML = `<img src="${userPhoto}" alt="${dName}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`;
             } else {
               const parts = dName.split(" ");
               avatarInitials.textContent = parts.length > 1 ? (parts[0][0] + parts[1][0]).toUpperCase() : dName.slice(0, 2).toUpperCase();
@@ -290,13 +293,19 @@
       if (window.auth) {
         window.auth.onAuthStateChanged(async user => {
           if (user) {
+            let existing = {};
+            try { existing = JSON.parse(localStorage.getItem("sugarAtelierCurrentUser") || "{}"); } catch(e){}
+
             let userData = {
               uid: user.uid,
-              name: user.displayName || user.email.split('@')[0],
+              name: existing.name || user.displayName || user.email.split('@')[0],
               email: user.email,
-              phone: '',
-              photoUrl: user.photoURL || ''
+              phone: existing.phone || '',
+              dob: existing.dob || '',
+              photoUrl: existing.photoUrl || existing.photo || user.photoURL || '',
+              photo: existing.photoUrl || existing.photo || user.photoURL || ''
             };
+
             if (window.db) {
               try {
                 const doc = await window.db.collection('customers').doc(user.uid).get();
@@ -304,12 +313,20 @@
                   const d = doc.data();
                   if (d.name) userData.name = d.name;
                   if (d.phone) userData.phone = d.phone;
-                  if (d.photoUrl) userData.photoUrl = d.photoUrl;
+                  if (d.dob) userData.dob = d.dob;
+                  if (d.photoUrl || d.photo) {
+                    userData.photoUrl = d.photoUrl || d.photo;
+                    userData.photo = d.photoUrl || d.photo;
+                  }
+                } else {
+                  // Ensure document exists in Firestore
+                  await window.db.collection('customers').doc(user.uid).set(userData, { merge: true }).catch(() => {});
                 }
               } catch (e) {
                 console.warn("User fetch notice:", e);
               }
             }
+
             localStorage.setItem("sugarAtelierCurrentUser", JSON.stringify(userData));
             loadAccountUser(userData);
             updateAccountStats(user);
@@ -398,11 +415,17 @@
       // Profile form submission handler
       document.getElementById("profileForm")?.addEventListener("submit", async function(e) {
         e.preventDefault();
-        const name = document.getElementById("profName").value.trim();
+        const name  = document.getElementById("profName").value.trim();
         const email = document.getElementById("profEmail").value.trim();
         const phone = document.getElementById("profPhone")?.value.trim() || "";
-        const p1 = document.getElementById("newPassword")?.value;
-        const p2 = document.getElementById("confirmNewPassword")?.value;
+        const dob   = document.getElementById("profDob")?.value || "";
+        const p1    = document.getElementById("newPassword")?.value;
+        const p2    = document.getElementById("confirmNewPassword")?.value;
+
+        if (!name) {
+          toast("Please enter your name.");
+          return;
+        }
 
         if (p1 && p1 !== p2) {
           toast("Passwords do not match!");
@@ -410,39 +433,55 @@
         }
 
         const btn = document.getElementById("saveProfBtn");
-        const orig = btn.textContent;
-        btn.textContent = "Saving...";
-        btn.disabled = true;
+        const orig = btn ? btn.textContent : "Save Changes";
+        if (btn) { btn.textContent = "Saving..."; btn.disabled = true; }
 
         try {
           const user = window.auth ? window.auth.currentUser : null;
-          if (user) {
-            if (user.updateProfile) await user.updateProfile({ displayName: name }).catch(() => {});
-            if (p1 && p1.length >= 6 && user.updatePassword) {
-              await user.updatePassword(p1).catch(err => toast(err.message));
-            }
-            if (window.db) {
-              await window.db.collection("customers").doc(user.uid).set({
-                name,
-                email,
-                phone
-              }, { merge: true }).catch(err => console.warn("Customer update error:", err));
-            }
+          let current = {};
+          try { current = JSON.parse(localStorage.getItem("sugarAtelierCurrentUser") || "{}"); } catch(e){}
+
+          current.name = name;
+          current.email = email || (user ? user.email : current.email);
+          current.phone = phone;
+          current.dob = dob;
+          if (user) current.uid = user.uid;
+
+          // 1. Update Firebase Auth Profile DisplayName
+          if (user && user.updateProfile) {
+            await user.updateProfile({ displayName: name }).catch(() => {});
           }
-          localStorage.setItem("sugarAtelierCurrentUser", JSON.stringify({ uid: user ? user.uid : undefined, name, email, phone }));
-          
-          document.getElementById("heroUserName").textContent = name;
-          document.getElementById("heroUserSub").textContent = email + " • Verified Member";
-          const parts = name.split(" ");
-          const initials = parts.length > 1 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.slice(0, 2).toUpperCase();
-          document.getElementById("avatarInitials").textContent = initials;
-          toast("Profile updated successfully!");
+
+          // 2. Update Password if provided
+          if (user && p1 && p1.length >= 6 && user.updatePassword) {
+            await user.updatePassword(p1).catch(err => toast("Password note: " + err.message));
+          }
+
+          // 3. Save to Firestore customers collection
+          const uid = user ? user.uid : (current.uid || null);
+          if (window.db && uid) {
+            await window.db.collection("customers").doc(uid).set({
+              name,
+              email: current.email,
+              phone,
+              dob,
+              photoUrl: current.photoUrl || current.photo || "",
+              photo: current.photoUrl || current.photo || "",
+              updatedAt: new Date().toISOString()
+            }, { merge: true }).catch(err => console.warn("Customer update error:", err));
+          }
+
+          // 4. Save to localStorage with ALL fields preserved
+          localStorage.setItem("sugarAtelierCurrentUser", JSON.stringify(current));
+
+          // 5. Update UI immediately
+          loadAccountUser(current);
+          toast("🎉 Profile details saved successfully!");
         } catch (err) {
           console.error("Save profile error:", err);
           toast("Error updating profile.");
         } finally {
-          btn.textContent = orig;
-          btn.disabled = false;
+          if (btn) { btn.textContent = orig; btn.disabled = false; }
         }
       });
 
@@ -455,6 +494,8 @@
       avatarInput?.addEventListener("change", function(e) {
         const file = e.target.files && e.target.files[0];
         if (!file) return;
+
+        toast("Optimizing & saving photo…");
 
         const reader = new FileReader();
         reader.onload = function(evt) {
@@ -475,34 +516,31 @@
 
             const compressedBase64 = canvas.toDataURL("image/jpeg", 0.82);
 
-            // Update UI immediately
+            // 1. Update UI immediately
             const avatarInitials = document.getElementById("avatarInitials");
             if (avatarInitials) {
               avatarInitials.innerHTML = `<img src="${compressedBase64}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`;
             }
 
-            // Save to localStorage
-            let current = null;
+            // 2. Save to localStorage immediately
+            let current = {};
             try { current = JSON.parse(localStorage.getItem("sugarAtelierCurrentUser") || "{}"); } catch (e) {}
-            if (!current) current = {};
             current.photoUrl = compressedBase64;
+            current.photo = compressedBase64;
             localStorage.setItem("sugarAtelierCurrentUser", JSON.stringify(current));
 
-            // Save to Firestore and Firebase Auth
+            // 3. Save to Firestore customers/{uid}
             const user = window.auth ? window.auth.currentUser : null;
-            if (user) {
-              if (window.db) {
-                try {
-                  await window.db.collection("customers").doc(user.uid).set({
-                    photoUrl: compressedBase64,
-                    updatedAt: new Date().toISOString()
-                  }, { merge: true });
-                } catch (err) {
-                  console.warn("Firestore avatar update notice:", err);
-                }
-              }
-              if (user.updateProfile) {
-                user.updateProfile({ photoURL: compressedBase64 }).catch(() => {});
+            const uid = user ? user.uid : (current.uid || null);
+            if (window.db && uid) {
+              try {
+                await window.db.collection("customers").doc(uid).set({
+                  photoUrl: compressedBase64,
+                  photo: compressedBase64,
+                  updatedAt: new Date().toISOString()
+                }, { merge: true });
+              } catch (err) {
+                console.warn("Firestore avatar update notice:", err);
               }
             }
 

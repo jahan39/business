@@ -1112,6 +1112,7 @@
               await window.db.collection('customers').doc(user.uid).set({
                 name: user.displayName || 'Google User',
                 email: user.email,
+                photoUrl: user.photoURL || null,
                 photo: user.photoURL || null,
                 createdAt: new Date().toISOString(),
                 emailVerified: true
@@ -1122,10 +1123,11 @@
           }
 
           localStorage.setItem('sugarAtelierCurrentUser', JSON.stringify({
-            uid:   user.uid,
-            name:  user.displayName || 'Google User',
-            email: user.email,
-            photo: user.photoURL || null,
+            uid:      user.uid,
+            name:     user.displayName || 'Google User',
+            email:    user.email,
+            photoUrl: user.photoURL || null,
+            photo:    user.photoURL || null,
           }));
 
           toast(`Welcome, ${user.displayName || 'Member'}! Account connected.`);

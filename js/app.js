@@ -487,14 +487,7 @@ if (checkoutForm && !document.getElementById("placeOrderBtn")) {
   });
 }
 
-// Contact form (runs only if page has not defined custom handler)
-if (!window.__customContactHandler) {
-  document.getElementById("contactForm")?.addEventListener("submit", e => {
-    e.preventDefault();
-    toast("Thank you! Your message has been submitted.");
-    e.target.reset();
-  });
-}
+// Contact form is handled exclusively by contact.html
 
 // Custom cake form
 if (!window.__customCakeHandler) {

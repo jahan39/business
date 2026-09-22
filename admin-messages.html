@@ -56,6 +56,7 @@
     <div id="toast" class="toast"></div>
     <!-- Firebase SDK & Config -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/app.js"></script>
@@ -66,53 +67,85 @@
         if (!tbody) return;
 
         function renderMessages(list) {
-          if (countBadge) countBadge.textContent = list.length + " Message" + (list.length === 1 ? "" : "s");
-          if (!list.length) {
+          // Filter out completely blank ghost messages if any
+          const validList = list.filter(m => m && (m.name || m.email || m.message || m.subject));
+          if (countBadge) countBadge.textContent = validList.length + " Message" + (validList.length === 1 ? "" : "s");
+          if (!validList.length) {
             tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:36px;color:var(--muted);">No messages yet.</td></tr>';
             return;
           }
-          tbody.innerHTML = list.map(m => {
+          tbody.innerHTML = validList.map(m => {
             const dateStr = m.createdAt ? new Date(m.createdAt).toLocaleString("en-GB") : "—";
             const rowStyle = m.read ? "opacity:0.6;" : "font-weight:600;";
+            const mId = m._docId || m.id || "";
             return `
               <tr style="${rowStyle}">
-                <td><b>${m.name || "—"}</b></td>
+                <td><b>${m.name || m.customerName || "—"}</b></td>
                 <td>
                   <a href="mailto:${m.email || ''}" style="color:var(--primary);text-decoration:none;">${m.email || "—"}</a><br>
                   <small style="color:var(--muted);">${m.phone || ""}</small>
                 </td>
-                <td>${m.subject || "—"}</td>
-                <td style="max-width:240px;font-size:13px;">${m.message || "—"}</td>
+                <td>${m.subject || "General Inquiry"}</td>
+                <td style="max-width:240px;font-size:13px;word-break:break-word;">${m.message || "—"}</td>
                 <td><small style="color:var(--muted);">${dateStr}</small></td>
                 <td>
-                  ${!m.read ? `<button class="btn btn-outline" style="font-size:12px;padding:5px 10px;margin-bottom:4px;" onclick="markRead('${m._docId}')">Mark Read</button><br>` : '<span style="color:var(--muted);font-size:12px;display:block;margin-bottom:4px;">✓ Read</span>'}
-                  <button class="btn btn-outline" style="font-size:12px;padding:5px 10px;color:#c0392b;border-color:#c0392b;" onclick="deleteMsg('${m._docId}')">Delete</button>
+                  ${!m.read ? `<button class="btn btn-outline" style="font-size:12px;padding:5px 10px;margin-bottom:4px;" onclick="markRead('${mId}')">Mark Read</button><br>` : '<span style="color:var(--muted);font-size:12px;display:block;margin-bottom:4px;">✓ Read</span>'}
+                  <button class="btn btn-outline" style="font-size:12px;padding:5px 10px;color:#c0392b;border-color:#c0392b;" onclick="deleteMsg('${mId}')">Delete</button>
                 </td>
               </tr>`;
           }).join("");
         }
 
         window.markRead = async function(docId) {
-          if (!window.db || !docId) return;
-          try { await window.db.collection("messages").doc(docId).update({ read: true }); toast("Marked as read."); }
-          catch (err) { console.warn(err); }
+          if (!docId) return;
+          if (window.db) {
+            try { await window.db.collection("messages").doc(docId).update({ read: true }); }
+            catch (err) { console.warn(err); }
+          }
+          try {
+            const list = JSON.parse(localStorage.getItem("sugarAtelierMessages") || "[]");
+            const target = list.find(m => (m._docId || m.id) === docId);
+            if (target) { target.read = true; localStorage.setItem("sugarAtelierMessages", JSON.stringify(list)); }
+          } catch(e) {}
+          toast("Marked as read.");
         };
 
         window.deleteMsg = async function(docId) {
-          if (!window.db || !docId) return;
           if (!confirm("Delete this message?")) return;
-          try { await window.db.collection("messages").doc(docId).delete(); toast("Message deleted."); }
-          catch (err) { console.warn(err); }
+          if (window.db && docId) {
+            try { await window.db.collection("messages").doc(docId).delete(); }
+            catch (err) { console.warn(err); }
+          }
+          try {
+            const list = JSON.parse(localStorage.getItem("sugarAtelierMessages") || "[]");
+            const updated = list.filter(m => (m._docId || m.id) !== docId);
+            localStorage.setItem("sugarAtelierMessages", JSON.stringify(updated));
+            renderMessages(updated);
+          } catch(e) {}
+          toast("Message deleted.");
         };
+
+        // Initial render from localStorage
+        const localList = JSON.parse(localStorage.getItem("sugarAtelierMessages") || "[]");
+        if (localList.length) renderMessages(localList);
 
         if (window.db) {
           window.db.collection("messages").orderBy("createdAt", "desc").onSnapshot(snapshot => {
             const list = [];
             snapshot.forEach(doc => list.push({ _docId: doc.id, ...doc.data() }));
-            renderMessages(list);
-          }, err => { console.warn("Firestore messages notice:", err); renderMessages([]); });
+            if (list.length) {
+              renderMessages(list);
+            } else if (localList.length) {
+              renderMessages(localList);
+            } else {
+              renderMessages([]);
+            }
+          }, err => {
+            console.warn("Firestore messages notice:", err);
+            renderMessages(localList);
+          });
         } else {
-          renderMessages([]);
+          renderMessages(localList);
         }
       })();
     </script>

@@ -656,13 +656,29 @@
         try {
           if (typeof firebase !== 'undefined' && firebase.auth) {
             const provider = new firebase.auth.GoogleAuthProvider();
-            const result = await firebase.auth().signInWithPopup(provider);
             const user = result.user;
+            const photoVal = user.photoURL || null;
+
+            if (window.db) {
+              try {
+                await window.db.collection('customers').doc(user.uid).set({
+                  name: user.displayName || 'Google User',
+                  email: user.email,
+                  photoUrl: photoVal,
+                  photo: photoVal,
+                  lastLogin: new Date().toISOString()
+                }, { merge: true });
+              } catch (dbErr) {
+                console.warn('Customer doc sync notice:', dbErr);
+              }
+            }
+
             localStorage.setItem('sugarAtelierCurrentUser', JSON.stringify({
-              uid:   user.uid,
-              name:  user.displayName || 'Google User',
-              email: user.email,
-              photo: user.photoURL || null,
+              uid:      user.uid,
+              name:     user.displayName || 'Google User',
+              email:    user.email,
+              photoUrl: photoVal,
+              photo:    photoVal,
             }));
             toast(`Welcome, ${user.displayName || 'User'}!`);
             setTimeout(() => window.location.href = 'account.html', 800);
