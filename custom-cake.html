@@ -3,9 +3,240 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <meta name="description" content="The Sugar Atelier premium online cake shop. Fresh cakes and custom cakes.">
-    <title>Custom Cake | The Sugar Atelier</title>
+    <meta name="description" content="Design and order your dream custom cake with The Sugar Atelier. Custom flavors, custom name, tiers, reference photos and live price estimation.">
+    <title>Custom Cake Builder | The Sugar Atelier</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+      .cc-layout {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 32px;
+        align-items: start;
+        margin-top: 24px;
+      }
+      @media (max-width: 960px) {
+        .cc-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+      .cc-section-card {
+        background: var(--surface, #fff);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+      }
+      .cc-section-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--border);
+      }
+      .cc-step-badge {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        flex-shrink: 0;
+      }
+      .cc-section-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0;
+        font-family: "Playfair Display", serif;
+      }
+      .cc-section-desc {
+        font-size: 12.5px;
+        color: var(--muted);
+        margin: 2px 0 0;
+      }
+      .cc-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      @media (max-width: 600px) {
+        .cc-grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+      .cc-field {
+        margin-bottom: 16px;
+      }
+      .cc-field label {
+        display: block;
+        font-weight: 600;
+        font-size: 13px;
+        margin-bottom: 6px;
+        color: var(--text);
+      }
+      .cc-field label span.req {
+        color: #e53e3e;
+      }
+      .cc-field input,
+      .cc-field select,
+      .cc-field textarea {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--bg);
+        color: var(--text);
+        font-size: 14px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        box-sizing: border-box;
+      }
+      .cc-field input:focus,
+      .cc-field select:focus,
+      .cc-field textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(139, 58, 98, 0.12);
+      }
+      .cc-field .hint {
+        font-size: 11.5px;
+        color: var(--muted);
+        margin-top: 4px;
+        display: block;
+      }
+      /* Sticky Quote Card */
+      .cc-summary-card {
+        position: sticky;
+        top: 96px;
+        background: var(--surface, #fff);
+        border: 1.5px solid var(--accent);
+        border-radius: 18px;
+        padding: 24px;
+        box-shadow: 0 12px 35px rgba(139, 58, 98, 0.08);
+      }
+      .cc-summary-title {
+        font-family: "Playfair Display", serif;
+        font-size: 20px;
+        font-weight: 700;
+        margin: 0 0 4px;
+        color: var(--primary);
+      }
+      .cc-live-badge-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 14px 0;
+      }
+      .cc-live-badge {
+        font-size: 11.5px;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 20px;
+        background: var(--secondary);
+        color: var(--primary);
+        border: 1px solid rgba(139, 58, 98, 0.2);
+      }
+      .cc-price-breakdown {
+        border-top: 1px dashed var(--border);
+        border-bottom: 1px dashed var(--border);
+        padding: 14px 0;
+        margin: 16px 0;
+        font-size: 13.5px;
+      }
+      .cc-price-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        color: var(--muted);
+      }
+      .cc-price-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 19px;
+        font-weight: 800;
+        color: var(--text);
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid var(--border);
+      }
+      .cc-price-total .val {
+        color: var(--primary);
+        font-size: 24px;
+      }
+      .cc-trust-list {
+        list-style: none;
+        padding: 0;
+        margin: 16px 0 20px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .cc-trust-list li {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+      .cc-trust-list li span.chk {
+        color: #2e7d32;
+        font-weight: bold;
+      }
+      .cc-upload-box {
+        border: 2px dashed var(--border);
+        border-radius: 12px;
+        padding: 18px;
+        text-align: center;
+        cursor: pointer;
+        background: var(--bg);
+        transition: border-color 0.2s;
+      }
+      .cc-upload-box:hover {
+        border-color: var(--primary);
+      }
+      /* Order Success Modal */
+      .cc-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(20, 14, 17, 0.7);
+        backdrop-filter: blur(5px);
+        z-index: 10000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .cc-modal-content {
+        background: var(--surface, #fff);
+        border-radius: 20px;
+        max-width: 520px;
+        width: 100%;
+        padding: 32px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+        border: 1px solid var(--border);
+        animation: ccPop .3s ease-out;
+        text-align: center;
+      }
+      @keyframes ccPop {
+        from { opacity: 0; transform: scale(0.92); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      .cc-success-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: #e8f5e9;
+        color: #2e7d32;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        margin-bottom: 16px;
+      }
+    </style>
   </head>
   <body class="">
     <header class="site-header">
@@ -27,70 +258,371 @@
         </div>
       </div>
     </header>
+
     <main>
-      <section class="section">
-        <div class="container narrow">
-          <span class="eyebrow">MAKE IT YOURS</span>
-          <h1>Request a Custom Cake</h1>
-          <p>Tell us your idea and our cake artists will help bring it to life.</p>
-          <form class="form-card" id="customCakeForm">
-            <div class="form-grid">
-              <label>Your Name<input required name="customerName" id="ccName" placeholder="e.g. Ayesha Rahman"></label>
-              <label>Phone Number<input required type="tel" name="phone" id="ccPhone" placeholder="+880 1XXX-XXXXXX"></label>
-              <label>Cake Type<input required name="cakeType" placeholder="e.g. Birthday, Anniversary, Wedding"></label>
-              <label>Flavor
-                <select name="flavor">
-                  <option>Chocolate</option>
-                  <option>Vanilla</option>
-                  <option>Red Velvet</option>
-                  <option>Strawberry</option>
-                  <option>Cheesecake</option>
-                </select>
-              </label>
-              <label>Size
-                <select name="size">
-                  <option>1 KG</option>
-                  <option>1.5 KG</option>
-                  <option>2 KG</option>
-                  <option>3 KG+</option>
-                </select>
-              </label>
-              <label>Delivery Date<input required type="date" name="deliveryDate"></label>
-            </div>
-            <label>Theme / Design<input name="theme" placeholder="Describe your theme (e.g. Fairy Tale, Minimalist, Floral)"></label>
-            <label>Message on Cake<input name="message" placeholder="e.g. Happy 25th Birthday Sarah!"></label>
-            <label>Additional Instructions<textarea rows="4" name="instructions" placeholder="Any dietary preferences, eggless, less sugar, etc."></textarea></label>
-            <label>Reference Image / Sketch (Optional)
-              <input type="file" id="cakeRefImage" accept="image/*" style="padding: 8px 12px; background: var(--surface);">
-            </label>
-            <div id="cakeRefPreview" style="display:none; margin-bottom: 1.25rem;">
-              <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.4rem;">Photo Preview:</p>
-              <div style="position: relative; display: inline-block;">
-                <img id="cakeRefPreviewImg" src="" alt="Reference Preview" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); display: block;">
-                <button type="button" id="removeCakeRefBtn" title="Remove image" style="position: absolute; top: -6px; right: -6px; background: #e53e3e; color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;">✕</button>
+      <section class="section" style="padding-top: 40px;">
+        <div class="container">
+          <div>
+            <span class="eyebrow">BESPOKE CAKE ATELIER</span>
+            <h1 style="margin: 6px 0 10px;">Craft Your Dream Custom Cake</h1>
+            <p style="color: var(--muted); max-width: 680px; margin: 0;">
+              Specify your unique cake name, flavor blend, tiers, shape, and dietary preferences. Our master pastry chefs will turn your celebration into an unforgettable work of art.
+            </p>
+          </div>
+
+          <form id="customCakeForm" class="cc-layout">
+            <!-- LEFT COLUMN: BUILDER STEPS -->
+            <div class="cc-form-main">
+
+              <!-- STEP 1: CAKE IDENTITY & OCCASION -->
+              <div class="cc-section-card">
+                <div class="cc-section-header">
+                  <span class="cc-step-badge">1</span>
+                  <div>
+                    <h3 class="cc-section-title">Cake Design & Concept</h3>
+                    <p class="cc-section-desc">Give your cake an identity, pick the occasion, shape, and tier configuration.</p>
+                  </div>
+                </div>
+
+                <div class="cc-field">
+                  <label for="ccCakeName">Custom Cake Name / Title <span class="req">*</span></label>
+                  <input required id="ccCakeName" name="cakeName" placeholder="e.g. Vintage Velvet Pearl Ribbon Cake, Princess Tiara 1st Birthday" maxlength="80">
+                  <span class="hint">Give your cake an imaginative name or title for your special moment.</span>
+                </div>
+
+                <div class="cc-grid-2">
+                  <div class="cc-field">
+                    <label for="ccOccasion">Celebration / Occasion <span class="req">*</span></label>
+                    <select id="ccOccasion" name="occasion" required>
+                      <option value="Birthday">Birthday Celebration</option>
+                      <option value="Wedding">Wedding / Reception</option>
+                      <option value="Anniversary">Anniversary</option>
+                      <option value="Engagement">Engagement / Akht</option>
+                      <option value="Baby Shower">Baby Shower / Gender Reveal</option>
+                      <option value="Graduation">Graduation / Success</option>
+                      <option value="Romantic">Romantic Date / Valentine</option>
+                      <option value="Eid & Festival">Eid / Festive Celebration</option>
+                      <option value="Other">Other Celebration</option>
+                    </select>
+                  </div>
+
+                  <div class="cc-field">
+                    <label for="ccShape">Cake Shape</label>
+                    <select id="ccShape" name="cakeShape">
+                      <option value="Classic Round">Classic Round</option>
+                      <option value="Romantic Heart">Romantic Heart</option>
+                      <option value="Elegant Square">Elegant Square</option>
+                      <option value="Modern Korean Bento">Modern Korean Bento</option>
+                      <option value="Sculpted / 3D Custom">Sculpted / 3D Custom Shape</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="cc-grid-2">
+                  <div class="cc-field">
+                    <label for="ccTiers">Number of Tiers</label>
+                    <select id="ccTiers" name="tiers">
+                      <option value="1-Tier" data-tier-charge="0">1-Tier (Single Layer - Standard)</option>
+                      <option value="2-Tier" data-tier-charge="500">2-Tier (Grand Celebration +৳500)</option>
+                      <option value="3-Tier" data-tier-charge="1200">3-Tier (Royal Wedding / Party +৳1,200)</option>
+                    </select>
+                    <span class="hint">2 & 3 tier cakes require a minimum size of 2 KG or 3 KG.</span>
+                  </div>
+
+                  <div class="cc-field">
+                    <label for="ccColorTheme">Theme & Color Palette</label>
+                    <input id="ccColorTheme" name="colorTheme" placeholder="e.g. Pastel Blush Pink & Rose Gold, Minimalist White">
+                  </div>
+                </div>
+              </div>
+
+              <!-- STEP 2: FLAVOR, WEIGHT & DIETARY -->
+              <div class="cc-section-card">
+                <div class="cc-section-header">
+                  <span class="cc-step-badge">2</span>
+                  <div>
+                    <h3 class="cc-section-title">Flavor & Dietary Specifications</h3>
+                    <p class="cc-section-desc">Select handcrafted flavors, weight, and health/dietary requirements.</p>
+                  </div>
+                </div>
+
+                <div class="cc-field">
+                  <label for="ccFlavor">Signature Flavor <span class="req">*</span></label>
+                  <select id="ccFlavor" name="flavor" required>
+                    <option value="Belgian Rich Chocolate">Belgian Rich Dark & Milk Chocolate</option>
+                    <option value="Classic Madagascar Vanilla">Classic Madagascar Vanilla Bean & Buttercream</option>
+                    <option value="Velvet Romance (Red Velvet)">Velvet Romance (Red Velvet & Cream Cheese)</option>
+                    <option value="Black Forest Royale">Black Forest Royale (Dark Cherries & Fresh Cream)</option>
+                    <option value="Mango Passionfruit Cream">Mango Passionfruit Cream (Seasonal Tropical)</option>
+                    <option value="Salted Butterscotch & Caramel">Salted Butterscotch & Dulce de Leche</option>
+                    <option value="Lotus Biscoff Crunch">Lotus Biscoff Crunch & Caramel Drizzle</option>
+                    <option value="Nutella Ferrero Rocher">Nutella Ferrero Rocher & Roasted Hazelnuts</option>
+                    <option value="Custom Signature Blend">Custom Signature Blend (Specify in instructions below)</option>
+                  </select>
+                </div>
+
+                <div class="cc-field" id="customFlavorWrap" style="display: none;">
+                  <label for="ccCustomFlavorDetail">Describe Your Custom Flavor Blend</label>
+                  <input id="ccCustomFlavorDetail" name="customFlavorDetail" placeholder="e.g. Pistachio Cardamom with Rose Buttercream, Lemon Blueberry Swirl">
+                </div>
+
+                <div class="cc-grid-2">
+                  <div class="cc-field">
+                    <label for="ccSize">Size / Weight <span class="req">*</span></label>
+                    <select id="ccSize" name="size" required>
+                      <option value="1 KG" data-base-price="1600">1 KG (Serves 6–8) — ৳1,600</option>
+                      <option value="1.5 KG" data-base-price="2300" selected>1.5 KG (Serves 10–12) — ৳2,300</option>
+                      <option value="2 KG" data-base-price="3000">2 KG (Serves 14–16) — ৳3,000</option>
+                      <option value="3 KG" data-base-price="4300">3 KG (Serves 22–25) — ৳4,300</option>
+                      <option value="4 KG" data-base-price="5600">4 KG (Serves 30–35) — ৳5,600</option>
+                      <option value="5 KG+" data-base-price="7000">5 KG+ (Grand Party 40+) — ৳7,000</option>
+                    </select>
+                  </div>
+
+                  <div class="cc-field">
+                    <label for="ccDietary">Dietary Preference</label>
+                    <select id="ccDietary" name="dietary">
+                      <option value="Regular" data-diet-charge="0">Standard / Regular (Contains Fresh Eggs)</option>
+                      <option value="100% Eggless" data-diet-charge="200">100% Pure Eggless (+৳200)</option>
+                      <option value="Sugar-Free (Stevia)" data-diet-charge="300">Sugar-Free / Stevia Sweetened (+৳300)</option>
+                      <option value="Gluten-Free" data-diet-charge="350">Gluten-Free Flour Base (+৳350)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- STEP 3: MESSAGE & REFERENCE PHOTO -->
+              <div class="cc-section-card">
+                <div class="cc-section-header">
+                  <span class="cc-step-badge">3</span>
+                  <div>
+                    <h3 class="cc-section-title">Personalized Message & Reference Photo</h3>
+                    <p class="cc-section-desc">Piping text, cake topper instructions, and design inspiration photos.</p>
+                  </div>
+                </div>
+
+                <div class="cc-field">
+                  <label for="ccMessage">Message to Pipe on Cake</label>
+                  <input id="ccMessage" name="message" placeholder="e.g. Happy 25th Birthday Sarah! 🎂 or Happy Anniversary Mom & Dad" maxlength="60">
+                  <span class="hint">Will be hand-piped with chocolate or colored royal icing.</span>
+                </div>
+
+                <div class="cc-field">
+                  <label for="ccInstructions">Special Baking & Design Instructions</label>
+                  <textarea id="ccInstructions" name="instructions" rows="3" placeholder="Specify any decoration elements, candle count, edible flowers, acrylic toppers, gold leaf details, or delivery instructions."></textarea>
+                </div>
+
+                <div class="cc-field">
+                  <label>Reference Photo / Sketch (Optional)</label>
+                  <div class="cc-upload-box" id="uploadTriggerBox">
+                    <div style="font-size: 28px; margin-bottom: 6px;">📷</div>
+                    <p style="margin: 0; font-weight: 600; font-size: 13.5px;">Click or drag to upload cake inspiration photo</p>
+                    <span style="font-size: 11.5px; color: var(--muted);">Supports JPG, PNG, WEBP (Auto-optimized for instant processing)</span>
+                    <input type="file" id="cakeRefImage" accept="image/*" style="display: none;">
+                  </div>
+
+                  <div id="cakeRefPreview" style="display: none; margin-top: 14px;">
+                    <div style="display: flex; align-items: center; gap: 14px; background: var(--bg); padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border);">
+                      <img id="cakeRefPreviewImg" src="" alt="Reference Preview" style="width: 65px; height: 65px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border);">
+                      <div style="flex: 1;">
+                        <b style="font-size: 13px; display: block;">Reference Image Attached</b>
+                        <span id="cakeRefFileName" style="font-size: 11.5px; color: var(--muted);">cake-photo.jpg</span>
+                      </div>
+                      <button type="button" id="removeCakeRefBtn" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px; color: #e53e3e; border-color: #feb2b2;">Remove</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- STEP 4: DELIVERY & CUSTOMER INFO -->
+              <div class="cc-section-card">
+                <div class="cc-section-header">
+                  <span class="cc-step-badge">4</span>
+                  <div>
+                    <h3 class="cc-section-title">Delivery Schedule & Contact Information</h3>
+                    <p class="cc-section-desc">Provide your contact and delivery location details.</p>
+                  </div>
+                </div>
+
+                <div class="cc-grid-2">
+                  <div class="cc-field">
+                    <label for="ccName">Your Full Name <span class="req">*</span></label>
+                    <input required id="ccName" name="customerName" placeholder="e.g. Ayesha Rahman">
+                  </div>
+
+                  <div class="cc-field">
+                    <label for="ccPhone">Primary Phone Number <span class="req">*</span></label>
+                    <input required type="tel" id="ccPhone" name="phone" placeholder="+880 1XXX-XXXXXX">
+                  </div>
+                </div>
+
+                <div class="cc-grid-2">
+                  <div class="cc-field">
+                    <label for="ccWhatsApp">WhatsApp Number (For Photo & Proof Updates)</label>
+                    <input type="tel" id="ccWhatsApp" name="whatsapp" placeholder="+880 1XXX-XXXXXX (Optional)">
+                    <span class="hint">Our chef will share progress photos via WhatsApp.</span>
+                  </div>
+
+                  <div class="cc-field">
+                    <label for="ccCity">Delivery Area / Zone <span class="req">*</span></label>
+                    <select id="ccCity" name="city" required>
+                      <option value="Gulshan">Gulshan 1 & 2</option>
+                      <option value="Banani">Banani</option>
+                      <option value="Dhanmondi">Dhanmondi</option>
+                      <option value="Uttara">Uttara</option>
+                      <option value="Bashundhara R/A">Bashundhara R/A</option>
+                      <option value="Mirpur">Mirpur</option>
+                      <option value="Mohammadpur">Mohammadpur</option>
+                      <option value="Badda / Baridhara">Badda / Baridhara DOHS</option>
+                      <option value="Old Dhaka">Old Dhaka</option>
+                      <option value="Other Area (Dhaka)">Other Area in Dhaka</option>
+                      <option value="Outside Dhaka">Outside Dhaka (Prior Notice)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="cc-grid-2">
+                  <div class="cc-field">
+                    <label for="ccDeliveryDate">Preferred Delivery Date <span class="req">*</span></label>
+                    <input required type="date" id="ccDeliveryDate" name="deliveryDate">
+                    <span class="hint">Please allow minimum 24–48 hours for bespoke artisan cakes.</span>
+                  </div>
+
+                  <div class="cc-field">
+                    <label for="ccTimeSlot">Preferred Delivery Slot <span class="req">*</span></label>
+                    <select id="ccTimeSlot" name="deliveryTimeSlot" required>
+                      <option value="Morning (9:00 AM – 1:00 PM)">Morning (9:00 AM – 1:00 PM)</option>
+                      <option value="Afternoon (1:00 PM – 5:00 PM)" selected>Afternoon (1:00 PM – 5:00 PM)</option>
+                      <option value="Evening (5:00 PM – 9:00 PM)">Evening (5:00 PM – 9:00 PM)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="cc-field">
+                  <label for="ccAddress">Full Delivery Address <span class="req">*</span></label>
+                  <textarea required id="ccAddress" name="deliveryAddress" rows="2" placeholder="House #, Road #, Apartment / Flat name, Floor, Landmark"></textarea>
+                </div>
               </div>
             </div>
-            <button type="submit" class="btn btn-primary" id="ccSubmitBtn">Submit Custom Request</button>
+
+            <!-- RIGHT COLUMN: STICKY LIVE ESTIMATOR CARD -->
+            <div class="cc-form-sidebar">
+              <div class="cc-summary-card">
+                <span class="eyebrow" style="font-size: 11px;">LIVE ESTIMATION</span>
+                <h3 class="cc-summary-title">Custom Cake Blueprint</h3>
+                <p style="font-size: 12.5px; color: var(--muted); margin: 0 0 10px;" id="summaryCakeNameDisplay">
+                  Your Custom Cake
+                </p>
+
+                <div class="cc-live-badge-wrap">
+                  <span class="cc-live-badge" id="badgeFlavor">Belgian Chocolate</span>
+                  <span class="cc-live-badge" id="badgeSize">1.5 KG</span>
+                  <span class="cc-live-badge" id="badgeTiers">1-Tier</span>
+                  <span class="cc-live-badge" id="badgeDietary">Regular</span>
+                  <span class="cc-live-badge" id="badgeShape">Round</span>
+                </div>
+
+                <div class="cc-price-breakdown">
+                  <div class="cc-price-row">
+                    <span>Base Weight Price:</span>
+                    <span id="priceBaseVal">৳ 2,300</span>
+                  </div>
+                  <div class="cc-price-row">
+                    <span>Tier Configuration:</span>
+                    <span id="priceTierVal">+৳ 0</span>
+                  </div>
+                  <div class="cc-price-row">
+                    <span>Dietary Preference:</span>
+                    <span id="priceDietVal">+৳ 0</span>
+                  </div>
+                  <div class="cc-price-total">
+                    <span>Estimated Total:</span>
+                    <span class="val" id="priceTotalVal">৳ 2,300</span>
+                  </div>
+                </div>
+
+                <ul class="cc-trust-list">
+                  <li><span class="chk">✓</span> Baked completely fresh after order confirmation</li>
+                  <li><span class="chk">✓</span> 100% Premium Belgian chocolate & European dairy</li>
+                  <li><span class="chk">✓</span> Progress photo confirmation via WhatsApp</li>
+                  <li><span class="chk">✓</span> Temperature-controlled safe door delivery</li>
+                </ul>
+
+                <button type="submit" class="btn btn-primary" id="ccSubmitBtn" style="width: 100%; padding: 14px; font-size: 15px; font-weight: 700; border-radius: 12px;">
+                  Place Custom Cake Order 🎂
+                </button>
+
+                <p style="font-size: 11.5px; color: var(--muted); text-align: center; margin: 12px 0 0;">
+                  *Estimated quote. Detailed complex sculpted fondant or fresh flower arrangements will be finalized upon chef call.
+                </p>
+              </div>
+            </div>
           </form>
         </div>
       </section>
     </main>
+
+    <!-- CUSTOM CAKE SUCCESS MODAL -->
+    <div id="customCakeSuccessModal" class="cc-modal-backdrop">
+      <div class="cc-modal-content">
+        <div class="cc-success-icon">✓</div>
+        <span class="eyebrow" style="color: #2e7d32;">ORDER CONFIRMED</span>
+        <h2 style="font-family: 'Playfair Display', serif; margin: 6px 0 10px;">Custom Cake Request Received!</h2>
+        <p style="color: var(--muted); font-size: 13.5px; margin-bottom: 20px;">
+          Thank you! Our master cake artist has received your custom cake blueprint and will call you shortly to confirm all hand-crafted details.
+        </p>
+
+        <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 16px; text-align: left; font-size: 13.5px; margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 8px;">
+            <span style="color: var(--muted);">Request ID:</span>
+            <b id="modalReqId" style="color: var(--primary); font-family: monospace; font-size: 15px;">CC-101</b>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span style="color: var(--muted);">Cake Name:</span>
+            <b id="modalCakeName">Custom Cake</b>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span style="color: var(--muted);">Flavor & Size:</span>
+            <span id="modalFlavorSize">Chocolate • 1.5 KG</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span style="color: var(--muted);">Delivery Date:</span>
+            <span id="modalDeliveryDate">Tomorrow</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding-top: 8px; border-top: 1px solid var(--border); font-weight: 700;">
+            <span>Estimated Total:</span>
+            <span id="modalTotalPrice" style="color: var(--primary); font-size: 16px;">৳ 2,300</span>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <a id="modalWhatsAppBtn" href="#" target="_blank" class="btn" style="background: #25D366; color: #fff; border: none; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 10px; padding: 12px;">
+            💬 Chat with Chef on WhatsApp
+          </a>
+          <div style="display: flex; gap: 10px;">
+            <a href="orders.html" class="btn btn-outline" style="flex: 1; border-radius: 10px; font-size: 13px;">View in Orders</a>
+            <button type="button" id="modalCloseBtn" class="btn btn-primary" style="flex: 1; border-radius: 10px; font-size: 13px;">Order Another</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <footer class="footer">
       <div class="container footer-grid">
         <div>
           <a class="logo" href="index.html">The Sugar <span>Atelier</span></a>
           <p>Premium handcrafted cakes for every celebration.</p>
-        <div class="footer-social">
-          <a href="https://facebook.com" class="social-fb" target="_blank" rel="noopener" aria-label="Facebook">
-            <svg width="17" height="17" viewBox="-2 -2 28 28" fill="currentColor" aria-hidden="true"><path d="M9 8H6v4h3v12h5V12h3.642L18 8h-4V6.333C14 5.374 14.5 5 15.5 5H18V0h-3.808C10.592 0 9 1.583 9 4.615V8z"/></svg>
-          </a>
-          <a href="https://instagram.com" class="social-ig" target="_blank" rel="noopener" aria-label="Instagram">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-          </a>
-          <a href="https://wa.me/8801700000000" class="social-wa" target="_blank" rel="noopener" aria-label="WhatsApp">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.031 0C5.396 0 .029 5.367.029 12.003c0 2.123.554 4.197 1.609 6.024L0 24l6.163-1.613a11.968 11.968 0 005.868 1.534h.005c6.633 0 12.001-5.367 12.001-12.003C24.037 5.367 18.67 0 12.031 0zm0 21.99a9.972 9.972 0 01-5.084-1.39l-.365-.216-3.778.99.99-3.68-.237-.377a9.96 9.96 0 01-1.527-5.314c0-5.506 4.48-9.986 9.992-9.986 2.668 0 5.176 1.038 7.062 2.925 1.887 1.887 2.926 4.396 2.926 7.066 0 5.508-4.48 9.988-9.979 9.988zm5.474-7.487c-.3-.15-1.776-.876-2.051-.976-.275-.1-.475-.15-.675.15s-.775.976-.95 1.176c-.175.2-.35.225-.65.075s-1.268-.468-2.416-1.492c-.893-.797-1.496-1.782-1.671-2.082-.175-.3-.019-.462.131-.612.135-.135.3-.35.45-.525.15-.175.2-.3.3-.5.1-.2.05-.375-.025-.525s-.675-1.626-.925-2.226c-.244-.585-.491-.506-.675-.515-.175-.01-.375-.01-.575-.01s-.525.075-.8.375c-.275.3-1.05 1.026-1.05 2.502s1.075 2.902 1.225 3.102c.15.2 2.116 3.232 5.127 4.533.716.31 1.275.495 1.71.634.719.229 1.373.197 1.891.12.577-.086 1.776-.725 2.026-1.426.25-.7.25-1.301.175-1.426-.075-.125-.275-.2-.575-.35z"/></svg>
-          </a>
-        </div>
+          <div class="footer-social">
+            <a href="https://facebook.com" class="social-fb" target="_blank" rel="noopener" aria-label="Facebook">
+              <svg width="17" height="17" viewBox="-2 -2 28 28" fill="currentColor" aria-hidden="true"><path d="M9 8H6v4h3v12h5V12h3.642L18 8h-4V6.333C14 5.374 14.5 5 15.5 5H18V0h-3.808C10.592 0 9 1.583 9 4.615V8z"/></svg>
+            </a>
+            <a href="https://instagram.com" class="social-ig" target="_blank" rel="noopener" aria-label="Instagram">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </a>
+            <a href="https://wa.me/8801700000000" class="social-wa" target="_blank" rel="noopener" aria-label="WhatsApp">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.031 0C5.396 0 .029 5.367.029 12.003c0 2.123.554 4.197 1.609 6.024L0 24l6.163-1.613a11.968 11.968 0 005.868 1.534h.005c6.633 0 12.001-5.367 12.001-12.003C24.037 5.367 18.67 0 12.031 0zm0 21.99a9.972 9.972 0 01-5.084-1.39l-.365-.216-3.778.99.99-3.68-.237-.377a9.96 9.96 0 01-1.527-5.314c0-5.506 4.48-9.986 9.992-9.986 2.668 0 5.176 1.038 7.062 2.925 1.887 1.887 2.926 4.396 2.926 7.066 0 5.508-4.48 9.988-9.979 9.988zm5.474-7.487c-.3-.15-1.776-.876-2.051-.976-.275-.1-.475-.15-.675.15s-.775.976-.95 1.176c-.175.2-.35.225-.65.075s-1.268-.468-2.416-1.492c-.893-.797-1.496-1.782-1.671-2.082-.175-.3-.019-.462.131-.612.135-.135.3-.35.45-.525.15-.175.2-.3.3-.5.1-.2.05-.375-.025-.525s-.675-1.626-.925-2.226c-.244-.585-.491-.506-.675-.515-.175-.01-.375-.01-.575-.01s-.525.075-.8.375c-.275.3-1.05 1.026-1.05 2.502s1.075 2.902 1.225 3.102c.15.2 2.116 3.232 5.127 4.533.716.31 1.275.495 1.71.634.719.229 1.373.197 1.891.12.577-.086 1.776-.725 2.026-1.426.25-.7.25-1.301.175-1.426-.075-.125-.275-.2-.575-.35z"/></svg>
+            </a>
+          </div>
         </div>
         <div>
           <h4>Quick Links</h4>
@@ -113,16 +645,28 @@
       </div>
       <div class="copyright">© 2026 The Sugar Atelier. All rights reserved.</div>
     </footer>
+
     <div id="toast" class="toast"></div>
+
     <!-- Firebase SDK & Config -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/app.js"></script>
+
     <script>
-      // Flag to prevent app.js duplicate handler
+      // Prevent double listener conflict
       window.__customCakeHandler = true;
+
+      // Minimum delivery date = tomorrow
+      const dateInput = document.getElementById("ccDeliveryDate");
+      if (dateInput) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        dateInput.min = tomorrow.toISOString().split("T")[0];
+        dateInput.value = tomorrow.toISOString().split("T")[0];
+      }
 
       // Auto-fill customer info if logged in
       try {
@@ -130,26 +674,114 @@
         if (u) {
           if (u.name  && document.getElementById("ccName"))  document.getElementById("ccName").value  = u.name;
           if (u.phone && document.getElementById("ccPhone")) document.getElementById("ccPhone").value = u.phone;
+          if (u.phone && document.getElementById("ccWhatsApp") && !document.getElementById("ccWhatsApp").value) {
+            document.getElementById("ccWhatsApp").value = u.phone;
+          }
+          if (u.address && document.getElementById("ccAddress")) {
+            document.getElementById("ccAddress").value = u.address;
+          }
         }
       } catch (e) {}
 
+      // Interactive Price Estimator Elements
+      const cakeNameInput  = document.getElementById("ccCakeName");
+      const occasionInput  = document.getElementById("ccOccasion");
+      const shapeInput     = document.getElementById("ccShape");
+      const tiersInput     = document.getElementById("ccTiers");
+      const flavorInput    = document.getElementById("ccFlavor");
+      const customFlavorWp = document.getElementById("customFlavorWrap");
+      const customFlavorIn = document.getElementById("ccCustomFlavorDetail");
+      const sizeInput      = document.getElementById("ccSize");
+      const dietaryInput   = document.getElementById("ccDietary");
+
+      // Display Elements
+      const summaryCakeName = document.getElementById("summaryCakeNameDisplay");
+      const badgeFlavor     = document.getElementById("badgeFlavor");
+      const badgeSize       = document.getElementById("badgeSize");
+      const badgeTiers      = document.getElementById("badgeTiers");
+      const badgeDietary    = document.getElementById("badgeDietary");
+      const badgeShape      = document.getElementById("badgeShape");
+
+      const priceBaseVal    = document.getElementById("priceBaseVal");
+      const priceTierVal    = document.getElementById("priceTierVal");
+      const priceDietVal    = document.getElementById("priceDietVal");
+      const priceTotalVal   = document.getElementById("priceTotalVal");
+
+      let currentEstimatedTotal = 2300;
+
+      function updateEstimator() {
+        // Name display
+        const nameVal = cakeNameInput?.value.trim();
+        if (summaryCakeName) {
+          summaryCakeName.textContent = nameVal ? `"${nameVal}"` : "Your Custom Cake Blueprint";
+        }
+
+        // Custom flavor toggle
+        if (flavorInput?.value === "Custom Signature Blend") {
+          if (customFlavorWp) customFlavorWp.style.display = "block";
+        } else {
+          if (customFlavorWp) customFlavorWp.style.display = "none";
+        }
+
+        // Badges
+        const selectedFlavor = (flavorInput?.value === "Custom Signature Blend" && customFlavorIn?.value.trim())
+          ? customFlavorIn.value.trim()
+          : (flavorInput?.value || "Belgian Chocolate");
+
+        if (badgeFlavor) badgeFlavor.textContent = selectedFlavor;
+        if (badgeSize)   badgeSize.textContent   = sizeInput?.value || "1.5 KG";
+        if (badgeTiers)  badgeTiers.textContent  = tiersInput?.value || "1-Tier";
+        if (badgeDietary)badgeDietary.textContent= dietaryInput?.value || "Regular";
+        if (badgeShape)  badgeShape.textContent  = shapeInput?.value || "Round";
+
+        // Calculation
+        const sizeOpt = sizeInput?.selectedOptions[0];
+        const tierOpt = tiersInput?.selectedOptions[0];
+        const dietOpt = dietaryInput?.selectedOptions[0];
+
+        const basePrice  = Number(sizeOpt?.dataset.basePrice  || 2300);
+        const tierCharge = Number(tierOpt?.dataset.tierCharge || 0);
+        const dietCharge = Number(dietOpt?.dataset.dietCharge || 0);
+
+        const total = basePrice + tierCharge + dietCharge;
+        currentEstimatedTotal = total;
+
+        if (priceBaseVal)  priceBaseVal.textContent  = "৳ " + basePrice.toLocaleString();
+        if (priceTierVal)  priceTierVal.textContent  = tierCharge > 0 ? "+৳ " + tierCharge.toLocaleString() : "+৳ 0";
+        if (priceDietVal)  priceDietVal.textContent  = dietCharge > 0 ? "+৳ " + dietCharge.toLocaleString() : "+৳ 0";
+        if (priceTotalVal) priceTotalVal.textContent = "৳ " + total.toLocaleString();
+      }
+
+      // Add listeners to all interactive inputs
+      [cakeNameInput, occasionInput, shapeInput, tiersInput, flavorInput, customFlavorIn, sizeInput, dietaryInput].forEach(el => {
+        el?.addEventListener("input", updateEstimator);
+        el?.addEventListener("change", updateEstimator);
+      });
+      updateEstimator();
+
       // Photo upload & compression handling
       let cakeRefBase64 = "";
+      const uploadBox   = document.getElementById("uploadTriggerBox");
       const fileInput   = document.getElementById("cakeRefImage");
       const previewWrap = document.getElementById("cakeRefPreview");
       const previewImg  = document.getElementById("cakeRefPreviewImg");
+      const fileNameEl  = document.getElementById("cakeRefFileName");
       const removeBtn   = document.getElementById("removeCakeRefBtn");
+
+      uploadBox?.addEventListener("click", () => fileInput?.click());
 
       fileInput?.addEventListener("change", function(e) {
         const file = e.target.files && e.target.files[0];
         if (!file) return;
+
+        if (fileNameEl) fileNameEl.textContent = file.name;
 
         const reader = new FileReader();
         reader.onload = function(evt) {
           const img = new Image();
           img.onload = function() {
             const canvas = document.createElement("canvas");
-            const maxDim = 600;
+            const maxDim = 640;
             let w = img.width;
             let h = img.height;
             if (w > h && w > maxDim) {
@@ -163,7 +795,7 @@
             canvas.height = h;
             const ctx = canvas.getContext("2d");
             ctx.drawImage(img, 0, 0, w, h);
-            cakeRefBase64 = canvas.toDataURL("image/jpeg", 0.72);
+            cakeRefBase64 = canvas.toDataURL("image/jpeg", 0.75);
             if (previewImg)  previewImg.src = cakeRefBase64;
             if (previewWrap) previewWrap.style.display = "block";
           };
@@ -179,52 +811,114 @@
         if (previewImg)  previewImg.src = "";
       });
 
-      document.getElementById("customCakeForm")?.addEventListener("submit", async function(e) {
+      // Submit Form Handler
+      const form = document.getElementById("customCakeForm");
+      form?.addEventListener("submit", async function(e) {
         e.preventDefault();
-        const fd = new FormData(this);
-        const req = {
-          id:           "CC-" + Math.floor(100 + Math.random() * 900),
-          customerName: fd.get("customerName")?.trim() || "Customer",
-          phone:        fd.get("phone")?.trim() || "",
-          cakeType:     fd.get("cakeType")?.trim() || "",
-          flavor:       fd.get("flavor") || "Chocolate",
-          size:         fd.get("size") || "1 KG",
-          deliveryDate: fd.get("deliveryDate") || "",
-          theme:        fd.get("theme")?.trim() || "Custom Request",
-          message:      fd.get("message")?.trim() || "",
-          instructions: fd.get("instructions")?.trim() || "",
-          image:        cakeRefBase64 || "",
-          status:       "Pending",
-          createdAt:    new Date().toISOString(),
-        };
 
         const btn = document.getElementById("ccSubmitBtn");
         btn.disabled = true;
-        btn.textContent = "Submitting Request…";
+        btn.textContent = "Processing Custom Order…";
 
-        // Save to Firestore
+        const fd = new FormData(this);
+        const cakeName = fd.get("cakeName")?.trim() || "Custom Artisan Cake";
+        const flavor = (fd.get("flavor") === "Custom Signature Blend" && fd.get("customFlavorDetail")?.trim())
+          ? `Custom: ${fd.get("customFlavorDetail").trim()}`
+          : (fd.get("flavor") || "Belgian Rich Chocolate");
+
+        const orderId = "CC-" + Math.floor(100 + Math.random() * 900);
+
+        const req = {
+          id:                 orderId,
+          cakeName:           cakeName,
+          customerName:       fd.get("customerName")?.trim() || "Customer",
+          phone:              fd.get("phone")?.trim() || "",
+          whatsapp:           fd.get("whatsapp")?.trim() || fd.get("phone")?.trim() || "",
+          cakeType:           fd.get("occasion") || "Celebration Cake",
+          occasion:           fd.get("occasion") || "Celebration",
+          cakeShape:          fd.get("cakeShape") || "Classic Round",
+          tiers:              fd.get("tiers") || "1-Tier",
+          flavor:             flavor,
+          size:               fd.get("size") || "1.5 KG",
+          dietary:            fd.get("dietary") || "Regular",
+          colorTheme:         fd.get("colorTheme")?.trim() || "",
+          deliveryDate:       fd.get("deliveryDate") || "",
+          deliveryTimeSlot:   fd.get("deliveryTimeSlot") || "Afternoon (1:00 PM – 5:00 PM)",
+          city:               fd.get("city") || "Dhaka",
+          deliveryAddress:    fd.get("deliveryAddress")?.trim() || "",
+          theme:              fd.get("colorTheme")?.trim() || cakeName,
+          message:            fd.get("message")?.trim() || "",
+          instructions:       fd.get("instructions")?.trim() || "",
+          estimatedPrice:     currentEstimatedTotal,
+          image:              cakeRefBase64 || "",
+          status:             "Pending",
+          createdAt:          new Date().toISOString(),
+        };
+
+        // 1. Save to Firestore customCakeRequests
         if (window.db) {
           try {
             await window.db.collection("customCakeRequests").doc(req.id).set(req);
           } catch (err) {
-            console.warn("Firestore custom cake save notice:", err);
+            console.warn("Firestore custom cake save note:", err);
           }
         }
 
-        // Also save to localStorage as backup
+        // 2. Save to localStorage custom cakes list
         try {
           const list = JSON.parse(localStorage.getItem("sugarAtelierCustomCakes") || "[]");
           list.unshift(req);
           localStorage.setItem("sugarAtelierCustomCakes", JSON.stringify(list));
         } catch (err) {}
 
-        toast("🎉 Custom cake request submitted! We will call you shortly.");
+        // 3. Also push into sugarAtelierOrders so it appears in "My Orders" for the customer!
+        try {
+          const orders = JSON.parse(localStorage.getItem("sugarAtelierOrders") || "[]");
+          orders.unshift({
+            id: req.id,
+            date: new Date().toLocaleDateString("en-GB", { day: 'numeric', month: 'short', year: 'numeric' }),
+            total: "৳" + Number(req.estimatedPrice).toLocaleString(),
+            status: "Requested",
+            customerName: req.customerName,
+            customerPhone: req.phone,
+            address: req.deliveryAddress + " (" + req.city + ")",
+            items: [{ name: req.cakeName + " (" + req.size + ", " + req.flavor + ")", qty: 1 }]
+          });
+          localStorage.setItem("sugarAtelierOrders", JSON.stringify(orders));
+        } catch (err) {}
+
+        // Show Success Modal
+        const modal = document.getElementById("customCakeSuccessModal");
+        if (modal) {
+          document.getElementById("modalReqId").textContent = req.id;
+          document.getElementById("modalCakeName").textContent = req.cakeName;
+          document.getElementById("modalFlavorSize").textContent = `${req.flavor} • ${req.size} (${req.tiers})`;
+          document.getElementById("modalDeliveryDate").textContent = `${req.deliveryDate} (${req.deliveryTimeSlot.split(' ')[0]})`;
+          document.getElementById("modalTotalPrice").textContent = "৳ " + Number(req.estimatedPrice).toLocaleString();
+
+          // WhatsApp link
+          const waMsg = encodeURIComponent(`Hi The Sugar Atelier! I just placed a custom cake order on your website.\n\nOrder ID: ${req.id}\nCake: ${req.cakeName}\nFlavor: ${req.flavor}\nSize: ${req.size} (${req.tiers})\nDelivery: ${req.deliveryDate}\nEstimated: ৳${req.estimatedPrice}\n\nCould you please check my blueprint?`);
+          const waBtn = document.getElementById("modalWhatsAppBtn");
+          if (waBtn) waBtn.href = `https://wa.me/8801700000000?text=${waMsg}`;
+
+          modal.style.display = "flex";
+        } else {
+          toast("🎉 Custom cake request submitted! We will call you shortly.");
+        }
+
         this.reset();
         cakeRefBase64 = "";
         if (previewWrap) previewWrap.style.display = "none";
         if (previewImg)  previewImg.src = "";
         btn.disabled = false;
-        btn.textContent = "Submit Custom Request";
+        btn.textContent = "Place Custom Cake Order 🎂";
+        updateEstimator();
+      });
+
+      // Modal Close & Reset
+      document.getElementById("modalCloseBtn")?.addEventListener("click", () => {
+        const modal = document.getElementById("customCakeSuccessModal");
+        if (modal) modal.style.display = "none";
       });
     </script>
   </body>

@@ -3,9 +3,135 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <meta name="description" content="The Sugar Atelier premium online cake shop. Fresh cakes and custom cakes.">
-    <title>Custom Cake Requests | The Sugar Atelier</title>
+    <meta name="description" content="The Sugar Atelier admin management for bespoke and custom cake orders.">
+    <title>Custom Cake Requests | Admin | The Sugar Atelier</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+      .admin-stat-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      @media (max-width: 900px) {
+        .admin-stat-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      .admin-stat-card {
+        background: var(--surface, #fff);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+      }
+      .admin-stat-card span {
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .admin-stat-card b {
+        font-size: 26px;
+        display: block;
+        margin-top: 4px;
+        color: var(--text);
+        font-family: "Playfair Display", serif;
+      }
+      .admin-filter-bar {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+      }
+      .admin-filter-controls {
+        display: flex;
+        gap: 10px;
+        flex: 1;
+        max-width: 600px;
+      }
+      .admin-search-input {
+        flex: 1;
+        padding: 9px 14px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: var(--bg);
+        color: var(--text);
+        font-size: 13.5px;
+      }
+      .admin-status-filter {
+        padding: 9px 12px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: var(--bg);
+        color: var(--text);
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .dietary-tag {
+        font-size: 11px;
+        padding: 2px 7px;
+        border-radius: 12px;
+        background: #f0fdf4;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+        display: inline-block;
+        font-weight: 600;
+      }
+      .dietary-tag.sugar-free {
+        background: #fefce8;
+        color: #854d0e;
+        border-color: #fef08a;
+      }
+      .dietary-tag.gluten-free {
+        background: #faf5ff;
+        color: #6b21a8;
+        border-color: #e9d5ff;
+      }
+      /* Details Modal */
+      .cc-detail-modal-wrap {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.7);
+        backdrop-filter: blur(4px);
+        z-index: 10000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .cc-detail-modal-box {
+        background: var(--surface, #fff);
+        border-radius: 18px;
+        max-width: 680px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 28px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        border: 1px solid var(--border);
+        position: relative;
+      }
+      .cc-modal-close-x {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 16px;
+        color: var(--text);
+      }
+    </style>
   </head>
   <body class="admin-body">
     <div class="admin-layout">
@@ -24,151 +150,486 @@
         <a href="admin-settings.html">Settings</a>
         <a href="admin-login.html">Logout</a>
       </aside>
+
       <main class="admin-main">
-<div class="admin-top">
-            <div>
-              <span class="eyebrow">ADMIN MANAGEMENT</span>
-              <h1>Custom Cake Requests</h1>
-            </div>
+        <div class="admin-top">
+          <div>
+            <span class="eyebrow">ADMIN MANAGEMENT</span>
+            <h1>Custom Cake Requests</h1>
           </div>
-          <div class="admin-card">
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Request ID</th>
-                    <th>Photo</th>
-                    <th>Customer</th>
-                    <th>Cake Type & Flavor</th>
-                    <th>Size & Date</th>
-                    <th>Instructions / Message</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody id="customCakesTbody">
-                  <tr>
-                    <td colspan="8" style="text-align:center;padding:30px;color:var(--muted);">Loading requests…</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+          <span class="muted" id="totalReqBadge">Loading…</span>
+        </div>
+
+        <!-- STATS CARDS -->
+        <div class="admin-stat-grid">
+          <div class="admin-stat-card">
+            <span>Total Requests</span>
+            <b id="statTotal">0</b>
           </div>
+          <div class="admin-stat-card">
+            <span style="color: #d97706;">Pending Review</span>
+            <b id="statPending" style="color: #d97706;">0</b>
+          </div>
+          <div class="admin-stat-card">
+            <span style="color: #2563eb;">In Progress</span>
+            <b id="statProgress" style="color: #2563eb;">0</b>
+          </div>
+          <div class="admin-stat-card">
+            <span style="color: #16a34a;">Completed</span>
+            <b id="statCompleted" style="color: #16a34a;">0</b>
+          </div>
+        </div>
+
+        <!-- TABLE CARD -->
+        <div class="admin-card">
+          <!-- SEARCH & FILTER BAR -->
+          <div class="admin-filter-bar">
+            <div class="admin-filter-controls">
+              <input type="text" id="adminSearchInput" class="admin-search-input" placeholder="Search by cake name, customer, phone, or request ID…">
+              <select id="adminStatusFilter" class="admin-status-filter">
+                <option value="ALL">All Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Ready">Ready</option>
+                <option value="Completed">Completed</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+            </div>
+            <span id="matchingCount" style="font-size: 13px; color: var(--muted);"></span>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Request ID</th>
+                  <th>Photo</th>
+                  <th>Customer & Delivery</th>
+                  <th>Cake & Flavor</th>
+                  <th>Specs & Price</th>
+                  <th>Delivery Slot</th>
+                  <th>Message & Notes</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="customCakesTbody">
+                <tr>
+                  <td colspan="9" style="text-align:center;padding:36px;color:var(--muted);">Loading requests…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </main>
     </div>
-    <!-- Image Preview Modal -->
-    <div id="imagePreviewModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:9999; align-items:center; justify-content:center; padding:20px;">
-      <div style="position:relative; max-width:90vw; max-height:90vh; background:var(--surface, #1e1e24); border-radius:12px; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.5); padding:12px; display:flex; flex-direction:column; align-items:center;">
-        <button id="closeImgModalBtn" style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:#fff; border:none; width:32px; height:32px; border-radius:50%; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
-        <img id="modalPreviewImg" src="" alt="Cake Reference" style="max-width:100%; max-height:80vh; object-fit:contain; border-radius:8px;">
+
+    <!-- FULL DETAILS MODAL -->
+    <div id="customCakeDetailModal" class="cc-detail-modal-wrap">
+      <div class="cc-detail-modal-box">
+        <button id="closeDetailModalBtn" class="cc-modal-close-x">✕</button>
+        <span class="eyebrow" style="color: var(--primary);">CUSTOM CAKE BLUEPRINT</span>
+        <h2 id="modalTitle" style="margin: 4px 0 16px; font-family: 'Playfair Display', serif;">Cake Details</h2>
+
+        <div style="display: grid; grid-template-columns: 140px 1fr; gap: 20px; margin-bottom: 20px;">
+          <div id="modalImgContainer">
+            <img id="modalImg" src="" alt="Cake Reference" style="width: 140px; height: 140px; object-fit: cover; border-radius: 12px; border: 1px solid var(--border); display: block;">
+          </div>
+          <div>
+            <h3 id="modalCakeNameDisplay" style="margin: 0 0 6px; font-size: 17px;">Cake Name</h3>
+            <p id="modalOccasionShape" style="margin: 0 0 10px; color: var(--muted); font-size: 13px;">Birthday • Classic Round</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;" id="modalBadgesWrap"></div>
+          </div>
+        </div>
+
+        <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; font-size: 13.5px; margin-bottom: 18px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div>
+              <span style="color: var(--muted); font-size: 12px;">Customer:</span>
+              <b id="modalCustomerName" style="display: block;">—</b>
+              <span id="modalCustomerPhone" style="color: var(--muted); font-size: 12.5px;">—</span>
+            </div>
+            <div>
+              <span style="color: var(--muted); font-size: 12px;">Delivery Date & Slot:</span>
+              <b id="modalDeliverySchedule" style="display: block; color: var(--primary);">—</b>
+            </div>
+          </div>
+
+          <div style="border-top: 1px dashed var(--border); padding-top: 10px; margin-bottom: 10px;">
+            <span style="color: var(--muted); font-size: 12px;">Delivery Address:</span>
+            <div id="modalAddressFull" style="font-weight: 500; margin-top: 2px;">—</div>
+          </div>
+
+          <div style="border-top: 1px dashed var(--border); padding-top: 10px; margin-bottom: 10px;">
+            <span style="color: var(--muted); font-size: 12px;">Message on Cake:</span>
+            <div id="modalMessageFull" style="font-style: italic; color: var(--primary); font-weight: 600; margin-top: 2px;">—</div>
+          </div>
+
+          <div style="border-top: 1px dashed var(--border); padding-top: 10px;">
+            <span style="color: var(--muted); font-size: 12px;">Special Baking / Design Instructions:</span>
+            <div id="modalInstructionsFull" style="color: var(--text); margin-top: 2px;">—</div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+          <div style="font-size: 15px;">
+            Estimated Price: <b id="modalPriceVal" style="color: var(--primary); font-size: 20px;">৳ 0</b>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <a id="modalWhatsAppAction" href="#" target="_blank" class="btn" style="background: #25D366; color: #fff; border: none; font-size: 13px; padding: 8px 14px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px;">
+              💬 WhatsApp Customer
+            </a>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- IMAGE PREVIEW LIGHTBOX MODAL -->
+    <div id="imagePreviewModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:10001; align-items:center; justify-content:center; padding:20px;">
+      <div style="position:relative; max-width:90vw; max-height:90vh; background:var(--surface, #1e1e24); border-radius:14px; overflow:hidden; box-shadow:0 25px 50px rgba(0,0,0,0.5); padding:16px; display:flex; flex-direction:column; align-items:center;">
+        <button id="closeImgModalBtn" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:#fff; border:none; width:34px; height:34px; border-radius:50%; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+        <img id="modalPreviewImg" src="" alt="Cake Reference" style="max-width:100%; max-height:80vh; object-fit:contain; border-radius:10px;">
+      </div>
+    </div>
+
     <div id="toast" class="toast"></div>
+
     <!-- Firebase SDK & Config -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/app.js"></script>
+
     <script>
       (function() {
-        const tbody = document.getElementById("customCakesTbody");
-        const modal = document.getElementById("imagePreviewModal");
-        const modalImg = document.getElementById("modalPreviewImg");
-        const closeBtn = document.getElementById("closeImgModalBtn");
+        const tbody        = document.getElementById("customCakesTbody");
+        const totalBadge   = document.getElementById("totalReqBadge");
+        const statTotal    = document.getElementById("statTotal");
+        const statPending  = document.getElementById("statPending");
+        const statProgress = document.getElementById("statProgress");
+        const statCompleted= document.getElementById("statCompleted");
 
-        function openModal(src) {
-          if (!modal || !modalImg) return;
+        const searchInput  = document.getElementById("adminSearchInput");
+        const statusFilter = document.getElementById("adminStatusFilter");
+        const matchingCount= document.getElementById("matchingCount");
+
+        // Lightbox modal elements
+        const imgModal     = document.getElementById("imagePreviewModal");
+        const modalImg     = document.getElementById("modalPreviewImg");
+        const closeImgBtn  = document.getElementById("closeImgModalBtn");
+
+        // Detail modal elements
+        const detailModal  = document.getElementById("customCakeDetailModal");
+        const closeDetBtn  = document.getElementById("closeDetailModalBtn");
+
+        function openLightbox(src) {
+          if (!imgModal || !modalImg) return;
           modalImg.src = src;
-          modal.style.display = "flex";
+          imgModal.style.display = "flex";
         }
-        function closeModal() {
-          if (modal) modal.style.display = "none";
+        function closeLightbox() {
+          if (imgModal) imgModal.style.display = "none";
           if (modalImg) modalImg.src = "";
         }
-        closeBtn?.addEventListener("click", closeModal);
-        modal?.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+        closeImgBtn?.addEventListener("click", closeLightbox);
+        imgModal?.addEventListener("click", e => { if (e.target === imgModal) closeLightbox(); });
 
-        if (!tbody) return;
+        closeDetBtn?.addEventListener("click", () => {
+          if (detailModal) detailModal.style.display = "none";
+        });
+        detailModal?.addEventListener("click", e => {
+          if (e.target === detailModal) detailModal.style.display = "none";
+        });
 
-        const defaultItems = [
-          { id: "CC-101", customerName: "Sadia Islam", phone: "+880 1819-234567", cakeType: "3-Tier Wedding Cake", flavor: "Vanilla & Raspberry", size: "3 KG+", deliveryDate: "2026-10-05", theme: "Floral Gold Elegance", message: "Forever & Always", instructions: "Less sweet cream, eggless base preferred.", status: "In Progress" }
+        const defaultMock = [
+          {
+            id: "CC-101",
+            cakeName: "Vintage Golden Pearl Ribbon Cake",
+            customerName: "Sadia Islam",
+            phone: "+880 1819-234567",
+            whatsapp: "+880 1819-234567",
+            cakeType: "Anniversary",
+            occasion: "Anniversary",
+            cakeShape: "Romantic Heart",
+            tiers: "2-Tier",
+            flavor: "Belgian Rich Chocolate",
+            size: "2 KG",
+            dietary: "100% Eggless",
+            deliveryDate: "2026-10-05",
+            deliveryTimeSlot: "Evening (5:00 PM – 9:00 PM)",
+            city: "Gulshan",
+            deliveryAddress: "House 24, Road 11, Block D, Gulshan 1, Dhaka",
+            theme: "Gold & Ivory Pastel",
+            message: "Forever & Always",
+            instructions: "Please make the frosting less sweet and add gold leaf detailing.",
+            estimatedPrice: 3500,
+            status: "In Progress",
+            createdAt: new Date().toISOString()
+          }
         ];
 
-        function renderCustomCakes(all) {
-          if (!all.length) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--muted);">No custom cake requests yet.</td></tr>';
+        let currentRequestsList = [];
+
+        function updateStats(list) {
+          const total = list.length;
+          const pending = list.filter(c => (c.status || "Pending") === "Pending").length;
+          const progress = list.filter(c => (c.status || "") === "In Progress" || c.status === "Ready").length;
+          const completed = list.filter(c => (c.status || "") === "Completed").length;
+
+          if (statTotal)     statTotal.textContent = total;
+          if (statPending)   statPending.textContent = pending;
+          if (statProgress)  statProgress.textContent = progress;
+          if (statCompleted) statCompleted.textContent = completed;
+          if (totalBadge)    totalBadge.textContent = total + " Request" + (total === 1 ? "" : "s");
+        }
+
+        function renderRows() {
+          const query = (searchInput?.value || "").toLowerCase().trim();
+          const filter = statusFilter?.value || "ALL";
+
+          const filtered = currentRequestsList.filter(c => {
+            const matchesStatus = filter === "ALL" || (c.status || "Pending") === filter;
+            if (!matchesStatus) return false;
+            if (!query) return true;
+
+            const name = (c.customerName || "").toLowerCase();
+            const cake = (c.cakeName || "").toLowerCase();
+            const phone = (c.phone || "").toLowerCase();
+            const id = (c.id || "").toLowerCase();
+            const flavor = (c.flavor || "").toLowerCase();
+
+            return name.includes(query) || cake.includes(query) || phone.includes(query) || id.includes(query) || flavor.includes(query);
+          });
+
+          if (matchingCount) {
+            matchingCount.textContent = query || filter !== "ALL"
+              ? `Showing ${filtered.length} of ${currentRequestsList.length}`
+              : "";
+          }
+
+          if (!filtered.length) {
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:36px;color:var(--muted);">No matching custom cake requests found.</td></tr>';
             return;
           }
-          tbody.innerHTML = all.map(c => `
-            <tr>
-              <td><strong>${c.id}</strong></td>
-              <td>
-                ${c.image 
-                  ? `<img src="${c.image}" alt="Ref" class="cake-thumb-preview" data-full="${c.image}" title="Click to view reference" style="width:44px;height:44px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid var(--border);display:block;">` 
-                  : `<span style="color:var(--muted);font-size:12px;">No photo</span>`}
-              </td>
-              <td>
-                <b>${c.customerName || "—"}</b><br>
-                <small style="color:var(--muted);">${c.phone || "No phone"}</small>
-              </td>
-              <td>
-                <span>${c.cakeType || "—"}</span><br>
-                <small style="color:var(--muted);">${c.flavor || ""}</small>
-              </td>
-              <td>
-                <span>${c.size || "—"}</span><br>
-                <small style="color:var(--primary);">${c.deliveryDate || "ASAP"}</small>
-              </td>
-              <td style="max-width:220px;font-size:13px;">
-                ${c.message ? `<b>Msg:</b> "${c.message}"<br>` : ""}
-                <span style="color:var(--muted);">${c.instructions || c.theme || "—"}</span>
-              </td>
-              <td>
-                <span class="status ${c.status === 'Completed' ? 'success' : ''}">${c.status || "Pending"}</span>
-              </td>
-              <td>
-                <select class="status-change-sel" data-id="${c.id}" style="padding:4px 8px;font-size:12px;border-radius:6px;border:1px solid var(--border);">
-                  <option value="Pending"     ${c.status === 'Pending'     ? 'selected' : ''}>Pending</option>
-                  <option value="In Progress" ${c.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
-                  <option value="Completed"   ${c.status === 'Completed'   ? 'selected' : ''}>Completed</option>
-                  <option value="Rejected"    ${c.status === 'Rejected'    ? 'selected' : ''}>Rejected</option>
-                </select>
-              </td>
-            </tr>
-          `).join("");
 
+          tbody.innerHTML = filtered.map(c => {
+            const cleanPhone = (c.phone || "").replace(/[^0-9]/g, "");
+            const waPhone = (c.whatsapp || c.phone || "").replace(/[^0-9]/g, "");
+            const formattedWa = waPhone.startsWith("88") ? waPhone : ("88" + waPhone);
+            const waText = encodeURIComponent(`Hi ${c.customerName}! Re: Your Custom Cake "${c.cakeName || 'Order'}" (ID: ${c.id}) at The Sugar Atelier.`);
+            const waUrl = `https://wa.me/${formattedWa}?text=${waText}`;
+
+            let dietClass = "dietary-tag";
+            if ((c.dietary || "").includes("Sugar-Free")) dietClass += " sugar-free";
+            if ((c.dietary || "").includes("Gluten-Free")) dietClass += " gluten-free";
+
+            const priceStr = c.estimatedPrice ? `৳ ${Number(c.estimatedPrice).toLocaleString()}` : "Quote Pending";
+
+            return `
+              <tr>
+                <td>
+                  <strong>${c.id}</strong><br>
+                  <small style="color:var(--muted);font-size:11px;">${c.createdAt ? new Date(c.createdAt).toLocaleDateString() : 'Recent'}</small>
+                </td>
+                <td>
+                  ${c.image 
+                    ? `<img src="${c.image}" alt="Ref" class="cake-thumb-preview" data-full="${c.image}" title="Click to view reference" style="width:48px;height:48px;object-fit:cover;border-radius:8px;cursor:pointer;border:1px solid var(--border);display:block;">` 
+                    : `<span style="color:var(--muted);font-size:11.5px;background:var(--bg);padding:4px 8px;border-radius:6px;border:1px solid var(--border);display:inline-block;">No photo</span>`}
+                </td>
+                <td>
+                  <b>${c.customerName || "—"}</b><br>
+                  <a href="tel:${cleanPhone}" style="color:var(--primary);font-size:12px;">${c.phone || "No phone"}</a><br>
+                  <small style="color:var(--muted);font-size:11px;" title="${c.deliveryAddress || ''}">${c.city || ''} ${c.deliveryAddress ? '• ' + c.deliveryAddress.substring(0, 26) + '…' : ''}</small>
+                </td>
+                <td>
+                  <b style="color:var(--text);font-size:13.5px;">${c.cakeName || "Custom Cake"}</b><br>
+                  <span style="font-size:12px;color:var(--primary);">${c.flavor || "Chocolate"}</span><br>
+                  <small style="color:var(--muted);font-size:11px;">${c.cakeShape || 'Round'}${c.occasion ? ' • ' + c.occasion : ''}</small>
+                </td>
+                <td>
+                  <span style="font-weight:600;font-size:13px;">${c.size || "1.5 KG"}</span>
+                  <small style="color:var(--muted);font-size:11px;">(${c.tiers || "1-Tier"})</small><br>
+                  <span class="${dietClass}">${c.dietary || "Regular"}</span><br>
+                  <b style="color:var(--primary);font-size:13px;">${priceStr}</b>
+                </td>
+                <td>
+                  <b style="color:var(--text);font-size:12.5px;">${c.deliveryDate || "ASAP"}</b><br>
+                  <small style="color:var(--muted);font-size:11px;">${c.deliveryTimeSlot ? c.deliveryTimeSlot.split(' ')[0] : 'Anytime'}</small>
+                </td>
+                <td style="max-width:200px;font-size:12px;">
+                  ${c.message ? `<div style="color:var(--primary);font-weight:600;margin-bottom:2px;">"${c.message}"</div>` : ""}
+                  <div style="color:var(--muted);font-size:11.5px;max-height:40px;overflow:hidden;text-overflow:ellipsis;">
+                    ${c.instructions || c.colorTheme || "—"}
+                  </div>
+                </td>
+                <td>
+                  <select class="status-change-sel" data-id="${c.id}" style="padding:4px 8px;font-size:12px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-weight:600;">
+                    <option value="Pending"     ${c.status === 'Pending'     ? 'selected' : ''}>Pending</option>
+                    <option value="In Progress" ${c.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                    <option value="Ready"       ${c.status === 'Ready'       ? 'selected' : ''}>Ready</option>
+                    <option value="Completed"   ${c.status === 'Completed'   ? 'selected' : ''}>Completed</option>
+                    <option value="Rejected"    ${c.status === 'Rejected'    ? 'selected' : ''}>Rejected</option>
+                  </select>
+                </td>
+                <td>
+                  <div style="display:flex;gap:6px;align-items:center;">
+                    <button class="btn btn-outline view-details-btn" data-id="${c.id}" title="View Complete Blueprint" style="padding:4px 8px;font-size:12px;border-radius:6px;">
+                      👁️ Details
+                    </button>
+                    <a href="${waUrl}" target="_blank" class="btn" title="Chat on WhatsApp" style="background:#25D366;color:#fff;border:none;padding:4px 8px;font-size:12px;border-radius:6px;">
+                      💬
+                    </a>
+                    <button class="btn btn-outline delete-req-btn" data-id="${c.id}" title="Delete Request" style="padding:4px 8px;font-size:12px;border-radius:6px;color:#e53e3e;border-color:#fecaca;">
+                      🗑️
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join("");
+
+          // Attach listeners
           tbody.querySelectorAll(".cake-thumb-preview").forEach(img => {
-            img.addEventListener("click", () => openModal(img.dataset.full));
+            img.addEventListener("click", () => openLightbox(img.dataset.full));
+          });
+
+          tbody.querySelectorAll(".view-details-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+              const req = currentRequestsList.find(r => r.id === btn.dataset.id);
+              if (req) showDetailModal(req);
+            });
           });
 
           tbody.querySelectorAll(".status-change-sel").forEach(sel => {
             sel.addEventListener("change", async function() {
-              const reqId    = this.dataset.id;
+              const reqId = this.dataset.id;
               const newStatus = this.value;
+
+              // Firestore update
               if (window.db) {
-                try { await window.db.collection("customCakeRequests").doc(reqId).update({ status: newStatus }); }
-                catch (err) { console.warn("Firestore custom cake status note:", err); }
+                try {
+                  await window.db.collection("customCakeRequests").doc(reqId).update({ status: newStatus });
+                } catch (err) {
+                  console.warn("Firestore status update note:", err);
+                }
               }
+
+              // Local storage update
               const list = JSON.parse(localStorage.getItem("sugarAtelierCustomCakes") || "[]");
               const target = list.find(item => item.id === reqId);
-              if (target) { target.status = newStatus; localStorage.setItem("sugarAtelierCustomCakes", JSON.stringify(list)); }
+              if (target) {
+                target.status = newStatus;
+                localStorage.setItem("sugarAtelierCustomCakes", JSON.stringify(list));
+              }
+
+              // In-memory update
+              const memTarget = currentRequestsList.find(item => item.id === reqId);
+              if (memTarget) memTarget.status = newStatus;
+
+              updateStats(currentRequestsList);
               toast("Status updated to: " + newStatus);
+            });
+          });
+
+          tbody.querySelectorAll(".delete-req-btn").forEach(btn => {
+            btn.addEventListener("click", async function() {
+              const reqId = this.dataset.id;
+              if (!confirm(`Are you sure you want to delete custom cake request ${reqId}?`)) return;
+
+              // Firestore delete
+              if (window.db) {
+                try {
+                  await window.db.collection("customCakeRequests").doc(reqId).delete();
+                } catch (err) {
+                  console.warn("Firestore delete note:", err);
+                }
+              }
+
+              // Local storage delete
+              let list = JSON.parse(localStorage.getItem("sugarAtelierCustomCakes") || "[]");
+              list = list.filter(item => item.id !== reqId);
+              localStorage.setItem("sugarAtelierCustomCakes", JSON.stringify(list));
+
+              // In-memory update
+              currentRequestsList = currentRequestsList.filter(item => item.id !== reqId);
+              updateStats(currentRequestsList);
+              renderRows();
+              toast("Request deleted successfully.");
             });
           });
         }
 
+        function showDetailModal(c) {
+          if (!detailModal) return;
+          document.getElementById("modalTitle").textContent = `${c.id} • ${c.cakeName || 'Custom Cake'}`;
+          document.getElementById("modalCakeNameDisplay").textContent = c.cakeName || "Custom Cake";
+          document.getElementById("modalOccasionShape").textContent = `${c.occasion || 'Celebration'} • ${c.cakeShape || 'Classic Round'} • ${c.tiers || '1-Tier'}`;
+
+          const imgEl = document.getElementById("modalImg");
+          const imgWrap = document.getElementById("modalImgContainer");
+          if (c.image) {
+            imgEl.src = c.image;
+            imgWrap.style.display = "block";
+            imgEl.onclick = () => openLightbox(c.image);
+          } else {
+            imgWrap.style.display = "none";
+          }
+
+          const badgesWrap = document.getElementById("modalBadgesWrap");
+          badgesWrap.innerHTML = `
+            <span class="dietary-tag" style="font-size:12px;padding:3px 9px;">${c.flavor || 'Chocolate'}</span>
+            <span class="dietary-tag" style="font-size:12px;padding:3px 9px;">${c.size || '1.5 KG'}</span>
+            <span class="dietary-tag" style="font-size:12px;padding:3px 9px;">${c.dietary || 'Regular'}</span>
+            <span class="dietary-tag" style="font-size:12px;padding:3px 9px;background:#fdf2f8;color:#9d174d;border-color:#fbcfe8;">Status: ${c.status || 'Pending'}</span>
+          `;
+
+          document.getElementById("modalCustomerName").textContent = c.customerName || "Customer";
+          document.getElementById("modalCustomerPhone").textContent = `${c.phone || ''} ${c.whatsapp ? '(WA: ' + c.whatsapp + ')' : ''}`;
+          document.getElementById("modalDeliverySchedule").textContent = `${c.deliveryDate || 'ASAP'} • ${c.deliveryTimeSlot || ''}`;
+          document.getElementById("modalAddressFull").textContent = `${c.deliveryAddress || 'No detailed address'}, ${c.city || ''}`;
+          document.getElementById("modalMessageFull").textContent = c.message ? `"${c.message}"` : "No piping message requested.";
+          document.getElementById("modalInstructionsFull").textContent = c.instructions || c.colorTheme || "No special instructions provided.";
+          document.getElementById("modalPriceVal").textContent = c.estimatedPrice ? `৳ ${Number(c.estimatedPrice).toLocaleString()}` : "Quote Pending";
+
+          // WhatsApp link
+          const waPhone = (c.whatsapp || c.phone || "").replace(/[^0-9]/g, "");
+          const formattedWa = waPhone.startsWith("88") ? waPhone : ("88" + waPhone);
+          const waMsg = encodeURIComponent(`Hi ${c.customerName}! We received your Custom Cake request "${c.cakeName || ''}" (ID: ${c.id}) at The Sugar Atelier.\n\nFlavor: ${c.flavor}\nSize: ${c.size} (${c.tiers})\nDelivery Date: ${c.deliveryDate}\nEstimated: ৳${c.estimatedPrice || 'Quote'}\n\nWe'd like to confirm your design details!`);
+          document.getElementById("modalWhatsAppAction").href = `https://wa.me/${formattedWa}?text=${waMsg}`;
+
+          detailModal.style.display = "flex";
+        }
+
+        searchInput?.addEventListener("input", renderRows);
+        statusFilter?.addEventListener("change", renderRows);
+
+        function updateRequestsList(list) {
+          currentRequestsList = list;
+          updateStats(currentRequestsList);
+          renderRows();
+        }
+
+        // Firestore Real-time listener + LocalStorage fallback
         if (window.db) {
           window.db.collection("customCakeRequests").orderBy("createdAt", "desc").onSnapshot(snapshot => {
             const list = [];
             snapshot.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
-            renderCustomCakes(list.length ? list : [...JSON.parse(localStorage.getItem("sugarAtelierCustomCakes") || "[]"), ...defaultItems]);
+
+            if (list.length) {
+              updateRequestsList(list);
+            } else {
+              const localList = JSON.parse(localStorage.getItem("sugarAtelierCustomCakes") || "[]");
+              updateRequestsList(localList.length ? localList : defaultMock);
+            }
           }, err => {
-            console.warn("Firestore custom cakes notice:", err);
-            renderCustomCakes([...JSON.parse(localStorage.getItem("sugarAtelierCustomCakes") || "[]"), ...defaultItems]);
+            console.warn("Firestore custom cakes listener note:", err);
+            const localList = JSON.parse(localStorage.getItem("sugarAtelierCustomCakes") || "[]");
+            updateRequestsList(localList.length ? localList : defaultMock);
           });
         } else {
-          renderCustomCakes([...JSON.parse(localStorage.getItem("sugarAtelierCustomCakes") || "[]"), ...defaultItems]);
+          const localList = JSON.parse(localStorage.getItem("sugarAtelierCustomCakes") || "[]");
+          updateRequestsList(localList.length ? localList : defaultMock);
         }
       })();
     </script>
