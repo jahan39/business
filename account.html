@@ -43,6 +43,7 @@
             <div class="account-avatar-wrap">
               <div class="account-avatar" id="avatarInitials">👤</div>
               <button type="button" class="avatar-edit-btn" id="avatarEditBtn" title="Change photo">📷</button>
+              <input type="file" id="avatarFileInput" accept="image/*" style="display:none;">
             </div>
             <div class="account-user-info">
               <div class="user-meta-top">
@@ -269,8 +270,12 @@
           }
           if (saved.phone && profPhone) profPhone.value = saved.phone;
           if (avatarInitials) {
-            const parts = dName.split(" ");
-            avatarInitials.textContent = parts.length > 1 ? (parts[0][0] + parts[1][0]).toUpperCase() : dName.slice(0, 2).toUpperCase();
+            if (saved.photoUrl) {
+              avatarInitials.innerHTML = `<img src="${saved.photoUrl}" alt="${dName}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`;
+            } else {
+              const parts = dName.split(" ");
+              avatarInitials.textContent = parts.length > 1 ? (parts[0][0] + parts[1][0]).toUpperCase() : dName.slice(0, 2).toUpperCase();
+            }
           }
         } else {
           const heroName = document.getElementById("heroUserName");
@@ -289,7 +294,8 @@
               uid: user.uid,
               name: user.displayName || user.email.split('@')[0],
               email: user.email,
-              phone: ''
+              phone: '',
+              photoUrl: user.photoURL || ''
             };
             if (window.db) {
               try {
@@ -298,6 +304,7 @@
                   const d = doc.data();
                   if (d.name) userData.name = d.name;
                   if (d.phone) userData.phone = d.phone;
+                  if (d.photoUrl) userData.photoUrl = d.photoUrl;
                 }
               } catch (e) {
                 console.warn("User fetch notice:", e);
@@ -439,9 +446,71 @@
         }
       });
 
-      // Photo upload demo
-      document.getElementById("avatarEditBtn")?.addEventListener("click", function() {
-        toast("Photo upload modal opened (Demo)");
+      // Real Photo upload & canvas compression
+      const avatarBtn   = document.getElementById("avatarEditBtn");
+      const avatarInput = document.getElementById("avatarFileInput");
+
+      avatarBtn?.addEventListener("click", () => avatarInput?.click());
+
+      avatarInput?.addEventListener("change", function(e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const img = new Image();
+          img.onload = async function() {
+            // Compress with canvas (240x240 square crop)
+            const canvas = document.createElement("canvas");
+            const size = 240;
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext("2d");
+
+            // Crop center square
+            const minDim = Math.min(img.width, img.height);
+            const sx = (img.width - minDim) / 2;
+            const sy = (img.height - minDim) / 2;
+            ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
+
+            const compressedBase64 = canvas.toDataURL("image/jpeg", 0.82);
+
+            // Update UI immediately
+            const avatarInitials = document.getElementById("avatarInitials");
+            if (avatarInitials) {
+              avatarInitials.innerHTML = `<img src="${compressedBase64}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`;
+            }
+
+            // Save to localStorage
+            let current = null;
+            try { current = JSON.parse(localStorage.getItem("sugarAtelierCurrentUser") || "{}"); } catch (e) {}
+            if (!current) current = {};
+            current.photoUrl = compressedBase64;
+            localStorage.setItem("sugarAtelierCurrentUser", JSON.stringify(current));
+
+            // Save to Firestore and Firebase Auth
+            const user = window.auth ? window.auth.currentUser : null;
+            if (user) {
+              if (window.db) {
+                try {
+                  await window.db.collection("customers").doc(user.uid).set({
+                    photoUrl: compressedBase64,
+                    updatedAt: new Date().toISOString()
+                  }, { merge: true });
+                } catch (err) {
+                  console.warn("Firestore avatar update notice:", err);
+                }
+              }
+              if (user.updateProfile) {
+                user.updateProfile({ photoURL: compressedBase64 }).catch(() => {});
+              }
+            }
+
+            toast("🎉 Profile photo updated!");
+          };
+          img.src = evt.target.result;
+        };
+        reader.readAsDataURL(file);
       });
     </script>
   </body>

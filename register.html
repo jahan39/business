@@ -1079,11 +1079,18 @@
       }
     });
 
-    // ── Google Sign Up (existing behaviour preserved) ────────────────
-    document.getElementById('googleSignupBtn')?.addEventListener('click', function (e) {
+    // ── Google Sign Up (Real Firebase Google Auth) ───────────────────
+    document.getElementById('googleSignupBtn')?.addEventListener('click', async function (e) {
       e.preventDefault();
       const btn = this;
       const orig = btn.innerHTML;
+
+      // Check if file:// protocol
+      if (window.location.protocol === 'file:') {
+        toast('file:// দিয়ে Google Sign-In কাজ করে না। দয়া করে http://localhost:3000/register.html ব্যবহার করুন।');
+        return;
+      }
+
       btn.innerHTML = `
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="animation: spin 0.8s linear infinite; flex-shrink:0;">
             <circle cx="12" cy="12" r="10" stroke="#8B3A62" stroke-width="3" stroke-dasharray="31" stroke-dashoffset="10"/>
@@ -1092,13 +1099,60 @@
         `;
       btn.style.pointerEvents = 'none';
       btn.style.opacity = '0.8';
-      setTimeout(() => {
+
+      try {
+        if (typeof firebase !== 'undefined' && firebase.auth) {
+          const provider = new firebase.auth.GoogleAuthProvider();
+          const result = await firebase.auth().signInWithPopup(provider);
+          const user = result.user;
+
+          // Save customer profile in Firestore
+          if (window.db) {
+            try {
+              await window.db.collection('customers').doc(user.uid).set({
+                name: user.displayName || 'Google User',
+                email: user.email,
+                photo: user.photoURL || null,
+                createdAt: new Date().toISOString(),
+                emailVerified: true
+              }, { merge: true });
+            } catch (dbErr) {
+              console.warn('Profile save note:', dbErr);
+            }
+          }
+
+          localStorage.setItem('sugarAtelierCurrentUser', JSON.stringify({
+            uid:   user.uid,
+            name:  user.displayName || 'Google User',
+            email: user.email,
+            photo: user.photoURL || null,
+          }));
+
+          toast(`Welcome, ${user.displayName || 'Member'}! Account connected.`);
+          setTimeout(() => location.href = 'account.html', 800);
+        } else {
+          throw new Error('Authentication service not initialized.');
+        }
+      } catch (error) {
+        console.error('Google signup error:', error);
         btn.innerHTML = orig;
         btn.style.pointerEvents = '';
         btn.style.opacity = '';
-        toast('Google Account connected! Welcome.');
-        setTimeout(() => location.href = 'account.html', 1000);
-      }, 1500);
+        if (error.code === 'auth/popup-closed-by-user') {
+          toast('Sign-in cancelled. Please try again.');
+        } else if (error.code === 'auth/popup-blocked') {
+          toast('Popup blocked. Please allow popups and try again.');
+        } else if (error.code === 'auth/unauthorized-domain') {
+          const host = window.location.hostname || 'this domain';
+          if (host === '127.0.0.1') {
+            toast('ব্রাউজারে http://localhost:3000 ওপেন করুন, অথবা Firebase-এ 127.0.0.1 যোগ করুন।');
+          } else {
+            toast(`Firebase-এ '${host}' ডোমেইনটি Authorized Domains-এ যুক্ত করুন।`);
+          }
+        } else {
+          toast(error.message || 'Google sign-up failed. Please try again.');
+        }
+      }
     });
 
     // Signal app.js not to attach a duplicate register listener

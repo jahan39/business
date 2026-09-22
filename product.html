@@ -64,7 +64,7 @@
             <label class="field">Cake Message<input id="cakeMessageInput" placeholder="Happy Birthday!"></label>
             <div class="buy-row">
               <input class="qty" type="number" min="1" value="1">
-              <button class="btn btn-primary" id="addCartBtn" data-name="Classic Chocolate Dream" data-price="1850" onclick="handleProductAddToCart(event)">Add to Cart</button>
+              <button class="btn btn-primary add-cart" id="addCartBtn" data-name="Classic Chocolate Dream" data-price="1850" data-base-price="1850" onclick="handleProductAddToCart(event)">Add to Cart</button>
               <button class="btn btn-outline wishlist-btn" id="wishBtn" data-wishlist="Classic Chocolate Dream" title="Add to Wishlist"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></button>
             </div>
             <div class="info-box">
@@ -176,6 +176,7 @@
     <div id="toast" class="toast"></div>
     <!-- Firebase SDK & Config -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/app.js"></script>
@@ -315,8 +316,9 @@
         // Cart & Wishlist buttons
         const addBtn  = document.getElementById("addCartBtn");
         const wishBtn = document.getElementById("wishBtn");
-        addBtn.dataset.name  = product.name;
-        addBtn.dataset.price = product.price;
+        addBtn.dataset.name      = product.name;
+        addBtn.dataset.basePrice = product.price;
+        addBtn.dataset.price     = product.price;
         wishBtn.dataset.wishlist = product.name;
 
         // Wishlist state
@@ -324,7 +326,7 @@
           const wish = JSON.parse(localStorage.getItem("sugarAtelierWishlist") || "[]");
           if (wish.includes(product.name)) {
             wishBtn.classList.add("saved");
-            wishBtn.textContent = "♥";
+            wishBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>`;
           }
         } catch { /* ignore */ }
       }
@@ -354,7 +356,7 @@
       const name  = addBtn.dataset.name  || "Handcrafted Cake";
       const price = Number(addBtn.dataset.price) || 1850;
 
-      // Read selected size chip
+      // Read selected size and flavor
       const sizeChips   = detail ? [...detail.querySelectorAll(".option")] : [];
       let selectedSize  = "";
       let selectedFlavor = "";
@@ -364,6 +366,17 @@
         if (label.includes("size"))   selectedSize   = selected?.textContent?.trim() || "";
         if (label.includes("flavor")) selectedFlavor = selected?.textContent?.trim() || "";
       });
+
+      const sizeMultipliers = {
+        "0.5 KG": 0.6,
+        "1 KG": 1.0,
+        "1.5 KG": 1.45,
+        "2 KG": 1.85
+      };
+      const basePrice = Number(addBtn.dataset.basePrice || addBtn.dataset.price) || 1850;
+      const mult = sizeMultipliers[selectedSize] || 1.0;
+      const finalPrice = Math.round(basePrice * mult);
+      addBtn.dataset.price = finalPrice;
 
       // Read cake message
       const cakeMsg = document.getElementById("cakeMessageInput")?.value?.trim() || "";
@@ -383,7 +396,7 @@
 
       // Use global addToCart from app.js
       if (typeof addToCart === "function") {
-        addToCart(displayName, price, qty, imgSrc);
+        addToCart(displayName, finalPrice, qty, imgSrc);
       }
     }
     window.handleProductAddToCart = handleProductAddToCart;

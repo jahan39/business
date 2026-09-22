@@ -151,6 +151,7 @@
 
     <!-- Firebase SDK & Config -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/app.js"></script>
@@ -214,7 +215,10 @@
             let recText = "";
             if (order.customerName) recText += `Recipient: ${order.customerName}`;
             if (order.customerPhone) recText += ` • Phone: ${order.customerPhone}`;
-            if (order.deliveryAddress) recText += ` • Address: ${order.deliveryAddress}`;
+            const addr = order.deliveryAddress || order.address || "";
+            const city = order.city ? (", " + order.city) : "";
+            const postal = order.postal ? (" – " + order.postal) : "";
+            if (addr) recText += ` • Address: ${addr}${city}${postal}`;
             if (recipientEl) recipientEl.textContent = recText;
           }
 

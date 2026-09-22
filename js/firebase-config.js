@@ -16,11 +16,21 @@ try {
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
-    db = firebase.firestore();
-    window.db = db;
+    if (typeof firebase.firestore === "function") {
+      try {
+        db = firebase.firestore();
+        window.db = db;
+      } catch (fsErr) {
+        console.warn("Firestore initialization notice:", fsErr);
+      }
+    }
     if (typeof firebase.auth === "function") {
-      auth = firebase.auth();
-      window.auth = auth;
+      try {
+        auth = firebase.auth();
+        window.auth = auth;
+      } catch (authErr) {
+        console.warn("Auth initialization notice:", authErr);
+      }
     }
   }
 } catch (err) {

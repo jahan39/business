@@ -17,6 +17,7 @@ const rateLimit = require("express-rate-limit");
 
 const sendOtpHandler = require("./api/sendOtp");
 const verifyOtpHandler = require("./api/verifyOtp");
+const forgotPasswordHandler = require("./api/forgotPassword");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -93,6 +94,7 @@ const verifyOtpLimiter = rateLimit({
 // ── API Routes ────────────────────────────────────────────────────────
 app.post("/api/auth/send-otp", sendOtpLimiter, sendOtpHandler);
 app.post("/api/auth/verify-otp", verifyOtpLimiter, verifyOtpHandler);
+app.post("/api/auth/forgot-password", sendOtpLimiter, forgotPasswordHandler);
 
 // ── Static Files ──────────────────────────────────────────────────────
 // Serve all HTML, CSS, JS, images from the project root

@@ -37,6 +37,7 @@
                 <thead>
                   <tr>
                     <th>Request ID</th>
+                    <th>Photo</th>
                     <th>Customer</th>
                     <th>Cake Type & Flavor</th>
                     <th>Size & Date</th>
@@ -47,7 +48,7 @@
                 </thead>
                 <tbody id="customCakesTbody">
                   <tr>
-                    <td colspan="7" style="text-align:center;padding:30px;color:var(--muted);">Loading requests…</td>
+                    <td colspan="8" style="text-align:center;padding:30px;color:var(--muted);">Loading requests…</td>
                   </tr>
                 </tbody>
               </table>
@@ -55,15 +56,39 @@
           </div>
       </main>
     </div>
+    <!-- Image Preview Modal -->
+    <div id="imagePreviewModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:9999; align-items:center; justify-content:center; padding:20px;">
+      <div style="position:relative; max-width:90vw; max-height:90vh; background:var(--surface, #1e1e24); border-radius:12px; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.5); padding:12px; display:flex; flex-direction:column; align-items:center;">
+        <button id="closeImgModalBtn" style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:#fff; border:none; width:32px; height:32px; border-radius:50%; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+        <img id="modalPreviewImg" src="" alt="Cake Reference" style="max-width:100%; max-height:80vh; object-fit:contain; border-radius:8px;">
+      </div>
+    </div>
     <div id="toast" class="toast"></div>
     <!-- Firebase SDK & Config -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/app.js"></script>
     <script>
       (function() {
         const tbody = document.getElementById("customCakesTbody");
+        const modal = document.getElementById("imagePreviewModal");
+        const modalImg = document.getElementById("modalPreviewImg");
+        const closeBtn = document.getElementById("closeImgModalBtn");
+
+        function openModal(src) {
+          if (!modal || !modalImg) return;
+          modalImg.src = src;
+          modal.style.display = "flex";
+        }
+        function closeModal() {
+          if (modal) modal.style.display = "none";
+          if (modalImg) modalImg.src = "";
+        }
+        closeBtn?.addEventListener("click", closeModal);
+        modal?.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+
         if (!tbody) return;
 
         const defaultItems = [
@@ -72,12 +97,17 @@
 
         function renderCustomCakes(all) {
           if (!all.length) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted);">No custom cake requests yet.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--muted);">No custom cake requests yet.</td></tr>';
             return;
           }
           tbody.innerHTML = all.map(c => `
             <tr>
               <td><strong>${c.id}</strong></td>
+              <td>
+                ${c.image 
+                  ? `<img src="${c.image}" alt="Ref" class="cake-thumb-preview" data-full="${c.image}" title="Click to view reference" style="width:44px;height:44px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid var(--border);display:block;">` 
+                  : `<span style="color:var(--muted);font-size:12px;">No photo</span>`}
+              </td>
               <td>
                 <b>${c.customerName || "—"}</b><br>
                 <small style="color:var(--muted);">${c.phone || "No phone"}</small>
@@ -107,6 +137,10 @@
               </td>
             </tr>
           `).join("");
+
+          tbody.querySelectorAll(".cake-thumb-preview").forEach(img => {
+            img.addEventListener("click", () => openModal(img.dataset.full));
+          });
 
           tbody.querySelectorAll(".status-change-sel").forEach(sel => {
             sel.addEventListener("change", async function() {

@@ -340,7 +340,7 @@ function initProductDetail() {
     "2 KG": 1.85
   };
   const priceEl = detail.querySelector(".price");
-  const addBtn = detail.querySelector(".add-cart");
+  const addBtn = detail.querySelector(".add-cart") || detail.querySelector("#addCartBtn");
   const basePrice = Number(addBtn?.dataset.price) || 1850;
 
   detail.querySelectorAll(".option").forEach(opt => {
@@ -487,12 +487,14 @@ if (checkoutForm && !document.getElementById("placeOrderBtn")) {
   });
 }
 
-// Contact form
-document.getElementById("contactForm")?.addEventListener("submit", e => {
-  e.preventDefault();
-  toast("Thank you! Your message has been submitted.");
-  e.target.reset();
-});
+// Contact form (runs only if page has not defined custom handler)
+if (!window.__customContactHandler) {
+  document.getElementById("contactForm")?.addEventListener("submit", e => {
+    e.preventDefault();
+    toast("Thank you! Your message has been submitted.");
+    e.target.reset();
+  });
+}
 
 // Custom cake form
 if (!window.__customCakeHandler) {
@@ -518,15 +520,8 @@ if (regForm && !window.__customRegisterHandler) {
   });
 }
 
-// Forgot password form
-const forgotForm = document.getElementById("forgotPasswordForm") || document.querySelector(".auth-page form");
-if (forgotForm && (location.pathname.includes("forgot-password") || document.title.includes("Forgot Password"))) {
-  forgotForm.addEventListener("submit", e => {
-    e.preventDefault();
-    toast("Password reset link sent to your email!");
-    e.target.reset();
-  });
-}
+// Forgot password form is handled exclusively by forgot-password.html
+
 
 // Admin login
 document.getElementById("adminLoginForm")?.addEventListener("submit", e => {

@@ -43,15 +43,27 @@
         </div>
         <div class="admin-grid">
           <div class="admin-card">
-            <h2>Sales Overview</h2>
-            <div class="fake-chart">
-              <i style="height:35%"></i>
-              <i style="height:55%"></i>
-              <i style="height:45%"></i>
-              <i style="height:70%"></i>
-              <i style="height:60%"></i>
-              <i style="height:90%"></i>
-              <i style="height:75%"></i>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <h2 style="margin:0;">Sales Overview</h2>
+              <small style="color:var(--muted); font-size:12px;">Last 7 Days</small>
+            </div>
+            <div class="fake-chart" id="dashSalesChart">
+              <i style="height:35%" title="Day 1"></i>
+              <i style="height:55%" title="Day 2"></i>
+              <i style="height:45%" title="Day 3"></i>
+              <i style="height:70%" title="Day 4"></i>
+              <i style="height:60%" title="Day 5"></i>
+              <i style="height:90%" title="Day 6"></i>
+              <i style="height:75%" title="Today"></i>
+            </div>
+            <div id="dashChartLabels" style="display:flex; justify-content:space-between; gap:18px; padding:8px 10px 0; font-size:11px; color:var(--muted); text-align:center;">
+              <span style="flex:1;">Mon</span>
+              <span style="flex:1;">Tue</span>
+              <span style="flex:1;">Wed</span>
+              <span style="flex:1;">Thu</span>
+              <span style="flex:1;">Fri</span>
+              <span style="flex:1;">Sat</span>
+              <span style="flex:1;font-weight:700;color:var(--primary);">Today</span>
             </div>
           </div>
           <div class="admin-card">
@@ -68,6 +80,7 @@
     <div id="toast" class="toast"></div>
     <!-- Firebase SDK & Config -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/app.js"></script>
@@ -80,26 +93,85 @@
         const saved = JSON.parse(localStorage.getItem("sugarAtelierProducts") || "[]");
         if (elProducts) elProducts.textContent = BUILTIN + saved.length;
 
-        if (!window.db) return;
-
-        // Real-time orders stats
-        window.db.collection("orders").onSnapshot(snapshot => {
-          const orders = [];
-          snapshot.forEach(doc => orders.push(doc.data()));
-
+        // Render Chart and Order stats
+        function updateSalesOverview(orders) {
           const totalOrders = orders.length;
-          const totalSales  = orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+          const totalSales  = orders.reduce((sum, o) => {
+            const amt = o.totalAmount || parseInt((o.total || "").replace(/[^\d]/g, "")) || 0;
+            return sum + amt;
+          }, 0);
 
           const elOrders = document.getElementById("dashTotalOrders");
           const elSales  = document.getElementById("dashTotalSales");
           if (elOrders) elOrders.textContent = totalOrders;
           if (elSales)  elSales.textContent  = totalSales > 0 ? "৳" + totalSales.toLocaleString("en-IN") : "৳0";
 
+          // Calculate 7-day daily sales
+          const days = [];
+          const dayLabels = [];
+          const now = new Date();
+          for (let i = 6; i >= 0; i--) {
+            const d = new Date(now);
+            d.setDate(now.getDate() - i);
+            days.push(d.toISOString().slice(0, 10));
+            dayLabels.push(i === 0 ? "Today" : d.toLocaleDateString("en-US", { weekday: "short" }));
+          }
+
+          const daySales = [0, 0, 0, 0, 0, 0, 0];
+          orders.forEach(o => {
+            let orderDate = "";
+            if (o.createdAt) {
+              orderDate = o.createdAt.slice(0, 10);
+            } else if (o.date) {
+              const parsed = new Date(o.date);
+              if (!isNaN(parsed)) orderDate = parsed.toISOString().slice(0, 10);
+            }
+            const idx = days.indexOf(orderDate);
+            const amt = o.totalAmount || parseInt((o.total || "").replace(/[^\d]/g, "")) || 0;
+            if (idx !== -1) daySales[idx] += amt;
+          });
+
+          // Check if any sales in window, otherwise provide a gentle baseline preview
+          const maxVal = Math.max(...daySales, 1000);
+          const chartEl = document.getElementById("dashSalesChart");
+          const labelsEl = document.getElementById("dashChartLabels");
+
+          if (chartEl) {
+            chartEl.innerHTML = daySales.map((sales, idx) => {
+              const pct = Math.max(8, Math.round((sales / maxVal) * 100));
+              return `<i style="height:${pct}%; transition: height 0.4s ease;" title="${dayLabels[idx]}: ৳${sales.toLocaleString()}"></i>`;
+            }).join("");
+          }
+
+          if (labelsEl) {
+            labelsEl.innerHTML = dayLabels.map((lbl, idx) => {
+              const isToday = idx === 6;
+              return `<span style="flex:1;${isToday ? 'font-weight:700;color:var(--primary);' : ''}">${lbl}</span>`;
+            }).join("");
+          }
+
           // Recent orders widget
-          const recent = orders.sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || "")).slice(0, 5);
+          const recent = [...orders].sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || "")).slice(0, 5);
           const el = document.getElementById("dashRecentOrders");
           if (el && recent.length) {
-            el.innerHTML = recent.map(o => `<div class="mini-order"><b>${o.id || "—"}</b><span>${o.total || "—"}</span><em>${o.status || "—"}</em></div>`).join("");
+            el.innerHTML = recent.map(o => `<div class="mini-order"><b>${o.id || o.orderId || "—"}</b><span>${o.total || "—"}</span><em>${o.status || "—"}</em></div>`).join("");
+          }
+        }
+
+        // Initial render with localStorage orders
+        const localOrders = JSON.parse(localStorage.getItem("sugarAtelierOrders") || "[]");
+        if (localOrders.length) updateSalesOverview(localOrders);
+
+        if (!window.db) return;
+
+        // Real-time orders stats from Firestore
+        window.db.collection("orders").onSnapshot(snapshot => {
+          const orders = [];
+          snapshot.forEach(doc => orders.push({ id: doc.id, ...doc.data() }));
+          if (orders.length) {
+            updateSalesOverview(orders);
+          } else if (localOrders.length) {
+            updateSalesOverview(localOrders);
           }
         }, err => console.warn("Dashboard orders notice:", err));
 
