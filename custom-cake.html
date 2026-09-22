@@ -828,8 +828,21 @@
 
         const orderId = "CC-" + Math.floor(100 + Math.random() * 900);
 
+        let currentUid = null;
+        let currentEmail = "";
+        try {
+          const u = JSON.parse(localStorage.getItem("sugarAtelierCurrentUser") || "null");
+          if (u) {
+            currentUid = u.uid || u.id || null;
+            currentEmail = u.email || "";
+          }
+        } catch (e) {}
+
         const req = {
           id:                 orderId,
+          orderId:            orderId,
+          userId:             currentUid,
+          customerEmail:      currentEmail,
           cakeName:           cakeName,
           customerName:       fd.get("customerName")?.trim() || "Customer",
           phone:              fd.get("phone")?.trim() || "",
@@ -850,17 +863,26 @@
           message:            fd.get("message")?.trim() || "",
           instructions:       fd.get("instructions")?.trim() || "",
           estimatedPrice:     currentEstimatedTotal,
+          total:              "৳ " + Number(currentEstimatedTotal).toLocaleString(),
+          totalAmount:        currentEstimatedTotal,
           image:              cakeRefBase64 || "",
           status:             "Pending",
+          type:               "Custom Cake",
+          items:              [{ name: cakeName + ` (${fd.get("size") || "1.5 KG"}, ${flavor})`, qty: 1, price: currentEstimatedTotal }],
           createdAt:          new Date().toISOString(),
         };
 
-        // 1. Save to Firestore customCakeRequests
+        // 1. Save to Firestore customCakeRequests AND orders collection
         if (window.db) {
           try {
             await window.db.collection("customCakeRequests").doc(req.id).set(req);
           } catch (err) {
             console.warn("Firestore custom cake save note:", err);
+          }
+          try {
+            await window.db.collection("orders").doc(req.id).set(req);
+          } catch (err) {
+            console.warn("Firestore orders collection save note:", err);
           }
         }
 
@@ -876,9 +898,10 @@
           const orders = JSON.parse(localStorage.getItem("sugarAtelierOrders") || "[]");
           orders.unshift({
             id: req.id,
+            orderId: req.id,
             date: new Date().toLocaleDateString("en-GB", { day: 'numeric', month: 'short', year: 'numeric' }),
-            total: "৳" + Number(req.estimatedPrice).toLocaleString(),
-            status: "Requested",
+            total: "৳ " + Number(req.estimatedPrice).toLocaleString(),
+            status: "Pending",
             customerName: req.customerName,
             customerPhone: req.phone,
             address: req.deliveryAddress + " (" + req.city + ")",
