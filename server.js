@@ -135,7 +135,7 @@ app.use((err, req, res, _next) => {
 });
 
 // ── Start ─────────────────────────────────────────────────────────────
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`\n✅ The Sugar Atelier server running at http://localhost:${PORT}`);
   console.log(`   Environment: ${process.env.NODE_ENV || "development"}`);
   if (!process.env.RESEND_API_KEY) {
