@@ -685,6 +685,8 @@
             } else {
               toast(`Firebase-এ '${host}' ডোমেইনটি Authorized Domains-এ যুক্ত করুন।`);
             }
+          } else if (error.code === 'auth/operation-not-allowed') {
+            toast('Firebase Console-এ Google Provider টি Enable করা নেই। দয়া করে Sign-in method থেকে Enable করুন।');
           } else {
             toast(error.message || 'Google sign-in failed. Please try again.');
           }
